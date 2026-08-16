@@ -9,7 +9,7 @@ const newCategory = async (req, res) => {
       .json({ error: "Error, falta el nombre de la categoria" });
   }
 
-  const checkQuery = "SELECT * FROM categories WHERE BINARY category = ?";
+  const checkQuery = "SELECT * FROM categories WHERE category = ?";
 
   db.query(checkQuery, [categoryName], (err, results) => {
     if (err) {

@@ -7,6 +7,7 @@ const listUsers = require("../controllers/users/listUsers");
 const changePassword = require("../controllers/users/changePassword");
 const deleteUser = require("../controllers/users/deleteUser");
 const newCategory = require("../controllers/category/newCategory");
+const deleteCategory = require("../controllers/category/deleteCategory");
 
 router.post("/newUser", newUser);
 
@@ -19,5 +20,7 @@ router.post("/changePassword", changePassword);
 router.delete("/deleteUser", deleteUser);
 
 router.post("/newCategory", newCategory);
+
+router.delete("/deleteCategory", deleteCategory);
 
 module.exports = router;
