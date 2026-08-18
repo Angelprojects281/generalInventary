@@ -10,6 +10,8 @@ const newCategory = require("../controllers/category/newCategory");
 const deleteCategory = require("../controllers/category/deleteCategory");
 const newProduct = require("../controllers/products/newProduct");
 const deleteProduct = require("../controllers/products/deleteProduct");
+const listCategories = require("../controllers/category/listCategory");
+const filterProducts = require("../controllers/products/filterProducts");
 
 router.post("/newUser", newUser);
 
@@ -28,5 +30,9 @@ router.delete("/deleteCategory", deleteCategory);
 router.post("/newProduct", newProduct);
 
 router.delete("/deleteProduct", deleteProduct);
+
+router.get("/listCategories", listCategories);
+
+router.get("/filterProducts", filterProducts);
 
 module.exports = router;
