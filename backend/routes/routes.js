@@ -9,6 +9,7 @@ const deleteUser = require("../controllers/users/deleteUser");
 const newCategory = require("../controllers/category/newCategory");
 const deleteCategory = require("../controllers/category/deleteCategory");
 const newProduct = require("../controllers/products/newProduct");
+const deleteProduct = require("../controllers/products/deleteProduct");
 
 router.post("/newUser", newUser);
 
@@ -25,5 +26,7 @@ router.post("/newCategory", newCategory);
 router.delete("/deleteCategory", deleteCategory);
 
 router.post("/newProduct", newProduct);
+
+router.delete("/deleteProduct", deleteProduct);
 
 module.exports = router;
