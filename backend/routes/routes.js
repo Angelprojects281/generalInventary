@@ -12,6 +12,7 @@ const newProduct = require("../controllers/products/newProduct");
 const deleteProduct = require("../controllers/products/deleteProduct");
 const listCategories = require("../controllers/category/listCategory");
 const filterProducts = require("../controllers/products/filterProducts");
+const newMovement = require("../controllers/movements/newMovement");
 
 router.post("/newUser", newUser);
 
@@ -34,5 +35,7 @@ router.delete("/deleteProduct", deleteProduct);
 router.get("/listCategories", listCategories);
 
 router.get("/filterProducts", filterProducts);
+
+router.post("/newMovement", newMovement);
 
 module.exports = router;
