@@ -13,6 +13,7 @@ const deleteProduct = require("../controllers/products/deleteProduct");
 const listCategories = require("../controllers/category/listCategory");
 const filterProducts = require("../controllers/products/filterProducts");
 const newMovement = require("../controllers/movements/newMovement");
+const filterMovements = require("../controllers/movements/filterMovements");
 
 router.post("/newUser", newUser);
 
@@ -37,5 +38,7 @@ router.get("/listCategories", listCategories);
 router.get("/filterProducts", filterProducts);
 
 router.post("/newMovement", newMovement);
+
+router.get("/filterMovements", filterMovements);
 
 module.exports = router;
