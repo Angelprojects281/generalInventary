@@ -16,11 +16,11 @@ const logIn = async (req, res) => {
 
   db.query(verifyUserQuery, [idusers], (err, results) => {
     if (err) {
-      return res.status(500).json({ message: "Error al verificar el usuario" });
+      return res.status(500).json({ error: "Error al verificar el usuario" });
     }
 
     if (results.length === 0) {
-      return res.status(400).json({ message: "Error, el usuario no existe" });
+      return res.status(400).json({ error: "Error, el usuario no existe" });
     }
 
     const user = results[0];
@@ -28,7 +28,7 @@ const logIn = async (req, res) => {
     const passwordMatch = bcrypt.compareSync(password, user.password);
 
     if (!passwordMatch) {
-      return res.status(400).json({ message: "Error, contraseña incorrecta" });
+      return res.status(400).json({ error: "Error, contraseña incorrecta" });
     }
 
     console.log("JWT_SECRET:", process.env.JWT_SECRET);
