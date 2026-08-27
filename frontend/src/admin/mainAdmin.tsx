@@ -1,0 +1,28 @@
+import { useNavigate } from "react-router-dom";
+export default function MainAdmin() {
+  const navigate = useNavigate();
+  const handleLogOut = () => {
+    localStorage.removeItem("token");
+    navigate("/");
+  };
+  return (
+    <div className="mainScreen">
+      <header className="headerScreen">
+        <h3 className="tittle">Panel de administrador</h3>
+      </header>
+      <section className="principalSection">
+        <p className="infoP">
+          Bienvenido al panel de administrador, que vas a hacer hoy?
+        </p>
+
+        <button className="optionButton">Administrar usuarios</button>
+        <button className="optionButton">Administrar categorias</button>
+        <button className="optionButton">Administrar movimientos</button>
+        <button className="optionButton">Cambios de contraseña</button>
+        <button className="optionButton secundary" onClick={handleLogOut}>
+          Cerrar sesion
+        </button>
+      </section>
+    </div>
+  );
+}

@@ -31,8 +31,6 @@ const logIn = async (req, res) => {
       return res.status(400).json({ error: "Error, contraseña incorrecta" });
     }
 
-    console.log("JWT_SECRET:", process.env.JWT_SECRET);
-
     const token = jwt.sign(
       { idusers: user.idusers, rol: user.rol },
       process.env.JWT_SECRET,

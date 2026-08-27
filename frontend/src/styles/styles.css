@@ -45,18 +45,39 @@ body {
   margin-top: 100px;
   border: none;
   border-radius: 30px;
-  padding: 20px;
+  padding: 18px;
   background: linear-gradient(130deg, #636262, #8f8d8d);
   box-shadow: 2px 3px 5px #bbb9b9;
   color: #0c0c0c;
   transition: 0.4s;
 }
 
-.mainButton:hover {
+.optionButton {
+  display: flex;
+  margin: 0 auto;
+  margin-top: 20px;
+  width: 180px;
+  text-align: center;
+  border: none;
+  border-radius: 30px;
+  padding: 18px;
+  background: linear-gradient(130deg, #636262, #8f8d8d);
+  box-shadow: 2px 3px 5px #bbb9b9;
+  color: #0c0c0c;
+  transition: 0.4s;
+}
+
+.secundary {
+  background: linear-gradient(130deg, #c55b5b, #cd3f3f);
+}
+
+.mainButton:hover,
+.optionButton:hover {
   transform: scale(1.05);
 }
 
-.mainButton:active {
+.mainButton:active,
+.optionButton:active {
   transform: scale(0.95);
 }
 
@@ -67,7 +88,7 @@ body {
   margin-top: 30px;
   border-radius: 30px;
   border: solid 1px #636262;
-  padding: 20px;
+  padding: 18px;
   box-shadow: inset 2px 3px 5px #bbb9b9;
   font-size: 15px;
 }

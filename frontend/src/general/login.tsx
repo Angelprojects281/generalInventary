@@ -1,9 +1,19 @@
 import { useState } from "react";
 import mostrarAlerta from "../alerts/alert";
+import { jwtDecode } from "jwt-decode";
+import { useNavigate } from "react-router-dom";
+
+interface tokenPayload {
+  idusers: string;
+  rol: string;
+  iat: number;
+  exp: number;
+}
 
 export default function Login() {
   const [idusers, setIdusers] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
   const handleLogin = async () => {
     if (!idusers || !password) {
@@ -31,7 +41,14 @@ export default function Login() {
     }
 
     localStorage.setItem("token", data.token);
-    mostrarAlerta("success", "inicio de sesion correcto", data.token);
+
+    const decodedToken = jwtDecode<tokenPayload>(data.token);
+
+    if (decodedToken.rol === "admin") {
+      navigate("/adminMain");
+    } else {
+      navigate("/regularMain");
+    }
   };
 
   return (
