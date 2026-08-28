@@ -23,7 +23,7 @@ router.get("/listUsers", listUsers);
 
 router.post("/changePassword", changePassword);
 
-router.delete("/deleteUser", deleteUser);
+router.delete("/deleteUser/:idusers/:tokenUser", deleteUser);
 
 router.post("/newCategory", newCategory);
 

@@ -1,7 +1,7 @@
 const db = require("../../db/db");
 
 const listUsers = (req, res) => {
-  const { rol } = req.body;
+  const { rol } = req.query;
   const values = [];
   let listUsersQuery = "SELECT * FROM users WHERE 1=1";
 

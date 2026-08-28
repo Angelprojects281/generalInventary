@@ -4,6 +4,7 @@ import InitPage from "./init/initPage";
 import Login from "./general/login";
 import MainAdmin from "./admin/mainAdmin";
 import MainRegular from "./regular/regularMain";
+import AdminUsers from "./admin/adminUsers";
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/adminMain" element={<MainAdmin />} />
         <Route path="/regularMain" element={<MainRegular />} />
+        <Route path="/adminUsers" element={<AdminUsers />} />
       </Routes>
     </BrowserRouter>
   );

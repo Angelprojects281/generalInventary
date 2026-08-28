@@ -1,5 +1,5 @@
 import { useState } from "react";
-import mostrarAlerta from "../alerts/alert";
+import { mostrarAlerta } from "../alerts/alert";
 import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
 

@@ -15,7 +15,14 @@ export default function MainAdmin() {
           Bienvenido al panel de administrador, que vas a hacer hoy?
         </p>
 
-        <button className="optionButton">Administrar usuarios</button>
+        <button
+          className="optionButton"
+          onClick={() => {
+            navigate("/adminUsers");
+          }}
+        >
+          Administrar usuarios
+        </button>
         <button className="optionButton">Administrar categorias</button>
         <button className="optionButton">Administrar movimientos</button>
         <button className="optionButton">Cambios de contraseña</button>

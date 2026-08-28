@@ -5,6 +5,7 @@ body {
 
 .headerScreen {
   display: flex;
+  flex-direction: initial;
   text-align: left;
   background: linear-gradient(140deg, #e8e2e2, #e8e0e0);
   width: 100%;
@@ -19,6 +20,7 @@ body {
   font-size: 25px;
   text-shadow: 2px 3px 5px #bbb9b9;
   font-weight: 800;
+  width: 80%;
 }
 
 .principalSection {
@@ -37,6 +39,29 @@ body {
   font-weight: 600;
   font-size: 18px;
   text-shadow: 2px 3px 5px #bbb9b9;
+}
+
+.filterSection {
+  display: flex;
+  height: 50px;
+  padding: 10px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 600;
+  text-shadow: 2px 3px 5px #bbb9b9;
+}
+
+.filterText {
+  align-self: center;
+  padding-left: 50px;
+}
+
+.filterSelect {
+  width: 130px;
+  margin-left: 20px;
+  border-radius: 30px;
+  font-family: Arial, Helvetica, sans-serif;
+  text-align: center;
+  cursor: pointer;
 }
 
 .mainButton {
@@ -91,4 +116,47 @@ body {
   padding: 18px;
   box-shadow: inset 2px 3px 5px #bbb9b9;
   font-size: 15px;
+}
+
+.actionButton {
+  display: flex;
+  width: 20%;
+  border-left: 1px solid #636262;
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+  font-family: Arial, Helvetica, sans-serif;
+  cursor: pointer;
+}
+
+.infoList {
+  list-style: none;
+}
+
+.lineList {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  align-items: center;
+  font-family: Arial, Helvetica, sans-serif;
+  padding: 12px 30px;
+  border-bottom: 1px solid #454444;
+  min-height: 50px;
+}
+
+.listInfo {
+  display: flex;
+  font-weight: 600;
+  margin: 0 auto;
+}
+
+.lastInfo {
+  display: flex;
+  overflow-wrap: anywhere;
+  font-weight: 200;
+  max-width: 200px;
+}
+
+.Delete {
+  color: #cd3f3f;
+  cursor: pointer;
 }

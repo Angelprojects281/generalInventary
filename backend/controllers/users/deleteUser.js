@@ -1,10 +1,16 @@
 const db = require("../../db/db");
 
 const listUsers = async (req, res) => {
-  const { idusers } = req.body;
+  const { idusers, tokenUser } = req.params;
 
-  if (!idusers) {
+  if (!idusers || !tokenUser) {
     return res.status(400).json({ message: "Error, faltan campos necesarios" });
+  }
+
+  if (idusers === tokenUser) {
+    return res
+      .status(400)
+      .json({ error: "Error, no puedes eliminarte a ti mismo" });
   }
 
   const deleteUserQuery = "DELETE FROM users WHERE BINARY idusers = ?";
