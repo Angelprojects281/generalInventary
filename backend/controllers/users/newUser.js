@@ -7,7 +7,7 @@ const newUser = (req, res) => {
   const { idusers, password, rol } = req.body;
 
   if (!idusers || !password || !rol) {
-    return res.status(400).json({ message: "Error, faltan campos necesarios" });
+    return res.status(400).json({ error: "Error, faltan campos necesarios" });
   }
 
   const passwordStrength = zxcvbn(password);
@@ -15,7 +15,7 @@ const newUser = (req, res) => {
   if (passwordStrength.score < 3) {
     return res
       .status(400)
-      .json({ message: "Error, la contraseña es demasiado débil" });
+      .json({ error: "Error, la contraseña es demasiado débil" });
   }
 
   const verifyUserQuery = "SELECT * FROM users WHERE BINARY idusers = ?";
@@ -23,11 +23,11 @@ const newUser = (req, res) => {
   db.query(verifyUserQuery, [idusers], (err, results) => {
     if (err) {
       console.error("Error al verificar el usuario:", err);
-      return res.status(500).json({ message: "Error al verificar el usuario" });
+      return res.status(500).json({ error: "Error al verificar el usuario" });
     }
 
     if (results.length > 0) {
-      return res.status(400).json({ message: "Error, el usuario ya existe" });
+      return res.status(400).json({ error: "Error, el usuario ya existe" });
     }
 
     const encryptedPassword = bcrypt.hashSync(password, 10);
@@ -43,7 +43,7 @@ const newUser = (req, res) => {
           console.error("Error al insertar el usuario:", err);
           return res
             .status(500)
-            .json({ message: "Error al insertar el usuario" });
+            .json({ error: "Error al insertar el usuario" });
         }
 
         return res.status(200).json({ message: "Usuario creado exitosamente" });

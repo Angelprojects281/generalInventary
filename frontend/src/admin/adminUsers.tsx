@@ -1,22 +1,17 @@
 import { useState, useEffect } from "react";
-import { mostrarAlerta, mostrarConfirmacion } from "../alerts/alert";
-import { jwtDecode } from "jwt-decode";
+import { mostrarAlerta } from "../alerts/alert";
+import deleteUsers from "./deleteUsers";
+import FormUsers from "./newUser";
 
 interface usersInterface {
   idusers: string;
   rol: string;
 }
 
-interface tokenPayload {
-  idusers: string;
-  rol: string;
-  iat: number;
-  exp: number;
-}
-
 export default function AdminUsers() {
   const [rol, setRol] = useState("");
   const [users, setUsers] = useState<usersInterface[]>([]);
+  const [showForm, setShowForm] = useState(false);
 
   const filterUsers = async () => {
     const res = await fetch(`http://localhost:3000/listUsers?rol=${rol}`, {
@@ -35,43 +30,12 @@ export default function AdminUsers() {
     filterUsers();
   }, [rol]);
 
-  const handleDeleteUser = async (idusers: string) => {
-    const tokenLocal = localStorage.getItem("token");
+  const closeForm = () => {
+    setShowForm(false);
+  };
 
-    if (tokenLocal === null) {
-      return;
-    }
-
-    const decodeToken = jwtDecode<tokenPayload>(tokenLocal);
-
-    const result = await mostrarConfirmacion(
-      "question",
-      "¿Deseas eliminar este usuario?",
-      "revise nuevamente la informacion antes de continuar",
-    );
-
-    if (!result.isConfirmed) {
-      return;
-    }
-    const res = await fetch(
-      `http://localhost:3000/deleteUser/${idusers}/${decodeToken.idusers}`,
-      {
-        method: "DELETE",
-      },
-    );
-
-    const data = await res.json();
-
-    if (!res.ok) {
-      mostrarAlerta("error", "Error al eliminar usuario", data.error);
-      return;
-    }
-
-    mostrarAlerta(
-      "success",
-      "usuarios eliminado correctamente",
-      `se elimino el usuario ${idusers}`,
-    );
+  const usuarioCreado = () => {
+    closeForm();
     filterUsers();
   };
 
@@ -79,7 +43,12 @@ export default function AdminUsers() {
     <div className="mainScreen">
       <header className="headerScreen">
         <h3 className="tittle">Administrador de usuarios</h3>
-        <section className="actionButton">
+        <section
+          className="actionButton"
+          onClick={() => {
+            setShowForm(true);
+          }}
+        >
           <p>Nuevo usuario +</p>
         </section>
       </header>
@@ -110,7 +79,8 @@ export default function AdminUsers() {
               <p
                 className="listInfo lastInfo Delete"
                 onClick={() => {
-                  handleDeleteUser(users.idusers);
+                  deleteUsers(users.idusers);
+                  filterUsers();
                 }}
               >
                 Eliminar usuario
@@ -119,6 +89,7 @@ export default function AdminUsers() {
           ))}
         </ul>
       </section>
+      {showForm && <FormUsers onAcept={usuarioCreado} onCancel={closeForm} />}
     </div>
   );
 }

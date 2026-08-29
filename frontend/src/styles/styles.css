@@ -160,3 +160,19 @@ body {
   color: #cd3f3f;
   cursor: pointer;
 }
+
+.formContainer {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border: 2px solid #0c0c0c;
+  padding: 20px;
+  border-radius: 30px;
+  background-color: #8f8d8d;
+}
