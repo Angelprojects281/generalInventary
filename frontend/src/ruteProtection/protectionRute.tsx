@@ -17,13 +17,13 @@ function ProtectRoute({ page, authorizedRol }: props) {
   const token = localStorage.getItem("token");
 
   if (!token) {
-    return <Navigate to="/" />;
+    return <Navigate to="/" replace />;
   }
 
   const decodedToken = jwtDecode<tokenPayload>(token);
 
   if (authorizedRol && decodedToken.rol !== authorizedRol) {
-    return <Navigate to="/" />;
+    return <Navigate to="/" replace />;
   } else {
     return page;
   }

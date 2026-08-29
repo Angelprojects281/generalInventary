@@ -1,19 +1,9 @@
 import { useNavigate } from "react-router-dom";
-import { mostrarConfirmacion } from "../alerts/alert";
 export default function MainRegular() {
   const navigate = useNavigate();
   const handleLogOut = async () => {
-    const result = await mostrarConfirmacion(
-      "question",
-      "deseas cerrar sesion?",
-      "",
-    );
-
-    if (!result.isConfirmed) {
-      return;
-    }
     localStorage.removeItem("token");
-    navigate("/");
+    navigate("/", { replace: true });
   };
   return (
     <div className="mainScreen">
