@@ -1,0 +1,123 @@
+import { useState, useEffect } from "react";
+import listCategories from "../../admin/categories/listCategories";
+
+interface ProductInterface {
+  idproducts: number;
+  product_name: string;
+  amount: number;
+  description: string;
+  category: string;
+}
+
+interface ClassInterface {
+  idcategoria: number;
+  category: string;
+}
+
+export default function ProductsReg() {
+  const [productsArray, setProductsArray] = useState<ProductInterface[]>([]);
+  const [categoryArray, setCategoriesArray] = useState<ClassInterface[]>([]);
+  const [categoryName, setCategory] = useState("");
+  const [amount, setAmount] = useState<number | "">("");
+
+  const fetchCategories = async () => {
+    const categoryList = await listCategories();
+    setCategoriesArray(categoryList);
+  };
+
+  const fetchProducts = async () => {
+    const res = await fetch(
+      `http://localhost:3000/filterProducts?categoryName=${categoryName}&amount=${amount}`,
+      {
+        method: "GET",
+      },
+    );
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      console.error("Error al obtener productos:", data.error);
+      return;
+    }
+    setProductsArray(data);
+  };
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  useEffect(() => {
+    fetchProducts();
+  }, [categoryName, amount]);
+  return (
+    <div className="mainScreen">
+      <header className="headerScreen">
+        <h3 className="tittle">Administrador de productos</h3>
+        <section className="actionButton">
+          <p>Nuevo producto +</p>
+        </section>
+      </header>
+      <section className="filterSection">
+        <p className="filterText">Filtros:</p>
+        <select
+          className="filterSelect"
+          onChange={(e) => {
+            setCategory(e.target.value);
+          }}
+        >
+          <option value="">seleccione una categoria:</option>
+          {categoryArray.map((category) => (
+            <option key={category.idcategoria} value={category.category}>
+              {category.category}
+            </option>
+          ))}
+        </select>
+        <input
+          className="filterSelect"
+          type="number"
+          placeholder="cantidad menor que"
+          onChange={(e) => {
+            setAmount(Number(e.target.value));
+          }}
+        ></input>
+
+        <button
+          className="filterSelect secundary"
+          onClick={() => {
+            setCategory("");
+            setAmount("");
+          }}
+        >
+          Limpiar filtros
+        </button>
+      </section>
+
+      <section className="principalSection">
+        <ul className="infoList">
+          <li className="lineList">
+            <p className="listInfo">Nombre</p>
+            <p className="listInfo">Cantidad</p>
+            <p className="listInfo">Descripcion</p>
+            <p className="listInfo">Categoria</p>
+            <p className="listInfo">Nuevo movimiento</p>
+            <p className="listInfo">Eliminar producto</p>
+          </li>
+          {productsArray.map((product) => (
+            <li
+              key={product.idproducts}
+              value={product.product_name}
+              className="lineList"
+            >
+              <p className="listInfo lastInfo">{product.product_name}</p>
+              <p className="listInfo lastInfo">{product.amount}</p>
+              <p className="listInfo lastInfo">{product.description}</p>
+              <p className="listInfo lastInfo">{product.category}</p>
+              <p className="listInfo lastInfo Update">Nuevo movimiento</p>
+              <p className="listInfo lastInfo Delete">Eliminar producto</p>
+            </li>
+          ))}
+        </ul>
+      </section>
+    </div>
+  );
+}

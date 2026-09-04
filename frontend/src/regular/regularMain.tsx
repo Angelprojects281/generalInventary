@@ -15,8 +15,14 @@ export default function MainRegular() {
           Bienvenido al panel regular, que vas a hacer hoy?
         </p>
 
-        <button className="optionButton">Administrar productos</button>
-        <button className="optionButton">Nuevo movimiento</button>
+        <button
+          className="optionButton"
+          onClick={() => {
+            navigate("/productsReg");
+          }}
+        >
+          Administrar productos
+        </button>
         <button className="optionButton secundary" onClick={handleLogOut}>
           Cerrar sesion
         </button>

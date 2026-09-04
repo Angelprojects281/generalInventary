@@ -14,6 +14,7 @@ import AdminUsers from "./admin/users/adminUsers";
 import ProtectRoute from "./ruteProtection/protectionRute";
 import AdminCategory from "./admin/categories/adminCategory";
 import AdminMovements from "./admin/movements/movements";
+import ProductsReg from "./regular/products/productsReg";
 
 function BackNavigationGuard() {
   const location = useLocation();
@@ -98,6 +99,13 @@ function App() {
           path="/adminMovements"
           element={
             <ProtectRoute page={<AdminMovements />} authorizedRol="admin" />
+          }
+        />
+
+        <Route
+          path="/productsReg"
+          element={
+            <ProtectRoute page={<ProductsReg />} authorizedRol="regular" />
           }
         />
       </Routes>

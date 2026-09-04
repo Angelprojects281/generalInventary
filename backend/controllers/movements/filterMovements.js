@@ -2,7 +2,6 @@ const db = require("../../db/db");
 
 const filterMovements = (req, res) => {
   const { type, category_name, product_name, initDate, finalDate } = req.query;
-  const actualDate = new Date();
   let principalQuery = "SELECT * FROM movements WHERE 1=1";
   const values = [];
 
