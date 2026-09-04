@@ -23,9 +23,22 @@ export default function MainAdmin() {
         >
           Administrar usuarios
         </button>
-        <button className="optionButton">Administrar categorias</button>
-        <button className="optionButton">Administrar movimientos</button>
-        <button className="optionButton">Cambios de contraseña</button>
+        <button
+          className="optionButton"
+          onClick={() => {
+            navigate("/adminCategory");
+          }}
+        >
+          Administrar categorias
+        </button>
+        <button
+          className="optionButton"
+          onClick={() => {
+            navigate("/adminMovements");
+          }}
+        >
+          Administrar movimientos
+        </button>
         <button className="optionButton secundary" onClick={handleLogOut}>
           Cerrar sesion
         </button>

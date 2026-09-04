@@ -6,20 +6,20 @@ const changePassword = async (req, res) => {
   const { idusers, newPassword, confirmPassword } = req.body;
 
   if (!idusers || !newPassword || !confirmPassword) {
-    return res.status(400).json({ message: "Error, faltan campos necesarios" });
+    return res.status(400).json({ error: "Error, faltan campos necesarios" });
   }
 
   if (newPassword !== confirmPassword) {
     return res
       .status(400)
-      .json({ message: "Error, las contraseñas no coinciden" });
+      .json({ error: "Error, las contraseñas no coinciden" });
   }
 
   const passwordStrength = zxcvbn(newPassword);
 
   if (passwordStrength.score < 3) {
     return res.status(400).json({
-      message:
+      error:
         "Error, la contraseña es demasiado débil. Por favor, elige una contraseña más fuerte.",
     });
   }
@@ -33,11 +33,11 @@ const changePassword = async (req, res) => {
     if (err) {
       return res
         .status(500)
-        .json({ message: "Error al actualizar la contraseña" });
+        .json({ error: "Error al actualizar la contraseña" });
     }
 
     if (results.affectedRows === 0) {
-      return res.status(400).json({ message: "Error, el usuario no existe" });
+      return res.status(400).json({ error: "Error, el usuario no existe" });
     }
 
     return res

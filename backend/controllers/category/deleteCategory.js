@@ -1,7 +1,7 @@
 const db = require("../../db/db");
 
 const deleteCategory = async (req, res) => {
-  const { categoryName } = req.body;
+  const { categoryName } = req.params;
 
   if (!categoryName) {
     return res

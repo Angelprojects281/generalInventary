@@ -1,4 +1,4 @@
-import { mostrarAlerta, mostrarConfirmacion } from "../alerts/alert";
+import { mostrarAlerta, mostrarConfirmacion } from "../../alerts/alert";
 import { jwtDecode } from "jwt-decode";
 
 interface tokenPayload {

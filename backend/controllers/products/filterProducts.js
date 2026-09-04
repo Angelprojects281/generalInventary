@@ -1,7 +1,7 @@
 const db = require("../../db/db");
 
 const filterProducts = (req, res) => {
-  const { categoryName, amount } = req.body;
+  const { categoryName, amount } = req.query;
 
   let principalQuery = "SELECT * FROM products WHERE 1=1";
   const values = [];

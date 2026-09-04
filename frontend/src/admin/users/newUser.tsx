@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { mostrarAlerta } from "../alerts/alert";
+import { mostrarAlerta } from "../../alerts/alert";
 
 interface formProps {
   onAcept: () => void;
@@ -39,6 +39,7 @@ function FormUsers({ onAcept, onCancel }: formProps) {
 
   return (
     <div className="formContainer">
+      <p className="tittle">Nuevo usuario</p>
       <input
         className="userInput"
         placeholder="usuario"

@@ -27,7 +27,7 @@ router.delete("/deleteUser/:idusers/:tokenUser", deleteUser);
 
 router.post("/newCategory", newCategory);
 
-router.delete("/deleteCategory", deleteCategory);
+router.delete("/deleteCategory/:categoryName", deleteCategory);
 
 router.post("/newProduct", newProduct);
 

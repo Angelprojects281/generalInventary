@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
-import { mostrarAlerta } from "../alerts/alert";
+import { mostrarAlerta } from "../../alerts/alert";
 import deleteUsers from "./deleteUsers";
 import FormUsers from "./newUser";
+import FormUpdate from "./changePassword";
 
 interface usersInterface {
   idusers: string;
@@ -11,7 +12,9 @@ interface usersInterface {
 export default function AdminUsers() {
   const [rol, setRol] = useState("");
   const [users, setUsers] = useState<usersInterface[]>([]);
-  const [showForm, setShowForm] = useState(false);
+  const [showFormUser, setShowForm] = useState(false);
+  const [showFormUpdate, setShowFormUpdate] = useState(false);
+  const [idUsuario, setIdUsuario] = useState("");
 
   const filterUsers = async () => {
     const res = await fetch(`http://localhost:3000/listUsers?rol=${rol}`, {
@@ -32,6 +35,7 @@ export default function AdminUsers() {
 
   const closeForm = () => {
     setShowForm(false);
+    setShowFormUpdate(false);
   };
 
   const usuarioCreado = () => {
@@ -70,12 +74,22 @@ export default function AdminUsers() {
           <li className="lineList">
             <p className="listInfo">Usuario</p>
             <p className="listInfo">Rol</p>
+            <p className="listInfo">Cambiar contraseña</p>
             <p className="listInfo">Eliminar usuario</p>
           </li>
           {users.map((users) => (
             <li key={users.idusers} value={users.idusers} className="lineList">
               <p className="listInfo lastInfo">{users.idusers}</p>
               <p className="listInfo lastInfo">{users.rol}</p>
+              <p
+                className="listInfo lastInfo Update"
+                onClick={() => {
+                  setIdUsuario(users.idusers);
+                  setShowFormUpdate(true);
+                }}
+              >
+                Cambiar contraseña
+              </p>
               <p
                 className="listInfo lastInfo Delete"
                 onClick={() => {
@@ -89,7 +103,17 @@ export default function AdminUsers() {
           ))}
         </ul>
       </section>
-      {showForm && <FormUsers onAcept={usuarioCreado} onCancel={closeForm} />}
+      {showFormUser && (
+        <FormUsers onAcept={usuarioCreado} onCancel={closeForm} />
+      )}
+
+      {showFormUpdate && (
+        <FormUpdate
+          onAcept={usuarioCreado}
+          onCancel={closeForm}
+          idUsuario={idUsuario}
+        ></FormUpdate>
+      )}
     </div>
   );
 }

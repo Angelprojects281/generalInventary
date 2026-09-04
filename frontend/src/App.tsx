@@ -10,8 +10,10 @@ import "./styles/styles.css";
 import Login from "./general/login";
 import MainAdmin from "./admin/mainAdmin";
 import MainRegular from "./regular/regularMain";
-import AdminUsers from "./admin/adminUsers";
+import AdminUsers from "./admin/users/adminUsers";
 import ProtectRoute from "./ruteProtection/protectionRute";
+import AdminCategory from "./admin/categories/adminCategory";
+import AdminMovements from "./admin/movements/movements";
 
 function BackNavigationGuard() {
   const location = useLocation();
@@ -83,6 +85,20 @@ function App() {
         <Route
           path="/adminUsers"
           element={<ProtectRoute page={<AdminUsers />} authorizedRol="admin" />}
+        />
+
+        <Route
+          path="/adminCategory"
+          element={
+            <ProtectRoute page={<AdminCategory />} authorizedRol="admin" />
+          }
+        />
+
+        <Route
+          path="/adminMovements"
+          element={
+            <ProtectRoute page={<AdminMovements />} authorizedRol="admin" />
+          }
         />
       </Routes>
     </BrowserRouter>
