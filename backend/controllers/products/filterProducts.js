@@ -29,9 +29,9 @@ const filterProducts = (req, res) => {
 
   db.query(principalQuery, values, (err, results) => {
     if (err) {
-      return res
-        .status(500)
-        .json({ error: "error al consultar la base de datos" });
+      return res.status(500).json({
+        error: "No se pudieron cargar los productos. Inténtalo nuevamente.",
+      });
     }
 
     return res.status(200).json(results);

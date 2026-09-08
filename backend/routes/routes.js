@@ -31,7 +31,7 @@ router.delete("/deleteCategory/:categoryName", deleteCategory);
 
 router.post("/newProduct", newProduct);
 
-router.delete("/deleteProduct", deleteProduct);
+router.delete("/deleteProduct/:product_name", deleteProduct);
 
 router.get("/listCategories", listCategories);
 

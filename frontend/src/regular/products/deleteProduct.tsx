@@ -1,9 +1,9 @@
 import { mostrarAlerta, mostrarConfirmacion } from "../../alerts/alert";
 
-export default async function deleteCategory(categoryName: string) {
+export default async function deleteProduct(product_name: string) {
   const result = await mostrarConfirmacion(
     "question",
-    "¿Deseas eliminar esta categoría?",
+    "¿Deseas eliminar este producto?",
     "Revisa la información antes de continuar. Esta acción no se puede deshacer.",
   );
 
@@ -12,22 +12,17 @@ export default async function deleteCategory(categoryName: string) {
   }
 
   const res = await fetch(
-    `http://localhost:3000/deleteCategory/${categoryName}`,
+    `http://localhost:3000/deleteProduct/${product_name}`,
     {
       method: "DELETE",
     },
   );
 
   const data = await res.json();
-
   if (!res.ok) {
-    mostrarAlerta("error", "No se pudo eliminar la categoría", data.error);
+    mostrarAlerta("error", "No se pudo eliminar el producto", data.error);
     return;
   }
 
-  mostrarAlerta(
-    "success",
-    "Categoría eliminada",
-    `La categoría ${categoryName} se eliminó correctamente.`,
-  );
+  mostrarAlerta("success", "Producto eliminado", data.message);
 }

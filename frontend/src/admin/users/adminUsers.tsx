@@ -23,7 +23,8 @@ export default function AdminUsers() {
     const data = await res.json();
 
     if (!res.ok) {
-      mostrarAlerta("error", "error al obtener usuarios", data.error);
+      mostrarAlerta("error", "No se pudieron cargar los usuarios", data.error);
+      return;
     }
 
     setUsers(data);

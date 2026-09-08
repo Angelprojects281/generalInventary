@@ -1,5 +1,8 @@
 import { useState, useEffect } from "react";
 import listCategories from "../../admin/categories/listCategories";
+import deleteProduct from "./deleteProduct";
+import FormProduct from "./newProduct";
+import FormMovement from "../movements/newMovement";
 
 interface ProductInterface {
   idproducts: number;
@@ -19,6 +22,11 @@ export default function ProductsReg() {
   const [categoryArray, setCategoriesArray] = useState<ClassInterface[]>([]);
   const [categoryName, setCategory] = useState("");
   const [amount, setAmount] = useState<number | "">("");
+  const [actualProduct, setActualProduct] = useState<ProductInterface | null>(
+    null,
+  );
+  const [showFormNewProduct, setShowFormNewProduct] = useState(false);
+  const [showFormNewMovement, setShowFormNewMovement] = useState(false);
 
   const fetchCategories = async () => {
     const categoryList = await listCategories();
@@ -49,11 +57,26 @@ export default function ProductsReg() {
   useEffect(() => {
     fetchProducts();
   }, [categoryName, amount]);
+
+  const handleCloseForm = () => {
+    setShowFormNewProduct(false);
+    setShowFormNewMovement(false);
+  };
+
+  const successfulCreation = () => {
+    setShowFormNewProduct(false);
+    setShowFormNewMovement(false);
+    fetchProducts();
+  };
+
   return (
     <div className="mainScreen">
       <header className="headerScreen">
         <h3 className="tittle">Administrador de productos</h3>
-        <section className="actionButton">
+        <section
+          className="actionButton"
+          onClick={() => setShowFormNewProduct(true)}
+        >
           <p>Nuevo producto +</p>
         </section>
       </header>
@@ -112,12 +135,42 @@ export default function ProductsReg() {
               <p className="listInfo lastInfo">{product.amount}</p>
               <p className="listInfo lastInfo">{product.description}</p>
               <p className="listInfo lastInfo">{product.category}</p>
-              <p className="listInfo lastInfo Update">Nuevo movimiento</p>
-              <p className="listInfo lastInfo Delete">Eliminar producto</p>
+              <p
+                className="listInfo lastInfo Update"
+                onClick={() => {
+                  setActualProduct(product);
+                  setShowFormNewMovement(true);
+                }}
+              >
+                Nuevo movimiento
+              </p>
+              <p
+                className="listInfo lastInfo Delete"
+                onClick={() => {
+                  deleteProduct(product.product_name);
+                  fetchProducts();
+                }}
+              >
+                Eliminar producto
+              </p>
             </li>
           ))}
         </ul>
+        {showFormNewMovement && actualProduct && (
+          <FormMovement
+            onAcept={successfulCreation}
+            onCancel={handleCloseForm}
+            category_name={actualProduct?.category}
+            product_name={actualProduct?.product_name}
+          ></FormMovement>
+        )}
       </section>
+      {showFormNewProduct && (
+        <FormProduct
+          onAcept={successfulCreation}
+          onCancel={handleCloseForm}
+        ></FormProduct>
+      )}
     </div>
   );
 }

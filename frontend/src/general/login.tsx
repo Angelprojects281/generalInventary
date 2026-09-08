@@ -23,8 +23,8 @@ export default function Login() {
     if (!idusers || !password) {
       mostrarAlerta(
         "error",
-        "Error al iniciar sesion",
-        "ingrese su usuario y contraseña",
+        "No se pudo iniciar sesión",
+        "Ingresa tu usuario y contraseña para continuar.",
       );
       return;
     }
@@ -40,7 +40,7 @@ export default function Login() {
     const data = await res.json();
 
     if (!res.ok) {
-      mostrarAlerta("error", "error al iniciar sesion", data.error);
+      mostrarAlerta("error", "No se pudo iniciar sesión", data.error);
       return;
     }
 

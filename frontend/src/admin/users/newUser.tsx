@@ -12,6 +12,15 @@ function FormUsers({ onAcept, onCancel }: formProps) {
   const [rol, setRol] = useState("");
 
   const newUser = async () => {
+    if (!idusers || !password || !rol) {
+      mostrarAlerta(
+        "error",
+        "No se pudo crear el usuario",
+        "Completa todos los campos para continuar.",
+      );
+      return;
+    }
+
     const res = await fetch("http://localhost:3000/newUser", {
       method: "POST",
       headers: { "Content-type": "application/json" },
@@ -25,21 +34,21 @@ function FormUsers({ onAcept, onCancel }: formProps) {
     const data = await res.json();
 
     if (!res.ok) {
-      mostrarAlerta("error", "error al crear usuario", data.error);
+      mostrarAlerta("error", "No se pudo crear el usuario", data.error);
       return;
     }
     onAcept();
 
     mostrarAlerta(
       "success",
-      "Usuario creado correctamente",
-      `Se creo el usuario ${idusers} con el rol ${rol}`,
+      "Usuario creado",
+      `El usuario ${idusers} se creó correctamente con el rol ${rol}.`,
     );
   };
 
   return (
     <div className="formContainer">
-      <p className="tittle">Nuevo usuario</p>
+      <p className="listInfo">Nuevo usuario</p>
       <input
         className="userInput"
         placeholder="usuario"

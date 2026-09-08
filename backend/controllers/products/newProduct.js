@@ -6,9 +6,10 @@ const newProduct = (req, res) => {
     "INSERT INTO products (product_name, amount, description, idcategoria) VALUES (?, ?, ?, ?)";
 
   if (!product_name || !categoryName) {
-    return res
-      .status(400)
-      .json({ error: "se debe ingresar el nombre y categoria del producto" });
+    return res.status(400).json({
+      error:
+        "Falta el nombre del producto o la categoría. Completa los datos obligatorios.",
+    });
   }
 
   const checkProduct = "SELECT * FROM products WHERE product_name = ?";
@@ -18,24 +19,28 @@ const newProduct = (req, res) => {
   db.query(checkProduct, [product_name], (err, results) => {
     if (err) {
       return res.status(500).json({
-        error: "error al insertar el nuevo producto",
+        error: "No se pudo verificar el producto. Inténtalo nuevamente.",
         details: err.message,
       });
     }
 
     if (results.length > 0) {
-      return res.status(400).json({ error: "este producto ya existe" });
+      return res
+        .status(400)
+        .json({ error: "Ya existe un producto con ese nombre." });
     }
 
     db.query(checkCategory, [categoryName], (err, results) => {
       if (err) {
-        return res
-          .status(500)
-          .json({ error: "no se puedo consultar la categoria" });
+        return res.status(500).json({
+          error: "No se pudo verificar la categoría seleccionada.",
+        });
       }
 
       if (results.length === 0) {
-        return res.status(400).json({ error: "la categoria no existe" });
+        return res.status(400).json({
+          error: "La categoría seleccionada no existe.",
+        });
       }
 
       const category = results[0];
@@ -48,13 +53,13 @@ const newProduct = (req, res) => {
         return db.query(query, [product_name, idCategory], (err, results) => {
           if (err) {
             return res.status(500).json({
-              error: "error al insertar el producto",
+              error: "No se pudo guardar el producto. Inténtalo nuevamente.",
               details: err.message,
             });
           }
 
           return res.status(200).json({
-            message: "producto creado correctamente",
+            message: "Producto creado correctamente.",
           });
         });
       }
@@ -69,13 +74,13 @@ const newProduct = (req, res) => {
           (err, results) => {
             if (err) {
               return res.status(500).json({
-                error: "error al insertar el nuevo producto",
+                error: "No se pudo guardar el producto. Inténtalo nuevamente.",
                 details: err.message,
               });
             }
 
             return res.status(200).json({
-              message: "producto creado correctamente",
+              message: "Producto creado correctamente.",
             });
           },
         );
@@ -91,13 +96,13 @@ const newProduct = (req, res) => {
           (err, results) => {
             if (err) {
               return res.status(500).json({
-                error: "error al insertar el nuevo producto",
+                error: "No se pudo guardar el producto. Inténtalo nuevamente.",
                 details: err.message,
               });
             }
 
             return res.status(200).json({
-              message: "producto creado correctamente",
+              message: "Producto creado correctamente.",
             });
           },
         );
@@ -109,14 +114,14 @@ const newProduct = (req, res) => {
         (err, results) => {
           if (err) {
             return res.status(500).json({
-              error: "error al insertar el nuevo producto",
+              error: "No se pudo guardar el producto. Inténtalo nuevamente.",
               details: err.message,
             });
           }
 
           return res
             .status(200)
-            .json({ message: "prodcuto creado correctamente" });
+            .json({ message: "Producto creado correctamente." });
         },
       );
     });

@@ -7,15 +7,18 @@ const newUser = (req, res) => {
   const { idusers, password, rol } = req.body;
 
   if (!idusers || !password || !rol) {
-    return res.status(400).json({ error: "Error, faltan campos necesarios" });
+    return res.status(400).json({
+      error: "Faltan datos obligatorios. Completa todos los campos.",
+    });
   }
 
   const passwordStrength = zxcvbn(password);
 
   if (passwordStrength.score < 3) {
-    return res
-      .status(400)
-      .json({ error: "Error, la contraseña es demasiado débil" });
+    return res.status(400).json({
+      error:
+        "La contraseña es demasiado débil. Usa una combinación más segura.",
+    });
   }
 
   const verifyUserQuery = "SELECT * FROM users WHERE BINARY idusers = ?";
@@ -23,11 +26,15 @@ const newUser = (req, res) => {
   db.query(verifyUserQuery, [idusers], (err, results) => {
     if (err) {
       console.error("Error al verificar el usuario:", err);
-      return res.status(500).json({ error: "Error al verificar el usuario" });
+      return res.status(500).json({
+        error: "No se pudo verificar si el usuario ya existe.",
+      });
     }
 
     if (results.length > 0) {
-      return res.status(400).json({ error: "Error, el usuario ya existe" });
+      return res
+        .status(400)
+        .json({ error: "Este usuario ya está registrado." });
     }
 
     const encryptedPassword = bcrypt.hashSync(password, 10);
@@ -41,12 +48,14 @@ const newUser = (req, res) => {
       (err, results) => {
         if (err) {
           console.error("Error al insertar el usuario:", err);
-          return res
-            .status(500)
-            .json({ error: "Error al insertar el usuario" });
+          return res.status(500).json({
+            error: "No se pudo crear el usuario. Inténtalo nuevamente.",
+          });
         }
 
-        return res.status(200).json({ message: "Usuario creado exitosamente" });
+        return res
+          .status(200)
+          .json({ message: "Usuario creado correctamente." });
       },
     );
   });

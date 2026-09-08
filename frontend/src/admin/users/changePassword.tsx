@@ -13,13 +13,24 @@ function FormUpdate({ onAcept, onCancel, idUsuario }: formProps) {
   const [confirmPassword, setConfirmPassword] = useState("");
 
   const newUser = async () => {
+    if (!newPassword || !confirmPassword) {
+      mostrarAlerta(
+        "error",
+        "No se pudo cambiar la contraseña",
+        "Completa ambos campos antes de continuar.",
+      );
+      return;
+    }
+
     if (newPassword !== confirmPassword) {
       mostrarAlerta(
         "error",
-        "Error al cambiar contraseña",
-        "Las contraseñas no coinciden",
+        "No se pudo cambiar la contraseña",
+        "Las contraseñas no coinciden. Verifica la información.",
       );
+      return;
     }
+
     const res = await fetch("http://localhost:3000/changePassword", {
       method: "POST",
       headers: { "Content-type": "application/json" },
@@ -33,21 +44,21 @@ function FormUpdate({ onAcept, onCancel, idUsuario }: formProps) {
     const data = await res.json();
 
     if (!res.ok) {
-      mostrarAlerta("error", "error al crear usuario", data.error);
+      mostrarAlerta("error", "No se pudo cambiar la contraseña", data.error);
       return;
     }
     onAcept();
 
     mostrarAlerta(
       "success",
-      "Contraseña cambiada correctamente",
-      `Se cambio la contraseña para el usuario ${idusers}`,
+      "Contraseña actualizada",
+      `La contraseña del usuario ${idusers} se actualizó correctamente.`,
     );
   };
 
   return (
     <div className="formContainer">
-      <p className="tittle">
+      <p className="listInfo">
         Actualizando contraseña para el usuario {idUsuario}
       </p>
       <input

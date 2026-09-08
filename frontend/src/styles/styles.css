@@ -179,4 +179,5 @@ body {
   padding: 20px;
   border-radius: 30px;
   background-color: #8f8d8d;
+  max-height: 90vh;
 }

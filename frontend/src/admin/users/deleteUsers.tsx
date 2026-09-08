@@ -20,7 +20,7 @@ export default async function deleteUsers(idusers: string) {
   const result = await mostrarConfirmacion(
     "question",
     "¿Deseas eliminar este usuario?",
-    "revise nuevamente la informacion antes de continuar",
+    "Revisa la información antes de continuar. Esta acción no se puede deshacer.",
   );
 
   if (!result.isConfirmed) {
@@ -36,13 +36,13 @@ export default async function deleteUsers(idusers: string) {
   const data = await res.json();
 
   if (!res.ok) {
-    mostrarAlerta("error", "Error al eliminar usuario", data.error);
+    mostrarAlerta("error", "No se pudo eliminar el usuario", data.error);
     return;
   }
 
   mostrarAlerta(
     "success",
-    "usuarios eliminado correctamente",
-    `se elimino el usuario ${idusers}`,
+    "Usuario eliminado",
+    `El usuario ${idusers} se eliminó correctamente.`,
   );
 }

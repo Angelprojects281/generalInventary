@@ -10,6 +10,15 @@ function FormCategory({ onAcept, onCancel }: formProps) {
   const [categoryName, setIdusers] = useState("");
 
   const newUser = async () => {
+    if (!categoryName.trim()) {
+      mostrarAlerta(
+        "error",
+        "No se pudo crear la categoría",
+        "Ingresa el nombre de la categoría antes de continuar.",
+      );
+      return;
+    }
+
     const res = await fetch("http://localhost:3000/newCategory", {
       method: "POST",
       headers: { "Content-type": "application/json" },
@@ -21,21 +30,21 @@ function FormCategory({ onAcept, onCancel }: formProps) {
     const data = await res.json();
 
     if (!res.ok) {
-      mostrarAlerta("error", "error al crear categoria", data.error);
+      mostrarAlerta("error", "No se pudo crear la categoría", data.error);
       return;
     }
     onAcept();
 
     mostrarAlerta(
       "success",
-      "categoria creada",
-      `Se creo la categoria ${categoryName} correctamente`,
+      "Categoría creada",
+      `La categoría ${categoryName} se creó correctamente.`,
     );
   };
 
   return (
     <div className="formContainer">
-      <p className="tittle">Nueva categoria</p>
+      <p className="listInfo">Nueva categoria</p>
       <input
         className="userInput"
         placeholder="categoria"

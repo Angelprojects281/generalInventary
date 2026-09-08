@@ -8,7 +8,7 @@ export default async function listCategories() {
   const data = await res.json();
 
   if (!res.ok) {
-    mostrarAlerta("error", "error al obtener categorias", data.error);
+    mostrarAlerta("error", "No se pudieron cargar las categorías", data.error);
 
     return;
   }

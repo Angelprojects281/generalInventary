@@ -6,25 +6,29 @@ const newMovement = (req, res) => {
   const DATE = new Date();
 
   if (!type || !amount || !category_name || !product_name || !userName) {
-    return res.status(400).json({ error: "faltan campos requeridos" });
+    return res.status(400).json({
+      error: "Faltan datos obligatorios para registrar el movimiento.",
+    });
   }
 
   if (amount < 0) {
-    return res.status(400).json({ error: "amount debe ser mayor a cero" });
+    return res.status(400).json({
+      error: "La cantidad debe ser mayor a 0 para registrar el movimiento.",
+    });
   }
 
   const checkProduct = "SELECT * FROM products WHERE product_name = ?";
 
   db.query(checkProduct, [product_name], (err, results) => {
     if (err) {
-      return res
-        .status(500)
-        .json({ error: "error al consultar la base de datos" });
+      return res.status(500).json({
+        error: "No se pudo verificar el producto en este momento.",
+      });
     }
 
     if (results.length === 0) {
       return res.status(400).json({
-        error: "El producto no existe",
+        error: "El producto no existe en el inventario.",
       });
     }
 
@@ -35,7 +39,7 @@ const newMovement = (req, res) => {
     } else if (type === "salida") {
       if (actualAmount < amount) {
         return res.status(400).json({
-          error: "no hay suficiente stock para realizar este movimiento",
+          error: "No hay suficiente stock para realizar esta salida.",
         });
       }
 
@@ -47,9 +51,9 @@ const newMovement = (req, res) => {
 
     db.query(updateQuery, [actualAmount, product_name], (err, results) => {
       if (err) {
-        return res
-          .status(500)
-          .json({ error: "error al actualizar la base de datos" });
+        return res.status(500).json({
+          error: "No se pudo actualizar el inventario.",
+        });
       }
 
       const regMovement =
@@ -60,14 +64,14 @@ const newMovement = (req, res) => {
         [type, DATE, amount, category_name, product_name, userName],
         (err, results) => {
           if (err) {
-            return res
-              .status(500)
-              .json({ error: "error al consultar la base de datos" });
+            return res.status(500).json({
+              error: "No se pudo registrar el movimiento.",
+            });
           }
 
           return res
             .status(200)
-            .json({ message: "movimiento creado correctamente" });
+            .json({ message: "Movimiento registrado correctamente." });
         },
       );
     });
