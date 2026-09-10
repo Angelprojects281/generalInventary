@@ -6,6 +6,7 @@ export function mostrarAlerta(simbol: any, tittle: string, message: string) {
     text: message,
     icon: simbol,
     confirmButtonText: "Aceptar",
+    customClass: { popup: "formContainer", confirmButton: "mainButton" },
   });
 }
 
@@ -21,5 +22,10 @@ export function mostrarConfirmacion(
     icon: simbol,
     title: tittle,
     text: message,
+    customClass: {
+      popup: "formContainer",
+      confirmButton: "mainButton",
+      cancelButton: "mainButton secundary",
+    },
   });
 }
