@@ -181,3 +181,15 @@ body {
   background-color: #dcd5d5;
   max-height: 90vh;
 }
+
+.alertContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border: 2px solid #0c0c0c;
+  padding: 20px;
+  border-radius: 30px;
+  background-color: #dcd5d5;
+  max-height: 90vh;
+}

@@ -1,11 +1,10 @@
 const db = require("../../db/db");
 
 const newProduct = (req, res) => {
-  const { product_name, amount, description, categoryName } = req.body;
-  const newProductQuery =
-    "INSERT INTO products (product_name, amount, description, idcategoria) VALUES (?, ?, ?, ?)";
+  const { product_name, amount, description, categoryName, provider } =
+    req.body;
 
-  if (!product_name || !categoryName) {
+  if (!product_name || !categoryName || !provider) {
     return res.status(400).json({
       error:
         "Falta el nombre del producto o la categoría. Completa los datos obligatorios.",
@@ -45,85 +44,38 @@ const newProduct = (req, res) => {
 
       const category = results[0];
       const idCategory = category.idcategoria;
+      const columns = ["product_name", "idcategoria", "idprovider"];
+      const valuesToInsert = [product_name, idCategory, provider];
 
-      if (!amount && !description) {
-        const query =
-          "INSERT INTO products (product_name, idcategoria) VALUES (?, ?)";
+      if (amount !== undefined && amount !== null && amount !== "") {
+        columns.splice(1, 0, "amount");
+        valuesToInsert.splice(1, 0, amount);
+      }
 
-        return db.query(query, [product_name, idCategory], (err, results) => {
-          if (err) {
-            return res.status(500).json({
-              error: "No se pudo guardar el producto. Inténtalo nuevamente.",
-              details: err.message,
-            });
-          }
+      if (
+        description !== undefined &&
+        description !== null &&
+        description !== ""
+      ) {
+        columns.splice(columns.length - 2, 0, "description");
+        valuesToInsert.splice(valuesToInsert.length - 2, 0, description);
+      }
 
-          return res.status(200).json({
-            message: "Producto creado correctamente.",
+      const placeholders = columns.map(() => "?").join(", ");
+      const query = `INSERT INTO products (${columns.join(", ")}) VALUES (${placeholders})`;
+
+      db.query(query, valuesToInsert, (err, results) => {
+        if (err) {
+          return res.status(500).json({
+            error: "No se pudo guardar el producto. Inténtalo nuevamente.",
+            details: err.message,
           });
-        });
-      }
+        }
 
-      if (!description) {
-        const query =
-          "INSERT INTO products (product_name, amount, idcategoria) VALUES (?, ?, ?)";
-
-        return db.query(
-          query,
-          [product_name, amount, idCategory],
-          (err, results) => {
-            if (err) {
-              return res.status(500).json({
-                error: "No se pudo guardar el producto. Inténtalo nuevamente.",
-                details: err.message,
-              });
-            }
-
-            return res.status(200).json({
-              message: "Producto creado correctamente.",
-            });
-          },
-        );
-      }
-
-      if (!amount) {
-        const query =
-          "INSERT INTO products (product_name, description, idcategoria) VALUES (?, ?, ?)";
-
-        return db.query(
-          query,
-          [product_name, description, idCategory],
-          (err, results) => {
-            if (err) {
-              return res.status(500).json({
-                error: "No se pudo guardar el producto. Inténtalo nuevamente.",
-                details: err.message,
-              });
-            }
-
-            return res.status(200).json({
-              message: "Producto creado correctamente.",
-            });
-          },
-        );
-      }
-
-      db.query(
-        newProductQuery,
-        [product_name, amount, description, idCategory],
-        (err, results) => {
-          if (err) {
-            return res.status(500).json({
-              error: "No se pudo guardar el producto. Inténtalo nuevamente.",
-              details: err.message,
-            });
-          }
-
-          return res
-            .status(200)
-            .json({ message: "Producto creado correctamente." });
-        },
-      );
+        return res
+          .status(200)
+          .json({ message: "Producto creado correctamente." });
+      });
     });
   });
 };

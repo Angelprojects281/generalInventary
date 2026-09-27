@@ -9,10 +9,13 @@ const filterProducts = (req, res) => {
       products.product_name,
       products.amount,
       products.description,
-      categories.category AS category
+      categories.category AS category,
+      providers.provider_name AS provider_name
     FROM products
     INNER JOIN categories 
       ON products.idcategoria = categories.idcategoria
+    LEFT JOIN providers
+      ON products.idprovider = providers.idprovider
     WHERE 1=1
   `;
   const values = [];
