@@ -1,7 +1,7 @@
 const db = require("../../db/db");
 
 const filterProducts = (req, res) => {
-  const { categoryName, amount } = req.query;
+  const { categoryName, amount, provider } = req.query;
 
   let principalQuery = `
     SELECT 
@@ -28,6 +28,11 @@ const filterProducts = (req, res) => {
   if (amount) {
     principalQuery += " AND amount <= ?";
     values.push(amount);
+  }
+
+  if (provider) {
+    principalQuery += " AND providers.provider_name = ?";
+    values.push(provider);
   }
 
   db.query(principalQuery, values, (err, results) => {
