@@ -1,6 +1,9 @@
 import { useState, useEffect } from "react";
 import { mostrarAlerta } from "../../alerts/alert";
 import listCategories from "../../admin/categories/listCategories";
+import listProviders, {
+  type ProviderInterface,
+} from "../../admin/providers/listProviders";
 
 interface formProps {
   onAcept: () => void;
@@ -17,16 +20,29 @@ function FormProduct({ onAcept, onCancel }: formProps) {
   const [amount, setAmount] = useState<number | "">("");
   const [description, setDescription] = useState("");
   const [categoryName, setCategory] = useState("");
+  const [providerName, setProviderName] = useState("");
 
   const [categotyArray, setCategoriesArray] = useState<ClassInterface[]>([]);
+  const [providersArray, setProvidersArray] = useState<ProviderInterface[]>([]);
 
   const fetchCategories = async () => {
     const categoryList = await listCategories();
     setCategoriesArray(categoryList);
   };
 
+  const fetchProviders = async () => {
+    const providerList = await listProviders();
+    setProvidersArray(providerList);
+  };
+
   const newProduct = async () => {
-    if (!product_name || !amount || !description || !categoryName) {
+    if (
+      !product_name ||
+      amount === "" ||
+      !description ||
+      !categoryName ||
+      !providerName
+    ) {
       mostrarAlerta(
         "error",
         "No se pudo crear el producto",
@@ -42,6 +58,7 @@ function FormProduct({ onAcept, onCancel }: formProps) {
         amount,
         description,
         categoryName,
+        provider_name: providerName,
       }),
     });
 
@@ -62,6 +79,7 @@ function FormProduct({ onAcept, onCancel }: formProps) {
 
   useEffect(() => {
     fetchCategories();
+    fetchProviders();
   }, []);
 
   return (
@@ -100,6 +118,19 @@ function FormProduct({ onAcept, onCancel }: formProps) {
         {categotyArray.map((category) => (
           <option key={category.idcategoria} value={category.category}>
             {category.category}
+          </option>
+        ))}
+      </select>
+
+      <select
+        className="userInput"
+        value={providerName}
+        onChange={(e) => setProviderName(e.target.value)}
+      >
+        <option value="">Seleccione un proveedor:</option>
+        {providersArray.map((provider) => (
+          <option key={provider.idprovider} value={provider.provider_name}>
+            {provider.provider_name}
           </option>
         ))}
       </select>

@@ -34,6 +34,14 @@ export default function MainAdmin() {
         <button
           className="optionButton"
           onClick={() => {
+            navigate("/adminProviders");
+          }}
+        >
+          Administrar proveedores
+        </button>
+        <button
+          className="optionButton"
+          onClick={() => {
             navigate("/adminMovements");
           }}
         >

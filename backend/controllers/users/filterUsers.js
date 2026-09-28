@@ -3,7 +3,7 @@ const db = require("../../db/db");
 const listUsers = (req, res) => {
   const { rol } = req.query;
   const values = [];
-  let listUsersQuery = "SELECT * FROM users WHERE 1=1";
+  let listUsersQuery = "SELECT idusers, rol FROM users WHERE 1=1";
 
   if (rol) {
     listUsersQuery += " AND rol = ?";

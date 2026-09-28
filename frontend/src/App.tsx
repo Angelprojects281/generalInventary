@@ -13,6 +13,7 @@ import MainRegular from "./regular/regularMain";
 import AdminUsers from "./admin/users/adminUsers";
 import ProtectRoute from "./ruteProtection/protectionRute";
 import AdminCategory from "./admin/categories/adminCategory";
+import AdminProviders from "./admin/providers/adminProviders";
 import AdminMovements from "./admin/movements/movements";
 import ProductsReg from "./regular/products/productsReg";
 
@@ -92,6 +93,13 @@ function App() {
           path="/adminCategory"
           element={
             <ProtectRoute page={<AdminCategory />} authorizedRol="admin" />
+          }
+        />
+
+        <Route
+          path="/adminProviders"
+          element={
+            <ProtectRoute page={<AdminProviders />} authorizedRol="admin" />
           }
         />
 
