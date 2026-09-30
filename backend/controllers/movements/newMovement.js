@@ -7,13 +7,13 @@ const newMovement = (req, res) => {
 
   if (!type || !amount || !category_name || !product_name || !userName) {
     return res.status(400).json({
-      error: "Faltan datos obligatorios para registrar el movimiento.",
+      error: "Complete los datos obligatorios del movimiento.",
     });
   }
 
   if (amount < 0) {
     return res.status(400).json({
-      error: "La cantidad debe ser mayor a 0 para registrar el movimiento.",
+      error: "Ingrese una cantidad mayor que cero.",
     });
   }
 
@@ -22,7 +22,7 @@ const newMovement = (req, res) => {
   db.query(checkProduct, [product_name], (err, results) => {
     if (err) {
       return res.status(500).json({
-        error: "No se pudo verificar el producto en este momento.",
+        error: "No se pudo verificar el producto. Inténtelo de nuevo.",
       });
     }
 
@@ -39,7 +39,7 @@ const newMovement = (req, res) => {
     } else if (type === "salida") {
       if (actualAmount < amount) {
         return res.status(400).json({
-          error: "No hay suficiente stock para realizar esta salida.",
+          error: "No hay existencias suficientes para registrar la salida.",
         });
       }
 
@@ -52,7 +52,7 @@ const newMovement = (req, res) => {
     db.query(updateQuery, [actualAmount, product_name], (err, results) => {
       if (err) {
         return res.status(500).json({
-          error: "No se pudo actualizar el inventario.",
+          error: "No se pudo actualizar el inventario. Inténtelo de nuevo.",
         });
       }
 
@@ -65,7 +65,7 @@ const newMovement = (req, res) => {
         (err, results) => {
           if (err) {
             return res.status(500).json({
-              error: "No se pudo registrar el movimiento.",
+              error: "No se pudo registrar el movimiento. Inténtelo de nuevo.",
             });
           }
 

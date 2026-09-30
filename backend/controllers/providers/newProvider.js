@@ -5,8 +5,7 @@ const newProvider = async (req, res) => {
 
   if (!provider_name || !contact) {
     return res.status(400).json({
-      error:
-        "Falta el nombre del proveedor o el numero de contacto. Ingresa los datos para continuar.",
+      error: "El nombre y el número de contacto son obligatorios.",
     });
   }
 
@@ -15,14 +14,13 @@ const newProvider = async (req, res) => {
   db.query(checkQuery, [provider_name], (err, results) => {
     if (err) {
       return res.status(500).json({
-        error:
-          "No pudimos verificar el proveedor en este momento. Inténtalo nuevamente.",
+        error: "No se pudo verificar el proveedor. Inténtelo de nuevo.",
       });
     }
 
     if (results.length > 0) {
       return res.status(400).json({
-        error: "El proveedor ya existe. Ingresa otro nombre.",
+        error: "Ya existe un proveedor con ese nombre.",
       });
     }
 
@@ -32,7 +30,7 @@ const newProvider = async (req, res) => {
     db.query(query, [provider_name, contact], (err, results) => {
       if (err) {
         return res.status(500).json({
-          error: "No se pudo crear el proveedor. Inténtalo nuevamente.",
+          error: "No se pudo crear el proveedor. Inténtelo de nuevo.",
         });
       }
 

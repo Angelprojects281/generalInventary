@@ -5,7 +5,7 @@ const deleteProvider = async (req, res) => {
 
   if (!provider_name) {
     return res.status(400).json({
-      error: "Falta el nombre del proveedor para continuar.",
+      error: "El nombre del proveedor es obligatorio.",
     });
   }
 
@@ -14,13 +14,13 @@ const deleteProvider = async (req, res) => {
   db.query(checkQuery, [provider_name], (err, results) => {
     if (err) {
       return res.status(500).json({
-        error: "No se pudo consultar la información del proveedor.",
+        error: "No se pudo consultar el proveedor. Inténtelo de nuevo.",
       });
     }
 
     if (results.length === 0) {
       return res.status(400).json({
-        message: "El proveedor no existe o ya fue eliminado.",
+        error: "El proveedor no existe o ya fue eliminado.",
       });
     }
 
@@ -38,7 +38,8 @@ const deleteProvider = async (req, res) => {
     db.query(deleteProducts, [providerInfo.idprovider], (err, results) => {
       if (err) {
         return res.status(500).json({
-          error: "No se pudieron eliminar los productos relacionados.",
+          error:
+            "No se pudieron eliminar los productos asociados. Inténtelo de nuevo.",
         });
       }
 
@@ -48,7 +49,7 @@ const deleteProvider = async (req, res) => {
         (err, results) => {
           if (err) {
             return res.status(500).json({
-              error: "No se pudo eliminar el proveedor.",
+              error: "No se pudo eliminar el proveedor. Inténtelo de nuevo.",
             });
           }
 

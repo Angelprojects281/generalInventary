@@ -6,8 +6,7 @@ const newProduct = (req, res) => {
 
   if (!product_name || !categoryName || !provider_name) {
     return res.status(400).json({
-      error:
-        "Falta el nombre del producto o la categoría. Completa los datos obligatorios.",
+      error: "Ingrese el nombre del producto, la categoría y el proveedor.",
     });
   }
 
@@ -20,8 +19,7 @@ const newProduct = (req, res) => {
   db.query(checkProduct, [product_name], (err, results) => {
     if (err) {
       return res.status(500).json({
-        error: "No se pudo verificar el producto. Inténtalo nuevamente.",
-        details: err.message,
+        error: "No se pudo verificar el producto. Inténtelo de nuevo.",
       });
     }
 
@@ -34,7 +32,7 @@ const newProduct = (req, res) => {
     db.query(checkCategory, [categoryName], (err, results) => {
       if (err) {
         return res.status(500).json({
-          error: "No se pudo verificar la categoría seleccionada.",
+          error: "No se pudo verificar la categoría. Inténtelo de nuevo.",
         });
       }
 
@@ -50,7 +48,7 @@ const newProduct = (req, res) => {
       db.query(checkProvider, [provider_name], (err, results) => {
         if (err) {
           return res.status(500).json({
-            error: "No se pudo verificar el proveedor seleccionado.",
+            error: "No se pudo verificar el proveedor. Inténtelo de nuevo.",
           });
         }
 
@@ -84,8 +82,7 @@ const newProduct = (req, res) => {
         db.query(query, valuesToInsert, (err, results) => {
           if (err) {
             return res.status(500).json({
-              error: "No se pudo guardar el producto. Inténtalo nuevamente.",
-              details: err.message,
+              error: "No se pudo crear el producto. Inténtelo de nuevo.",
             });
           }
 

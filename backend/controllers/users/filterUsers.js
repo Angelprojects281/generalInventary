@@ -13,7 +13,7 @@ const listUsers = (req, res) => {
   db.query(listUsersQuery, values, (err, results) => {
     if (err) {
       return res.status(500).json({
-        message: "No se pudieron cargar los usuarios. Inténtalo nuevamente.",
+        error: "No se pudieron cargar los usuarios. Inténtelo de nuevo.",
       });
     }
 

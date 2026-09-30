@@ -1,10 +1,11 @@
 # Sistema de inventario
 
-Aplicación web para administrar usuarios, categorías, productos, existencias y movimientos de inventario. El proyecto está dividido en un frontend construido con React + TypeScript y Vite, un backend construido con Node.js + Express y una base de datos MySQL.
+Aplicación web para administrar usuarios, categorías, proveedores, productos, existencias y movimientos de inventario. El proyecto está dividido en un frontend construido con React + TypeScript y Vite, un backend construido con Node.js + Express y una base de datos MySQL.
 
 ## Contenido
 
 - [Características](#características)
+- [Interfaz y mensajes](#interfaz-y-mensajes)
 - [Arquitectura](#arquitectura)
 - [Tecnologías](#tecnologías)
 - [Requisitos previos](#requisitos-previos)
@@ -34,14 +35,23 @@ Aplicación web para administrar usuarios, categorías, productos, existencias y
   - Crear categorías.
   - Listar categorías.
   - Eliminar categorías y sus productos relacionados.
+- Administración de proveedores mediante la API: crear, listar y eliminar proveedores.
 - Administración de productos:
   - Crear productos con cantidad y descripción opcionales.
-  - Filtrar productos por categoría y cantidad máxima.
+  - Filtrar productos por categoría, proveedor y cantidad máxima.
   - Eliminar productos.
 - Registro de movimientos de entrada y salida.
 - Actualización automática del stock al registrar un movimiento.
 - Filtrado de movimientos por tipo, categoría, producto y rango de fechas.
-- Alertas visuales en el frontend mediante SweetAlert2.
+- Alertas visuales en el frontend mediante SweetAlert2, con mensajes de error consistentes.
+
+## Interfaz y mensajes
+
+- La interfaz usa una paleta monocromática; las acciones para editar y eliminar conservan sus acentos azul y rojo.
+- Los formularios muestran sus campos en dos columnas cuando hay espacio y se adaptan a una columna en pantallas estrechas.
+- Al abrir un formulario, el fondo se atenúa y desenfoca mientras el formulario permanece nítido.
+- Las pantallas, filas, formularios y controles tienen animaciones de entrada definidas con `@keyframes` en `frontend/src/styles/styles.css`. Se respeta la preferencia del sistema por reducir el movimiento.
+- Los errores de la API se devuelven en la propiedad `error`, con mensajes breves en español y sin detalles internos de la base de datos. Las operaciones exitosas que devuelven confirmación usan `message`.
 
 ## Arquitectura
 
@@ -209,14 +219,15 @@ El frontend también elimina el token al volver atrás en el historial del naveg
 
 ## Base de datos
 
-La aplicación espera una base de datos MySQL llamada `inventary` con cuatro tablas principales:
+La aplicación espera una base de datos MySQL llamada `inventary` con cinco tablas principales:
 
 ```text
 users       1 ---- N movements
 categories  1 ---- N products
+providers   1 ---- N products
 ```
 
-El esquema consolidado del proyecto está disponible en [`database/schema.sql`](database/schema.sql). Este archivo crea la base de datos y las cuatro tablas, y recrea las tablas si ya existen.
+El esquema consolidado del proyecto está disponible en [`database/schema.sql`](database/schema.sql). Este archivo crea la base de datos y las cinco tablas, y elimina y recrea las tablas si ya existen.
 
 ### Tablas esperadas
 
@@ -235,15 +246,24 @@ El esquema consolidado del proyecto está disponible en [`database/schema.sql`](
 | `idcategoria` | Identificador de la categoría. |
 | `category`    | Nombre de la categoría.        |
 
+#### `providers`
+
+| Columna         | Uso                               |
+| --------------- | --------------------------------- |
+| `idprovider`    | Identificador del proveedor.      |
+| `provider_name` | Nombre del proveedor.             |
+| `contact`       | Número de contacto del proveedor. |
+
 #### `products`
 
-| Columna        | Uso                                                              |
-| -------------- | ---------------------------------------------------------------- |
-| `idproducts`   | Identificador del producto.                                      |
-| `product_name` | Nombre único usado por las operaciones actuales.                 |
-| `amount`       | Cantidad disponible en inventario.                               |
-| `description`  | Descripción opcional; el dump usa `SIN DESCRIPCION` por defecto. |
-| `idcategoria`  | Referencia a `categories.idcategoria`.                           |
+| Columna        | Uso                                                                              |
+| -------------- | -------------------------------------------------------------------------------- |
+| `idproducts`   | Identificador del producto.                                                      |
+| `product_name` | Nombre único usado por las operaciones actuales.                                 |
+| `amount`       | Cantidad disponible en inventario.                                               |
+| `description`  | Descripción opcional; el dump usa `SIN DESCRIPCION` por defecto.                 |
+| `idcategoria`  | Referencia a `categories.idcategoria`.                                           |
+| `idprovider`   | Referencia a `providers.idprovider`; `0` representa el proveedor predeterminado. |
 
 #### `movements`
 
@@ -266,6 +286,8 @@ El volcado disponible en `C:\Users\l\Documents\dumps\Dump20260909` contiene esto
 - `inventary_movements.sql`
 
 Son dumps de estructura generados con MySQL 8.0.44. Cada archivo crea o selecciona la base de datos `inventary`, elimina la tabla del mismo nombre si ya existe y vuelve a crearla. El volcado contiene la definición de las tablas; no sustituye una copia de los datos de producción.
+
+Este volcado no incluye `providers`, tabla que requiere la versión actual de la aplicación. Para crear el esquema completo, utiliza `database/schema.sql`; ten en cuenta que este script elimina y recrea las cinco tablas.
 
 Puedes restaurarlos desde la carpeta del proyecto con el cliente de MySQL. Importa primero las tablas independientes y después las tablas que dependen lógicamente de ellas:
 
@@ -360,6 +382,8 @@ http://localhost:3000
 
 Actualmente no hay un middleware general que exija el JWT en cada endpoint. El frontend controla el acceso visual por rol, pero el backend debe reforzarse antes de exponerlo fuera de un entorno local.
 
+Cuando una solicitud falla, la API responde con un objeto JSON que contiene `error`. Las respuestas exitosas de operaciones de escritura pueden incluir `message`; las consultas de listas devuelven arreglos.
+
 ### Autenticación y usuarios
 
 #### `POST /logIn`
@@ -446,6 +470,27 @@ Ejemplo:
 DELETE /deleteCategory/Papelería
 ```
 
+### Proveedores
+
+#### `GET /listProviders`
+
+Devuelve la lista de proveedores.
+
+#### `POST /newProvider`
+
+Crea un proveedor. Ambos campos son obligatorios:
+
+```json
+{
+  "provider_name": "Distribuidora Central",
+  "contact": 555123456
+}
+```
+
+#### `DELETE /deleteProvider/:provider_name`
+
+Elimina un proveedor y los productos asociados. El proveedor predeterminado no se puede eliminar.
+
 ### Productos
 
 #### `GET /filterProducts`
@@ -453,26 +498,28 @@ DELETE /deleteCategory/Papelería
 Lista productos y permite aplicar filtros opcionales:
 
 ```text
-GET /filterProducts?categoryName=Papelería&amount=10
+GET /filterProducts?categoryName=Papelería&provider_name=Distribuidora%20Central&amount=10
 ```
 
 Parámetros:
 
 - `categoryName`: filtra por nombre de categoría.
+- `provider_name`: filtra por nombre de proveedor.
 - `amount`: devuelve productos cuya cantidad sea menor o igual al valor indicado.
 
-La respuesta incluye `idproducts`, `product_name`, `amount`, `description` y `category`.
+La respuesta incluye `idproducts`, `product_name`, `amount`, `description`, `category` y `provider_name`.
 
 #### `POST /newProduct`
 
-Crea un producto. `product_name` y `categoryName` son obligatorios; `amount` y `description` son opcionales.
+Crea un producto. `product_name`, `categoryName` y `provider_name` son obligatorios; `amount` y `description` son opcionales.
 
 ```json
 {
   "product_name": "Cuaderno",
   "amount": 25,
   "description": "Cuaderno de 100 hojas",
-  "categoryName": "Papelería"
+  "categoryName": "Papelería",
+  "provider_name": "Distribuidora Central"
 }
 ```
 
@@ -582,7 +629,7 @@ Antes de usar el sistema en producción, se recomienda:
 - Validar y limitar los valores de `amount`, incluyendo explícitamente cantidades cero, decimales y valores no numéricos.
 - Usar transacciones para actualizar el stock y registrar el movimiento como una operación atómica.
 - Añadir claves foráneas e índices adecuados para productos, categorías, usuarios y movimientos.
-- Evitar devolver detalles internos de errores de base de datos en producción.
+- Mantener las respuestas de error breves y sin detalles internos de la base de datos.
 - Configurar CORS con una lista de orígenes permitidos por entorno.
 - Rotar las credenciales si alguna contraseña o secreto ya fue expuesto.
 

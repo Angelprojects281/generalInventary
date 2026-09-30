@@ -17,7 +17,7 @@ function FormUpdate({ onAcept, onCancel, idUsuario }: formProps) {
       mostrarAlerta(
         "error",
         "No se pudo cambiar la contraseña",
-        "Completa ambos campos antes de continuar.",
+        "Complete ambos campos.",
       );
       return;
     }
@@ -26,7 +26,7 @@ function FormUpdate({ onAcept, onCancel, idUsuario }: formProps) {
       mostrarAlerta(
         "error",
         "No se pudo cambiar la contraseña",
-        "Las contraseñas no coinciden. Verifica la información.",
+        "Las contraseñas no coinciden.",
       );
       return;
     }

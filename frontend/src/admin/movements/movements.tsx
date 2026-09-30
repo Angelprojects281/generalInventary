@@ -47,11 +47,13 @@ export default function AdminMovements() {
       },
     );
 
+    const data = await res.json();
+
     if (!res.ok) {
-      mostrarAlerta("error", "error al obtener productos", "error");
+      mostrarAlerta("error", "No se pudieron cargar los productos", data.error);
+      return;
     }
 
-    const data = await res.json();
     setProductsArray(data);
   };
 
@@ -66,7 +68,12 @@ export default function AdminMovements() {
     const data = await res.json();
 
     if (!res.ok) {
-      mostrarAlerta("error", "error al obtener movimientos", data.error);
+      mostrarAlerta(
+        "error",
+        "No se pudieron cargar los movimientos",
+        data.error,
+      );
+      return;
     }
 
     setMovementsArray(data);

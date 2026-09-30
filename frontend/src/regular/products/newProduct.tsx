@@ -46,7 +46,7 @@ function FormProduct({ onAcept, onCancel }: formProps) {
       mostrarAlerta(
         "error",
         "No se pudo crear el producto",
-        "Completa todos los campos antes de continuar.",
+        "Complete todos los campos obligatorios.",
       );
       return;
     }

@@ -6,7 +6,7 @@ const listProviders = (req, res) => {
   db.query(listQuery, (err, results) => {
     if (err) {
       return res.status(500).json({
-        error: "No se pudieron cargar los proveedores. Inténtalo nuevamente.",
+        error: "No se pudieron cargar los proveedores. Inténtelo de nuevo.",
       });
     }
 

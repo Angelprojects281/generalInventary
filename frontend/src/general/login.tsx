@@ -24,7 +24,7 @@ export default function Login() {
       mostrarAlerta(
         "error",
         "No se pudo iniciar sesión",
-        "Ingresa tu usuario y contraseña para continuar.",
+        "Ingrese su usuario y contraseña.",
       );
       return;
     }

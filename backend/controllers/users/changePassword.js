@@ -7,13 +7,13 @@ const changePassword = async (req, res) => {
 
   if (!idusers || !newPassword || !confirmPassword) {
     return res.status(400).json({
-      error: "Faltan datos obligatorios para cambiar la contraseña.",
+      error: "Complete todos los campos obligatorios.",
     });
   }
 
   if (newPassword !== confirmPassword) {
     return res.status(400).json({
-      error: "Las contraseñas no coinciden. Verifica la confirmación.",
+      error: "Las contraseñas no coinciden.",
     });
   }
 
@@ -21,7 +21,7 @@ const changePassword = async (req, res) => {
 
   if (passwordStrength.score < 3) {
     return res.status(400).json({
-      error: "La contraseña es demasiado débil. Elige una más segura.",
+      error: "La contraseña no cumple los requisitos de seguridad.",
     });
   }
 
@@ -33,13 +33,13 @@ const changePassword = async (req, res) => {
   db.query(updatePasswordQuery, [hashedPassword, idusers], (err, results) => {
     if (err) {
       return res.status(500).json({
-        error: "No se pudo actualizar la contraseña. Inténtalo nuevamente.",
+        error: "No se pudo actualizar la contraseña. Inténtelo de nuevo.",
       });
     }
 
     if (results.affectedRows === 0) {
       return res.status(400).json({
-        error: "No se encontró el usuario para actualizar la contraseña.",
+        error: "No se encontró el usuario.",
       });
     }
 

@@ -16,7 +16,7 @@ function FormUsers({ onAcept, onCancel }: formProps) {
       mostrarAlerta(
         "error",
         "No se pudo crear el usuario",
-        "Completa todos los campos para continuar.",
+        "Complete todos los campos obligatorios.",
       );
       return;
     }

@@ -23,7 +23,7 @@ function FormProvider({ onAcept, onCancel }: FormProps) {
       mostrarAlerta(
         "error",
         "No se pudo crear el proveedor",
-        "Ingresa el nombre y un contacto numérico válido.",
+        "Ingrese un nombre y un número de contacto válido.",
       );
       return;
     }

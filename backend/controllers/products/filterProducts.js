@@ -38,7 +38,7 @@ const filterProducts = (req, res) => {
   db.query(principalQuery, values, (err, results) => {
     if (err) {
       return res.status(500).json({
-        error: "No se pudieron cargar los productos. Inténtalo nuevamente.",
+        error: "No se pudieron cargar los productos. Inténtelo de nuevo.",
       });
     }
 

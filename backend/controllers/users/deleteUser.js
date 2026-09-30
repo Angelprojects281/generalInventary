@@ -5,13 +5,13 @@ const listUsers = async (req, res) => {
 
   if (!idusers || !tokenUser) {
     return res.status(400).json({
-      message: "Faltan datos obligatorios para eliminar el usuario.",
+      error: "No se pudo identificar al usuario que desea eliminar.",
     });
   }
 
   if (idusers === tokenUser) {
     return res.status(400).json({
-      error: "No puedes eliminar tu propio usuario.",
+      error: "No puede eliminar su propia cuenta.",
     });
   }
 
@@ -20,13 +20,13 @@ const listUsers = async (req, res) => {
   db.query(deleteUserQuery, [idusers], (err, results) => {
     if (err) {
       return res.status(500).json({
-        message: "No se pudo eliminar el usuario. Inténtalo nuevamente.",
+        error: "No se pudo eliminar el usuario. Inténtelo de nuevo.",
       });
     }
 
     if (results.affectedRows === 0) {
       return res.status(400).json({
-        message: "El usuario no existe o ya fue eliminado.",
+        error: "El usuario no existe o ya fue eliminado.",
       });
     }
 

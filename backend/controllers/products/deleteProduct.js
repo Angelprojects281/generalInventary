@@ -5,7 +5,7 @@ const deleteProduct = (req, res) => {
 
   if (!product_name) {
     return res.status(400).json({
-      error: "Falta el nombre del producto para continuar.",
+      error: "El nombre del producto es obligatorio.",
     });
   }
 
@@ -14,7 +14,7 @@ const deleteProduct = (req, res) => {
   db.query(checkProduct, [product_name], (err, results) => {
     if (err) {
       return res.status(500).json({
-        error: "No se pudo verificar el producto en este momento.",
+        error: "No se pudo verificar el producto. Inténtelo de nuevo.",
       });
     }
 
@@ -29,7 +29,7 @@ const deleteProduct = (req, res) => {
     db.query(deleteQuery, [product_name], (err, results) => {
       if (err) {
         return res.status(500).json({
-          error: "No se pudo eliminar el producto. Inténtalo nuevamente.",
+          error: "No se pudo eliminar el producto. Inténtelo de nuevo.",
         });
       }
 

@@ -40,7 +40,7 @@ function FormMovement({
       mostrarAlerta(
         "error",
         "No se pudo registrar el movimiento",
-        "Selecciona la cantidad y el tipo de movimiento antes de continuar.",
+        "Ingrese una cantidad y seleccione el tipo de movimiento.",
       );
       return;
     }

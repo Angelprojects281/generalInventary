@@ -14,7 +14,7 @@ function FormCategory({ onAcept, onCancel }: formProps) {
       mostrarAlerta(
         "error",
         "No se pudo crear la categoría",
-        "Ingresa el nombre de la categoría antes de continuar.",
+        "Ingrese el nombre de la categoría.",
       );
       return;
     }
@@ -43,7 +43,7 @@ function FormCategory({ onAcept, onCancel }: formProps) {
   };
 
   return (
-    <div className="formContainer">
+    <div className="formContainer singleFieldForm">
       <p className="listInfo">Nueva categoria</p>
       <input
         className="userInput"

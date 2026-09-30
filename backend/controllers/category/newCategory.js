@@ -5,8 +5,7 @@ const newCategory = async (req, res) => {
 
   if (!categoryName) {
     return res.status(400).json({
-      error:
-        "Falta el nombre de la categoría. Ingresa una categoría para continuar.",
+      error: "El nombre de la categoría es obligatorio.",
     });
   }
 
@@ -15,14 +14,13 @@ const newCategory = async (req, res) => {
   db.query(checkQuery, [categoryName], (err, results) => {
     if (err) {
       return res.status(500).json({
-        error:
-          "No pudimos verificar la categoría en este momento. Inténtalo nuevamente.",
+        error: "No se pudo verificar la categoría. Inténtelo de nuevo.",
       });
     }
 
     if (results.length > 0) {
       return res.status(400).json({
-        error: "La categoría ya existe. Ingresa otro nombre.",
+        error: "Ya existe una categoría con ese nombre.",
       });
     }
 
@@ -31,7 +29,7 @@ const newCategory = async (req, res) => {
     db.query(query, [categoryName], (err, results) => {
       if (err) {
         return res.status(500).json({
-          error: "No se pudo crear la categoría. Inténtalo nuevamente.",
+          error: "No se pudo crear la categoría. Inténtelo de nuevo.",
         });
       }
 

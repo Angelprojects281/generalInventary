@@ -6,7 +6,7 @@ const listCategories = (req, res) => {
   db.query(listQuery, (err, results) => {
     if (err) {
       return res.status(500).json({
-        error: "No se pudieron cargar las categorías. Inténtalo nuevamente.",
+        error: "No se pudieron cargar las categorías. Inténtelo de nuevo.",
       });
     }
 

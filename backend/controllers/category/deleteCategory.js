@@ -5,7 +5,7 @@ const deleteCategory = async (req, res) => {
 
   if (!categoryName) {
     return res.status(400).json({
-      error: "Falta el nombre de la categoría para continuar.",
+      error: "El nombre de la categoría es obligatorio.",
     });
   }
 
@@ -14,13 +14,13 @@ const deleteCategory = async (req, res) => {
   db.query(checkQuery, [categoryName], (err, results) => {
     if (err) {
       return res.status(500).json({
-        error: "No se pudo consultar la información de la categoría.",
+        error: "No se pudo consultar la categoría. Inténtelo de nuevo.",
       });
     }
 
     if (results.length === 0) {
       return res.status(400).json({
-        message: "La categoría no existe o ya fue eliminada.",
+        error: "La categoría no existe o ya fue eliminada.",
       });
     }
 
@@ -31,14 +31,15 @@ const deleteCategory = async (req, res) => {
     db.query(deleteProducts, [categoryInfo.idcategoria], (err, results) => {
       if (err) {
         return res.status(500).json({
-          error: "No se pudieron eliminar los productos relacionados.",
+          error:
+            "No se pudieron eliminar los productos asociados. Inténtelo de nuevo.",
         });
       }
 
       db.query(deleteCategory, [categoryInfo.idcategoria], (err, results) => {
         if (err) {
           return res.status(500).json({
-            error: "No se pudo eliminar la categoría.",
+            error: "No se pudo eliminar la categoría. Inténtelo de nuevo.",
           });
         }
 

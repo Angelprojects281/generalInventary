@@ -55,7 +55,7 @@ export default function ProductsReg() {
     const data = await res.json();
 
     if (!res.ok) {
-      console.error("Error al obtener productos:", data.error);
+      console.error("No se pudieron cargar los productos:", data.error);
       return;
     }
     setProductsArray(data);

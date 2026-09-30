@@ -10,7 +10,7 @@ const logIn = async (req, res) => {
 
   if (!idusers || !password) {
     return res.status(400).json({
-      message: "Faltan datos obligatorios. Ingresa tu usuario y contraseña.",
+      error: "Ingrese su usuario y contraseña.",
     });
   }
 
@@ -19,13 +19,13 @@ const logIn = async (req, res) => {
   db.query(verifyUserQuery, [idusers], (err, results) => {
     if (err) {
       return res.status(500).json({
-        error: "No se pudo verificar tus datos. Inténtalo nuevamente.",
+        error: "No se pudo iniciar sesión. Inténtelo de nuevo.",
       });
     }
 
     if (results.length === 0) {
       return res.status(400).json({
-        error: "Usuario no encontrado. Verifica tus credenciales.",
+        error: "El usuario o la contraseña son incorrectos.",
       });
     }
 
@@ -35,7 +35,7 @@ const logIn = async (req, res) => {
 
     if (!passwordMatch) {
       return res.status(400).json({
-        error: "La contraseña es incorrecta. Inténtalo nuevamente.",
+        error: "El usuario o la contraseña son incorrectos.",
       });
     }
 
