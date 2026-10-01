@@ -32,7 +32,8 @@ const newMovement = (req, res) => {
       });
     }
 
-    let actualAmount = results[0].amount;
+    const product = results[0];
+    let actualAmount = product.amount;
 
     if (type === "entrada") {
       actualAmount += amount;
@@ -57,11 +58,19 @@ const newMovement = (req, res) => {
       }
 
       const regMovement =
-        "INSERT INTO movements (movement_type, date_movement, amount, category, product_name, idusers) VALUES (?, ?, ?, ?, ?, ?)";
+        "INSERT INTO movements (movement_type, date_movement, amount, category, product_name, product_code, idusers) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
       db.query(
         regMovement,
-        [type, DATE, amount, category_name, product_name, userName],
+        [
+          type,
+          DATE,
+          amount,
+          category_name,
+          product_name,
+          product.product_code,
+          userName,
+        ],
         (err, results) => {
           if (err) {
             return res.status(500).json({

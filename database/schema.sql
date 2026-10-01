@@ -70,6 +70,7 @@ VALUES (0, 'SIN PROVEEDOR', 0);
 
 CREATE TABLE `products` (
   `idproducts` int NOT NULL AUTO_INCREMENT,
+  `product_code` varchar(50) DEFAULT NULL,
   `product_name` varchar(100) NOT NULL,
   `amount` int NOT NULL DEFAULT 0,
   `description` varchar(500) DEFAULT 'SIN DESCRIPCION',
@@ -77,6 +78,7 @@ CREATE TABLE `products` (
   `idprovider` int NOT NULL DEFAULT 0,
   PRIMARY KEY (`idproducts`),
   UNIQUE KEY `idproducts_UNIQUE` (`idproducts`),
+  UNIQUE KEY `product_code_UNIQUE` (`product_code`),
   KEY `categoryKey_idx` (`idcategoria`),
   KEY `providerkey_idx` (`idprovider`),
   CONSTRAINT `fk_products_category`
@@ -98,6 +100,7 @@ CREATE TABLE `movements` (
   `amount` int NOT NULL,
   `category` varchar(50) NOT NULL,
   `product_name` varchar(50) NOT NULL,
+  `product_code` varchar(50) DEFAULT NULL,
   `idusers` varchar(50) NOT NULL,
   PRIMARY KEY (`idmovements`)
 ) ENGINE=InnoDB

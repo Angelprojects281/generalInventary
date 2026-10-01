@@ -50,10 +50,15 @@ export default function AdminCategory() {
               value={category.idcategoria}
               className="lineList"
             >
-              <p className="listInfo lastInfo">{index + 1}</p>
-              <p className="listInfo lastInfo">{category.category}</p>
+              <p className="listInfo lastInfo" data-label="Número">
+                {index + 1}
+              </p>
+              <p className="listInfo lastInfo" data-label="Categoría">
+                {category.category}
+              </p>
               <p
                 className="listInfo lastInfo Delete"
+                data-label="Acción"
                 onClick={() => {
                   deleteCategory(category.category);
                   fetchData();

@@ -25,6 +25,7 @@ export default function ProductsReg() {
   const [productsArray, setProductsArray] = useState<ProductInterface[]>([]);
   const [categoryArray, setCategoriesArray] = useState<ClassInterface[]>([]);
   const [providersArray, setProvidersArray] = useState<ProviderInterface[]>([]);
+  const [productCode, setProductCode] = useState("");
   const [categoryName, setCategory] = useState("");
   const [providerName, setProviderName] = useState("");
   const [amount, setAmount] = useState<number | "">("");
@@ -33,6 +34,7 @@ export default function ProductsReg() {
   );
   const [showFormNewProduct, setShowFormNewProduct] = useState(false);
   const [showFormNewMovement, setShowFormNewMovement] = useState(false);
+  const [filtersExpanded, setFiltersExpanded] = useState(false);
 
   const fetchCategories = async () => {
     const categoryList = await listCategories();
@@ -46,6 +48,7 @@ export default function ProductsReg() {
 
   const fetchProducts = async () => {
     const filters = new URLSearchParams();
+    if (productCode.trim()) filters.set("product_code", productCode.trim());
     if (categoryName) filters.set("categoryName", categoryName);
     if (amount !== "") filters.set("amount", String(amount));
     if (providerName) filters.set("provider_name", providerName);
@@ -68,7 +71,7 @@ export default function ProductsReg() {
 
   useEffect(() => {
     fetchProducts();
-  }, [categoryName, amount, providerName]);
+  }, [productCode, categoryName, amount, providerName]);
 
   const handleCloseForm = () => {
     setShowFormNewProduct(false);
@@ -92,8 +95,25 @@ export default function ProductsReg() {
           <p>Nuevo producto +</p>
         </section>
       </header>
-      <section className="filterSection">
-        <p className="filterText">Filtros:</p>
+      <section
+        className={`filterSection productFilterSection ${filtersExpanded ? "filtersExpanded" : ""}`}
+      >
+        <button
+          className="filterToggle"
+          type="button"
+          aria-expanded={filtersExpanded}
+          onClick={() => setFiltersExpanded((expanded) => !expanded)}
+        >
+          <span>Filtros</span>
+          <span>{filtersExpanded ? "Ocultar −" : "Mostrar +"}</span>
+        </button>
+        <input
+          className="filterSelect"
+          type="text"
+          placeholder="código único"
+          value={productCode}
+          onChange={(e) => setProductCode(e.target.value)}
+        />
         <select
           className="filterSelect"
           value={categoryName}
@@ -135,6 +155,7 @@ export default function ProductsReg() {
             setCategory("");
             setProviderName("");
             setAmount("");
+            setProductCode("");
           }}
         >
           Limpiar filtros
@@ -158,13 +179,24 @@ export default function ProductsReg() {
               value={product.product_name}
               className="lineList"
             >
-              <p className="listInfo lastInfo">{product.product_name}</p>
-              <p className="listInfo lastInfo">{product.amount}</p>
-              <p className="listInfo lastInfo">{product.description}</p>
-              <p className="listInfo lastInfo">{product.category}</p>
-              <p className="listInfo lastInfo">{product.provider_name}</p>
+              <p className="listInfo lastInfo" data-label="Nombre">
+                {product.product_name}
+              </p>
+              <p className="listInfo lastInfo" data-label="Cantidad">
+                {product.amount}
+              </p>
+              <p className="listInfo lastInfo" data-label="Descripción">
+                {product.description}
+              </p>
+              <p className="listInfo lastInfo" data-label="Categoría">
+                {product.category}
+              </p>
+              <p className="listInfo lastInfo" data-label="Proveedor">
+                {product.provider_name}
+              </p>
               <p
                 className="listInfo lastInfo Update"
+                data-label="Acción"
                 onClick={() => {
                   setActualProduct(product);
                   setShowFormNewMovement(true);
@@ -174,6 +206,7 @@ export default function ProductsReg() {
               </p>
               <p
                 className="listInfo lastInfo Delete"
+                data-label="Acción"
                 onClick={() => {
                   deleteProduct(product.product_name);
                   fetchProducts();

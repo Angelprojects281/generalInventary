@@ -1,7 +1,14 @@
 const db = require("../../db/db");
 
 const filterMovements = (req, res) => {
-  const { type, category_name, product_name, initDate, finalDate } = req.query;
+  const {
+    type,
+    category_name,
+    product_name,
+    product_code,
+    initDate,
+    finalDate,
+  } = req.query;
   let principalQuery = "SELECT * FROM movements WHERE 1=1";
   const values = [];
 
@@ -18,6 +25,11 @@ const filterMovements = (req, res) => {
   if (product_name) {
     principalQuery += " AND product_name = ?";
     values.push(product_name);
+  }
+
+  if (product_code) {
+    principalQuery += " AND product_code = ?";
+    values.push(product_code);
   }
 
   if (initDate && finalDate) {

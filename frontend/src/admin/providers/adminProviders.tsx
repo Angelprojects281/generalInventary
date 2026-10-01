@@ -52,14 +52,23 @@ export default function AdminProviders() {
           </li>
           {providers.map((provider, index) => (
             <li key={provider.idprovider} className="lineList">
-              <p className="listInfo lastInfo">{index + 1}</p>
-              <p className="listInfo lastInfo">{provider.provider_name}</p>
-              <p className="listInfo lastInfo">{provider.contact}</p>
+              <p className="listInfo lastInfo" data-label="Número">
+                {index + 1}
+              </p>
+              <p className="listInfo lastInfo" data-label="Proveedor">
+                {provider.provider_name}
+              </p>
+              <p className="listInfo lastInfo" data-label="Contacto">
+                {provider.contact}
+              </p>
               {provider.idprovider === 0 ? (
-                <p className="listInfo lastInfo">Proveedor protegido</p>
+                <p className="listInfo lastInfo" data-label="Estado">
+                  Proveedor protegido
+                </p>
               ) : (
                 <p
                   className="listInfo lastInfo Delete"
+                  data-label="Acción"
                   onClick={() => handleDelete(provider.provider_name)}
                 >
                   Eliminar proveedor

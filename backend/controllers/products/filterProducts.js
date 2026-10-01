@@ -1,11 +1,12 @@
 const db = require("../../db/db");
 
 const filterProducts = (req, res) => {
-  const { categoryName, amount, provider_name } = req.query;
+  const { product_code, categoryName, amount, provider_name } = req.query;
 
   let principalQuery = `
     SELECT 
       products.idproducts,
+      products.product_code,
       products.product_name,
       products.amount,
       products.description,
@@ -19,6 +20,11 @@ const filterProducts = (req, res) => {
     WHERE 1=1
   `;
   const values = [];
+
+  if (product_code) {
+    principalQuery += " AND products.product_code = ?";
+    values.push(product_code);
+  }
 
   if (categoryName) {
     principalQuery += " AND categories.category = ?";

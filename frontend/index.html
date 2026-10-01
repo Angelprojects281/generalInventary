@@ -5,6 +5,15 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>frontend</title>
+    <script>
+      try {
+        if (localStorage.getItem("inventario-theme") === "dark") {
+          document.documentElement.dataset.theme = "dark";
+        }
+      } catch {
+        // The default light theme remains available when storage is disabled.
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>

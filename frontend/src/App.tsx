@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Route,
   Routes,
@@ -68,9 +68,37 @@ function BackNavigationGuard() {
   return null;
 }
 
+type Theme = "light" | "dark";
+
 function App() {
+  const [theme, setTheme] = useState<Theme>(
+    document.documentElement.dataset.theme === "dark" ? "dark" : "light",
+  );
+
+  const toggleTheme = () => {
+    const nextTheme = theme === "dark" ? "light" : "dark";
+    document.documentElement.dataset.theme = nextTheme;
+    setTheme(nextTheme);
+
+    try {
+      localStorage.setItem("inventario-theme", nextTheme);
+    } catch {
+      // The current theme still applies until the page is reloaded.
+    }
+  };
+
   return (
     <BrowserRouter>
+      <button
+        className="themeToggle"
+        type="button"
+        aria-label={`Cambiar a tema ${theme === "dark" ? "claro" : "oscuro"}`}
+        aria-pressed={theme === "dark"}
+        title={`Cambiar a tema ${theme === "dark" ? "claro" : "oscuro"}`}
+        onClick={toggleTheme}
+      >
+        <span aria-hidden="true">{theme === "dark" ? "☾" : "☀"}</span>
+      </button>
       <BackNavigationGuard />
       <Routes>
         <Route path="/" element={<Login />} />

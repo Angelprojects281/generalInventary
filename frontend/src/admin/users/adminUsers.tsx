@@ -15,6 +15,7 @@ export default function AdminUsers() {
   const [showFormUser, setShowForm] = useState(false);
   const [showFormUpdate, setShowFormUpdate] = useState(false);
   const [idUsuario, setIdUsuario] = useState("");
+  const [filtersExpanded, setFiltersExpanded] = useState(false);
 
   const filterUsers = async () => {
     const res = await fetch(`http://localhost:3000/listUsers?rol=${rol}`, {
@@ -57,8 +58,18 @@ export default function AdminUsers() {
           <p>Nuevo usuario +</p>
         </section>
       </header>
-      <section className="filterSection">
-        <p className="filterText">Filtros:</p>
+      <section
+        className={`filterSection userFilterSection ${filtersExpanded ? "filtersExpanded" : ""}`}
+      >
+        <button
+          className="filterToggle"
+          type="button"
+          aria-expanded={filtersExpanded}
+          onClick={() => setFiltersExpanded((expanded) => !expanded)}
+        >
+          <span>Filtros</span>
+          <span>{filtersExpanded ? "Ocultar −" : "Mostrar +"}</span>
+        </button>
         <select
           className="filterSelect"
           onChange={(e) => {
@@ -80,10 +91,15 @@ export default function AdminUsers() {
           </li>
           {users.map((users) => (
             <li key={users.idusers} value={users.idusers} className="lineList">
-              <p className="listInfo lastInfo">{users.idusers}</p>
-              <p className="listInfo lastInfo">{users.rol}</p>
+              <p className="listInfo lastInfo" data-label="Usuario">
+                {users.idusers}
+              </p>
+              <p className="listInfo lastInfo" data-label="Rol">
+                {users.rol}
+              </p>
               <p
                 className="listInfo lastInfo Update"
+                data-label="Acción"
                 onClick={() => {
                   setIdUsuario(users.idusers);
                   setShowFormUpdate(true);
@@ -93,6 +109,7 @@ export default function AdminUsers() {
               </p>
               <p
                 className="listInfo lastInfo Delete"
+                data-label="Acción"
                 onClick={() => {
                   deleteUsers(users.idusers);
                   filterUsers();

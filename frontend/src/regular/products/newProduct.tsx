@@ -16,6 +16,7 @@ interface ClassInterface {
 }
 
 function FormProduct({ onAcept, onCancel }: formProps) {
+  const [product_code, setProductCode] = useState("");
   const [product_name, setProductName] = useState("");
   const [amount, setAmount] = useState<number | "">("");
   const [description, setDescription] = useState("");
@@ -37,6 +38,7 @@ function FormProduct({ onAcept, onCancel }: formProps) {
 
   const newProduct = async () => {
     if (
+      !product_code.trim() ||
       !product_name ||
       amount === "" ||
       !description ||
@@ -54,6 +56,7 @@ function FormProduct({ onAcept, onCancel }: formProps) {
       method: "POST",
       headers: { "Content-type": "application/json" },
       body: JSON.stringify({
+        product_code: product_code.trim(),
         product_name,
         amount,
         description,
@@ -87,12 +90,20 @@ function FormProduct({ onAcept, onCancel }: formProps) {
       <p className="listInfo">Nuevo producto</p>
       <input
         className="userInput"
+        placeholder="código único"
+        type="text"
+        maxLength={50}
+        value={product_code}
+        onChange={(e) => setProductCode(e.target.value)}
+      />
+      <input
+        className="userInput"
         placeholder="producto"
         type="text"
         onChange={(e) => {
           setProductName(e.target.value);
         }}
-      ></input>
+      />
       <input
         className="userInput"
         placeholder="cantidad"
