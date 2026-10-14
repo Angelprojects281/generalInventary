@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { mostrarAlerta } from "../alerts/alert";
 import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "../i18n";
 
 interface tokenPayload {
   idusers: string;
@@ -14,6 +15,7 @@ export default function Login() {
   const [idusers, setIdusers] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   useEffect(() => {
     localStorage.removeItem("token");
@@ -58,13 +60,13 @@ export default function Login() {
   return (
     <div className="mainScreen">
       <header className="headerScreen">
-        <h3 className="tittle">Inicio de sesion</h3>
+        <h3 className="tittle">{t("Inicio de sesion")}</h3>
       </header>
       <section className="principalSection">
-        <p className="infoP">Introduce tu usuario y contraseña:</p>
+        <p className="infoP">{t("Introduce tu usuario y contraseña:")}</p>
 
         <input
-          placeholder="usuario"
+          placeholder={t("usuario")}
           type="text"
           className="userInput"
           onChange={(e) => {
@@ -72,7 +74,7 @@ export default function Login() {
           }}
         ></input>
         <input
-          placeholder="contraseña"
+          placeholder={t("contraseña")}
           type="password"
           className="userInput"
           onChange={(e) => {
@@ -81,7 +83,7 @@ export default function Login() {
         ></input>
 
         <button className="mainButton" onClick={handleLogin}>
-          INICIAR SESION
+          {t("INICIAR SESION")}
         </button>
       </section>
     </div>

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { mostrarAlerta } from "../../alerts/alert";
+import { useTranslation } from "../../i18n";
 
 interface formProps {
   onAcept: () => void;
@@ -8,6 +9,7 @@ interface formProps {
 
 function FormCategory({ onAcept, onCancel }: formProps) {
   const [categoryName, setIdusers] = useState("");
+  const { t } = useTranslation();
 
   const newUser = async () => {
     if (!categoryName.trim()) {
@@ -44,10 +46,10 @@ function FormCategory({ onAcept, onCancel }: formProps) {
 
   return (
     <div className="formContainer singleFieldForm">
-      <p className="listInfo">Nueva categoria</p>
+      <p className="listInfo">{t("Nueva categoria")}</p>
       <input
         className="userInput"
-        placeholder="categoria"
+        placeholder={t("categoria")}
         type="text"
         onChange={(e) => {
           setIdusers(e.target.value);
@@ -56,10 +58,10 @@ function FormCategory({ onAcept, onCancel }: formProps) {
 
       <section className="buttonsSection">
         <button className="optionButton" onClick={newUser}>
-          Crear
+          {t("Crear")}
         </button>
         <button className="optionButton secundary" onClick={onCancel}>
-          Cancelar
+          {t("Cancelar")}
         </button>
       </section>
     </div>

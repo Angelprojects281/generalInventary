@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { mostrarAlerta } from "../../alerts/alert";
+import { useTranslation } from "../../i18n";
 
 interface formProps {
   onAcept: () => void;
@@ -11,6 +12,7 @@ function FormUpdate({ onAcept, onCancel, idUsuario }: formProps) {
   const idusers = idUsuario;
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const { t } = useTranslation();
 
   const newUser = async () => {
     if (!newPassword || !confirmPassword) {
@@ -59,11 +61,11 @@ function FormUpdate({ onAcept, onCancel, idUsuario }: formProps) {
   return (
     <div className="formContainer">
       <p className="listInfo">
-        Actualizando contraseña para el usuario {idUsuario}
+        {t("Actualizando contraseña para el usuario")} {idUsuario}
       </p>
       <input
         className="userInput"
-        placeholder="contraseña nueva"
+        placeholder={t("contraseña nueva")}
         type="password"
         onChange={(e) => {
           setNewPassword(e.target.value);
@@ -71,7 +73,7 @@ function FormUpdate({ onAcept, onCancel, idUsuario }: formProps) {
       ></input>
       <input
         className="userInput"
-        placeholder="confirmar contraseña"
+        placeholder={t("confirmar contraseña")}
         type="password"
         onChange={(e) => {
           setConfirmPassword(e.target.value);
@@ -80,10 +82,10 @@ function FormUpdate({ onAcept, onCancel, idUsuario }: formProps) {
 
       <section className="buttonsSection">
         <button className="optionButton" onClick={newUser}>
-          Cambiar contraseña
+          {t("Cambiar contraseña")}
         </button>
         <button className="optionButton secundary" onClick={onCancel}>
-          Cancelar
+          {t("Cancelar")}
         </button>
       </section>
     </div>

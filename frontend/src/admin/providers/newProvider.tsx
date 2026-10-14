@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { mostrarAlerta } from "../../alerts/alert";
+import { useTranslation } from "../../i18n";
 
 interface FormProps {
   onAcept: () => void;
@@ -9,6 +10,7 @@ interface FormProps {
 function FormProvider({ onAcept, onCancel }: FormProps) {
   const [providerName, setProviderName] = useState("");
   const [contact, setContact] = useState("");
+  const { t } = useTranslation();
 
   const createProvider = async () => {
     const normalizedName = providerName.trim();
@@ -53,17 +55,17 @@ function FormProvider({ onAcept, onCancel }: FormProps) {
 
   return (
     <div className="formContainer">
-      <p className="listInfo">Nuevo proveedor</p>
+      <p className="listInfo">{t("Nuevo proveedor")}</p>
       <input
         className="userInput"
-        placeholder="proveedor"
+        placeholder={t("proveedor")}
         type="text"
         value={providerName}
         onChange={(e) => setProviderName(e.target.value)}
       />
       <input
         className="userInput"
-        placeholder="contacto"
+        placeholder={t("contacto")}
         type="number"
         min="1"
         step="1"
@@ -72,10 +74,10 @@ function FormProvider({ onAcept, onCancel }: FormProps) {
       />
       <section className="buttonsSection">
         <button className="optionButton" onClick={createProvider}>
-          Crear
+          {t("Crear")}
         </button>
         <button className="optionButton secundary" onClick={onCancel}>
-          Cancelar
+          {t("Cancelar")}
         </button>
       </section>
     </div>

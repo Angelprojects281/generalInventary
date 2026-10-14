@@ -2,10 +2,12 @@ import { useEffect, useState } from "react";
 import listProviders, { type ProviderInterface } from "./listProviders";
 import FormProvider from "./newProvider";
 import deleteProvider from "./deleteProvider";
+import { useTranslation } from "../../i18n";
 
 export default function AdminProviders() {
   const [providers, setProviders] = useState<ProviderInterface[]>([]);
   const [showForm, setShowForm] = useState(false);
+  const { t } = useTranslation();
 
   const fetchProviders = async () => {
     setProviders(await listProviders());
@@ -37,41 +39,41 @@ export default function AdminProviders() {
   return (
     <div className="mainScreen">
       <header className="headerScreen">
-        <h3 className="tittle">Administrador de proveedores</h3>
+        <h3 className="tittle">{t("Administrador de proveedores")}</h3>
         <section className="actionButton" onClick={() => setShowForm(true)}>
-          <p>Nuevo proveedor +</p>
+          <p>{t("Nuevo proveedor +")}</p>
         </section>
       </header>
       <section className="principalSection">
         <ul className="infoList">
           <li className="lineList">
-            <p className="listInfo">Numero</p>
-            <p className="listInfo">Proveedor</p>
-            <p className="listInfo">Contacto</p>
-            <p className="listInfo">Eliminar proveedor</p>
+            <p className="listInfo">{t("Numero")}</p>
+            <p className="listInfo">{t("Proveedor")}</p>
+            <p className="listInfo">{t("Contacto")}</p>
+            <p className="listInfo">{t("Eliminar proveedor")}</p>
           </li>
           {providers.map((provider, index) => (
             <li key={provider.idprovider} className="lineList">
-              <p className="listInfo lastInfo" data-label="Número">
+              <p className="listInfo lastInfo" data-label={t("Numero")}>
                 {index + 1}
               </p>
-              <p className="listInfo lastInfo" data-label="Proveedor">
+              <p className="listInfo lastInfo" data-label={t("Proveedor")}>
                 {provider.provider_name}
               </p>
-              <p className="listInfo lastInfo" data-label="Contacto">
+              <p className="listInfo lastInfo" data-label={t("Contacto")}>
                 {provider.contact}
               </p>
               {provider.idprovider === 0 ? (
-                <p className="listInfo lastInfo" data-label="Estado">
-                  Proveedor protegido
+                <p className="listInfo lastInfo" data-label={t("Estado")}>
+                  {t("Proveedor protegido")}
                 </p>
               ) : (
                 <p
                   className="listInfo lastInfo Delete"
-                  data-label="Acción"
+                  data-label={t("Accion")}
                   onClick={() => handleDelete(provider.provider_name)}
                 >
-                  Eliminar proveedor
+                  {t("Eliminar proveedor")}
                 </p>
               )}
             </li>

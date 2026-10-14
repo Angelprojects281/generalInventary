@@ -1,4 +1,5 @@
 import Swal, { type SweetAlertIcon } from "sweetalert2";
+import { translateText } from "../i18n";
 
 export function mostrarAlerta(
   simbol: SweetAlertIcon,
@@ -6,14 +7,16 @@ export function mostrarAlerta(
   message = "",
 ) {
   Swal.fire({
-    title,
+    title: translateText(title),
     text:
-      message ||
-      (simbol === "error"
-        ? "No fue posible completar la solicitud. Inténtelo de nuevo."
-        : ""),
+      translateText(
+        message ||
+          (simbol === "error"
+            ? "No fue posible completar la solicitud. Inténtelo de nuevo."
+            : ""),
+      ),
     icon: simbol,
-    confirmButtonText: "Aceptar",
+    confirmButtonText: translateText("Aceptar"),
     customClass: { popup: "alertContainer", confirmButton: "mainButton" },
   });
 }
@@ -25,11 +28,11 @@ export function mostrarConfirmacion(
 ) {
   return Swal.fire({
     showCancelButton: true,
-    cancelButtonText: "cancelar",
-    confirmButtonText: "aceptar",
+    cancelButtonText: translateText("cancelar"),
+    confirmButtonText: translateText("aceptar"),
     icon: simbol,
-    title,
-    text: message,
+    title: translateText(title),
+    text: translateText(message),
     customClass: {
       popup: "alertContainer",
       confirmButton: "mainButton",

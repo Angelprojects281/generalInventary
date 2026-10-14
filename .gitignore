@@ -1,3 +1,4 @@
 backend/node_modules
 backend/secretKey.env
 frontend/node_modules
+memory.md

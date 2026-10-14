@@ -44,6 +44,7 @@ Aplicación web para administrar usuarios, categorías, proveedores, productos, 
 - Actualización automática del stock al registrar un movimiento.
 - Filtrado de movimientos por tipo, categoría, producto y rango de fechas.
 - Alertas visuales en el frontend mediante SweetAlert2, con mensajes de error consistentes.
+- Interfaz en español e inglés, con botón para cambiar el idioma y preferencia guardada en el navegador.
 
 ## Interfaz y mensajes
 
@@ -51,6 +52,11 @@ Aplicación web para administrar usuarios, categorías, proveedores, productos, 
 - Los formularios muestran sus campos en dos columnas cuando hay espacio y se adaptan a una columna en pantallas estrechas.
 - Al abrir un formulario, el fondo se atenúa y desenfoca mientras el formulario permanece nítido.
 - Las pantallas, filas, formularios y controles tienen animaciones de entrada definidas con `@keyframes` en `frontend/src/styles/styles.css`. Se respeta la preferencia del sistema por reducir el movimiento.
+- Un botón fijo en la esquina inferior derecha alterna entre el tema claro y el oscuro. La preferencia se guarda en `localStorage` con la clave `inventario-theme` y se aplica al cargar la página para evitar parpadeos.
+- Junto al botón de tema hay un botón de idioma que alterna entre español e inglés y muestra `ES` o `EN` según el idioma activo.
+- El idioma predeterminado es español y la selección se guarda en `localStorage` con la clave `inventario-language`.
+- El sistema de traducciones vive en `frontend/src/i18n.tsx`. El texto visible se envuelve con la función `t()` del hook `useTranslation`, y las alertas usan `translateText`. Las claves se escriben en español; si una clave no tiene traducción, se muestra el texto original.
+- Al cambiar el idioma también se actualizan el atributo `lang` del documento y el título de la pestaña: `Inventario` en español e `Inventory` en inglés.
 - Los errores de la API se devuelven en la propiedad `error`, con mensajes breves en español y sin detalles internos de la base de datos. Las operaciones exitosas que devuelven confirmación usan `message`.
 
 ## Arquitectura
@@ -69,7 +75,7 @@ API Express (http://localhost:3000)
 MySQL - base de datos inventary
 ```
 
-El frontend guarda el JWT en `localStorage` con la clave `token`. El rol incluido en el token determina la pantalla inicial y las rutas visibles. El backend expone actualmente las rutas directamente desde `/`; no se utiliza un prefijo como `/api`.
+El frontend guarda el JWT en `localStorage` con la clave `token` y la preferencia de idioma en `inventario-language`. El rol incluido en el token determina la pantalla inicial y las rutas visibles. El backend expone actualmente las rutas directamente desde `/`; no se utiliza un prefijo como `/api`.
 
 > Importante: las rutas de protección del frontend mejoran la experiencia de navegación, pero no sustituyen un middleware de autorización en el backend. Para un despliegue real, las operaciones administrativas deben validar el JWT y el rol en el servidor.
 
@@ -602,8 +608,9 @@ inventario/
 │   ├── package.json            # Dependencias y scripts de Vite
 │   ├── vite.config.ts          # Puerto 4000 y plugin React
 │   └── src/
-│       ├── App.tsx             # Router y rutas protegidas
+│       ├── App.tsx             # Router, rutas protegidas y botones de tema e idioma
 │       ├── main.tsx            # Punto de entrada React
+│       ├── i18n.tsx            # Traducciones (es/en), proveedor e hook de idioma
 │       ├── general/            # Inicio de sesión
 │       ├── admin/               # Vistas y operaciones administrativas
 │       ├── regular/             # Vistas para usuarios regulares

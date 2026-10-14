@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import listCategories from "./listCategories";
 import FormCategory from "./newCategory";
 import deleteCategory from "./deleteCategory";
+import { useTranslation } from "../../i18n";
 
 interface ClassInterface {
   idcategoria: number;
@@ -11,6 +12,7 @@ interface ClassInterface {
 export default function AdminCategory() {
   const [Category, setCategory] = useState<ClassInterface[]>([]);
   const [showForm, setShowForm] = useState(false);
+  const { t } = useTranslation();
 
   const fetchData = async () => {
     const categories = await listCategories();
@@ -32,17 +34,17 @@ export default function AdminCategory() {
   return (
     <div className="mainScreen">
       <header className="headerScreen">
-        <h3 className="tittle">Administrador de categorias</h3>
+        <h3 className="tittle">{t("Administrador de categorias")}</h3>
         <section className="actionButton" onClick={() => setShowForm(true)}>
-          <p>Nueva categoria +</p>
+          <p>{t("Nueva categoria +")}</p>
         </section>
       </header>
       <section className="principalSection">
         <ul className="infoList">
           <li className="lineList">
-            <p className="listInfo">Numero</p>
-            <p className="listInfo">Categoria</p>
-            <p className="listInfo">Eliminar categoria</p>
+            <p className="listInfo">{t("Numero")}</p>
+            <p className="listInfo">{t("Categoria")}</p>
+            <p className="listInfo">{t("Eliminar categoria")}</p>
           </li>
           {Category.map((category, index) => (
             <li
@@ -50,21 +52,21 @@ export default function AdminCategory() {
               value={category.idcategoria}
               className="lineList"
             >
-              <p className="listInfo lastInfo" data-label="Número">
+              <p className="listInfo lastInfo" data-label={t("Numero")}>
                 {index + 1}
               </p>
-              <p className="listInfo lastInfo" data-label="Categoría">
+              <p className="listInfo lastInfo" data-label={t("Categoria")}>
                 {category.category}
               </p>
               <p
                 className="listInfo lastInfo Delete"
-                data-label="Acción"
+                data-label={t("Accion")}
                 onClick={() => {
                   deleteCategory(category.category);
                   fetchData();
                 }}
               >
-                Eliminar categoria
+                {t("Eliminar categoria")}
               </p>
             </li>
           ))}

@@ -4,6 +4,7 @@ import listCategories from "../../admin/categories/listCategories";
 import listProviders, {
   type ProviderInterface,
 } from "../../admin/providers/listProviders";
+import { useTranslation } from "../../i18n";
 
 interface formProps {
   onAcept: () => void;
@@ -25,6 +26,7 @@ function FormProduct({ onAcept, onCancel }: formProps) {
 
   const [categotyArray, setCategoriesArray] = useState<ClassInterface[]>([]);
   const [providersArray, setProvidersArray] = useState<ProviderInterface[]>([]);
+  const { t } = useTranslation();
 
   const fetchCategories = async () => {
     const categoryList = await listCategories();
@@ -87,10 +89,10 @@ function FormProduct({ onAcept, onCancel }: formProps) {
 
   return (
     <div className="formContainer">
-      <p className="listInfo">Nuevo producto</p>
+      <p className="listInfo">{t("Nuevo producto")}</p>
       <input
         className="userInput"
-        placeholder="código único"
+        placeholder={t("código único")}
         type="text"
         maxLength={50}
         value={product_code}
@@ -98,7 +100,7 @@ function FormProduct({ onAcept, onCancel }: formProps) {
       />
       <input
         className="userInput"
-        placeholder="producto"
+        placeholder={t("producto")}
         type="text"
         onChange={(e) => {
           setProductName(e.target.value);
@@ -106,7 +108,7 @@ function FormProduct({ onAcept, onCancel }: formProps) {
       />
       <input
         className="userInput"
-        placeholder="cantidad"
+        placeholder={t("cantidad")}
         type="number"
         onChange={(e) => {
           setAmount(Number(e.target.value));
@@ -114,7 +116,7 @@ function FormProduct({ onAcept, onCancel }: formProps) {
       ></input>
       <input
         className="userInput"
-        placeholder="descripcion"
+        placeholder={t("descripcion")}
         type="text"
         onChange={(e) => {
           setDescription(e.target.value);
@@ -125,7 +127,7 @@ function FormProduct({ onAcept, onCancel }: formProps) {
         className="userInput"
         onChange={(e) => setCategory(e.target.value)}
       >
-        <option value="">seleccione una categoria:</option>
+        <option value="">{t("seleccione una categoria:")}</option>
         {categotyArray.map((category) => (
           <option key={category.idcategoria} value={category.category}>
             {category.category}
@@ -138,7 +140,7 @@ function FormProduct({ onAcept, onCancel }: formProps) {
         value={providerName}
         onChange={(e) => setProviderName(e.target.value)}
       >
-        <option value="">Seleccione un proveedor:</option>
+        <option value="">{t("Seleccione un proveedor:")}</option>
         {providersArray.map((provider) => (
           <option key={provider.idprovider} value={provider.provider_name}>
             {provider.provider_name}
@@ -148,10 +150,10 @@ function FormProduct({ onAcept, onCancel }: formProps) {
 
       <section className="buttonsSection">
         <button className="optionButton" onClick={newProduct}>
-          Crear
+          {t("Crear")}
         </button>
         <button className="optionButton secundary" onClick={onCancel}>
-          Cancelar
+          {t("Cancelar")}
         </button>
       </section>
     </div>

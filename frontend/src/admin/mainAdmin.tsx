@@ -1,6 +1,8 @@
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "../i18n";
 export default function MainAdmin() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const handleLogOut = async () => {
     localStorage.removeItem("token");
     navigate("/", { replace: true });
@@ -8,11 +10,11 @@ export default function MainAdmin() {
   return (
     <div className="mainScreen">
       <header className="headerScreen">
-        <h3 className="tittle">Panel de administrador</h3>
+        <h3 className="tittle">{t("Panel de administrador")}</h3>
       </header>
       <section className="principalSection">
         <p className="infoP">
-          Bienvenido al panel de administrador, que vas a hacer hoy?
+          {t("Bienvenido al panel de administrador, que vas a hacer hoy?")}
         </p>
 
         <button
@@ -21,7 +23,7 @@ export default function MainAdmin() {
             navigate("/adminUsers");
           }}
         >
-          Administrar usuarios
+          {t("Administrar usuarios")}
         </button>
         <button
           className="optionButton"
@@ -29,7 +31,7 @@ export default function MainAdmin() {
             navigate("/adminCategory");
           }}
         >
-          Administrar categorias
+          {t("Administrar categorias")}
         </button>
         <button
           className="optionButton"
@@ -37,7 +39,7 @@ export default function MainAdmin() {
             navigate("/adminProviders");
           }}
         >
-          Administrar proveedores
+          {t("Administrar proveedores")}
         </button>
         <button
           className="optionButton"
@@ -45,10 +47,10 @@ export default function MainAdmin() {
             navigate("/adminMovements");
           }}
         >
-          Administrar movimientos
+          {t("Administrar movimientos")}
         </button>
         <button className="optionButton secundary" onClick={handleLogOut}>
-          Cerrar sesion
+          {t("Cerrar sesion")}
         </button>
       </section>
     </div>

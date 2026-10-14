@@ -6,6 +6,7 @@ import listProviders, {
 import deleteProduct from "./deleteProduct";
 import FormProduct from "./newProduct";
 import FormMovement from "../movements/newMovement";
+import { useTranslation } from "../../i18n";
 
 interface ProductInterface {
   idproducts: number;
@@ -35,6 +36,7 @@ export default function ProductsReg() {
   const [showFormNewProduct, setShowFormNewProduct] = useState(false);
   const [showFormNewMovement, setShowFormNewMovement] = useState(false);
   const [filtersExpanded, setFiltersExpanded] = useState(false);
+  const { t } = useTranslation();
 
   const fetchCategories = async () => {
     const categoryList = await listCategories();
@@ -87,12 +89,12 @@ export default function ProductsReg() {
   return (
     <div className="mainScreen">
       <header className="headerScreen">
-        <h3 className="tittle">Administrador de productos</h3>
+        <h3 className="tittle">{t("Administrador de productos")}</h3>
         <section
           className="actionButton"
           onClick={() => setShowFormNewProduct(true)}
         >
-          <p>Nuevo producto +</p>
+          <p>{t("Nuevo producto +")}</p>
         </section>
       </header>
       <section
@@ -104,13 +106,13 @@ export default function ProductsReg() {
           aria-expanded={filtersExpanded}
           onClick={() => setFiltersExpanded((expanded) => !expanded)}
         >
-          <span>Filtros</span>
-          <span>{filtersExpanded ? "Ocultar −" : "Mostrar +"}</span>
+          <span>{t("Filtros")}</span>
+          <span>{t(filtersExpanded ? "Ocultar −" : "Mostrar +")}</span>
         </button>
         <input
           className="filterSelect"
           type="text"
-          placeholder="código único"
+          placeholder={t("código único")}
           value={productCode}
           onChange={(e) => setProductCode(e.target.value)}
         />
@@ -121,7 +123,7 @@ export default function ProductsReg() {
             setCategory(e.target.value);
           }}
         >
-          <option value="">seleccione una categoria:</option>
+          <option value="">{t("seleccione una categoria:")}</option>
           {categoryArray.map((category) => (
             <option key={category.idcategoria} value={category.category}>
               {category.category}
@@ -133,7 +135,7 @@ export default function ProductsReg() {
           value={providerName}
           onChange={(e) => setProviderName(e.target.value)}
         >
-          <option value="">Todos los proveedores</option>
+          <option value="">{t("Todos los proveedores")}</option>
           {providersArray.map((provider) => (
             <option key={provider.idprovider} value={provider.provider_name}>
               {provider.provider_name}
@@ -143,7 +145,7 @@ export default function ProductsReg() {
         <input
           className="filterSelect"
           type="number"
-          placeholder="cantidad menor que"
+          placeholder={t("cantidad menor que")}
           onChange={(e) => {
             setAmount(e.target.value === "" ? "" : Number(e.target.value));
           }}
@@ -158,20 +160,20 @@ export default function ProductsReg() {
             setProductCode("");
           }}
         >
-          Limpiar filtros
+          {t("Limpiar filtros")}
         </button>
       </section>
 
       <section className="principalSection">
         <ul className="infoList">
           <li className="lineList">
-            <p className="listInfo">Nombre</p>
-            <p className="listInfo">Cantidad</p>
-            <p className="listInfo">Descripcion</p>
-            <p className="listInfo">Categoria</p>
-            <p className="listInfo">Proveedor</p>
-            <p className="listInfo">Nuevo movimiento</p>
-            <p className="listInfo">Eliminar producto</p>
+            <p className="listInfo">{t("Nombre")}</p>
+            <p className="listInfo">{t("Cantidad")}</p>
+            <p className="listInfo">{t("Descripcion")}</p>
+            <p className="listInfo">{t("Categoria")}</p>
+            <p className="listInfo">{t("Proveedor")}</p>
+            <p className="listInfo">{t("Nuevo movimiento")}</p>
+            <p className="listInfo">{t("Eliminar producto")}</p>
           </li>
           {productsArray.map((product) => (
             <li
@@ -179,40 +181,40 @@ export default function ProductsReg() {
               value={product.product_name}
               className="lineList"
             >
-              <p className="listInfo lastInfo" data-label="Nombre">
+              <p className="listInfo lastInfo" data-label={t("Nombre")}>
                 {product.product_name}
               </p>
-              <p className="listInfo lastInfo" data-label="Cantidad">
+              <p className="listInfo lastInfo" data-label={t("Cantidad")}>
                 {product.amount}
               </p>
-              <p className="listInfo lastInfo" data-label="Descripción">
+              <p className="listInfo lastInfo" data-label={t("Descripcion")}>
                 {product.description}
               </p>
-              <p className="listInfo lastInfo" data-label="Categoría">
+              <p className="listInfo lastInfo" data-label={t("Categoria")}>
                 {product.category}
               </p>
-              <p className="listInfo lastInfo" data-label="Proveedor">
+              <p className="listInfo lastInfo" data-label={t("Proveedor")}>
                 {product.provider_name}
               </p>
               <p
                 className="listInfo lastInfo Update"
-                data-label="Acción"
+                data-label={t("Accion")}
                 onClick={() => {
                   setActualProduct(product);
                   setShowFormNewMovement(true);
                 }}
               >
-                Nuevo movimiento
+                {t("Nuevo movimiento")}
               </p>
               <p
                 className="listInfo lastInfo Delete"
-                data-label="Acción"
+                data-label={t("Accion")}
                 onClick={() => {
                   deleteProduct(product.product_name);
                   fetchProducts();
                 }}
               >
-                Eliminar producto
+                {t("Eliminar producto")}
               </p>
             </li>
           ))}

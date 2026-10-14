@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import listCategories from "../categories/listCategories";
 import { mostrarAlerta } from "../../alerts/alert";
+import { useTranslation } from "../../i18n";
 
 interface ClassInterface {
   idcategoria: number;
@@ -36,6 +37,7 @@ export default function AdminMovements() {
   const [finalDate, setFinalDate] = useState("");
   const [movementsArray, setMovementsArray] = useState<MovementInterface[]>([]);
   const [filtersExpanded, setFiltersExpanded] = useState(false);
+  const { t } = useTranslation();
   const categories = async () => {
     const categoryList = await listCategories();
     setCategoriesArray(categoryList);
@@ -102,7 +104,7 @@ export default function AdminMovements() {
   return (
     <div className="mainScreen">
       <header className="headerScreen">
-        <h3 className="tittle">Administrador de movimientos</h3>
+        <h3 className="tittle">{t("Administrador de movimientos")}</h3>
       </header>
       <section
         className={`filterSection movementFilterSection ${filtersExpanded ? "filtersExpanded" : ""}`}
@@ -113,16 +115,16 @@ export default function AdminMovements() {
           aria-expanded={filtersExpanded}
           onClick={() => setFiltersExpanded((expanded) => !expanded)}
         >
-          <span>Filtros</span>
-          <span>{filtersExpanded ? "Ocultar −" : "Mostrar +"}</span>
+          <span>{t("Filtros")}</span>
+          <span>{t(filtersExpanded ? "Ocultar −" : "Mostrar +")}</span>
         </button>
         <select
           className="filterSelect"
           onChange={(e) => setType(e.target.value)}
         >
-          <option value="">seleccione un tipo</option>
-          <option value="entrada">entrada</option>
-          <option value="salida">salida</option>
+          <option value="">{t("seleccione un tipo")}</option>
+          <option value="entrada">{t("entrada")}</option>
+          <option value="salida">{t("salida")}</option>
         </select>
         <select
           className="filterSelect"
@@ -131,7 +133,7 @@ export default function AdminMovements() {
             setProduct("");
           }}
         >
-          <option value="">seleccione una categoria:</option>
+          <option value="">{t("seleccione una categoria:")}</option>
           {categoriesArray.map((category) => (
             <option key={category.idcategoria} value={category.category}>
               {category.category}
@@ -142,7 +144,7 @@ export default function AdminMovements() {
           className="filterSelect"
           onChange={(e) => setProduct(e.target.value)}
         >
-          <option value="">seleccione un producto:</option>
+          <option value="">{t("seleccione un producto:")}</option>
           {productsArray.map((productName) => (
             <option
               key={productName.idproducts}
@@ -155,23 +157,23 @@ export default function AdminMovements() {
         <input
           className="filterSelect"
           type="text"
-          placeholder="código único"
+          placeholder={t("código único")}
           value={productCode}
           onChange={(e) => setProductCode(e.target.value)}
         />
         <p className="filterText filterLabel movementDateLabel">
-          Filtros de fecha (Desde, Hasta):
+          {t("Filtros de fecha (Desde, Hasta):")}
         </p>
         <input
           type="date"
           className="filterSelect"
-          aria-label="Fecha inicial"
+          aria-label={t("Fecha inicial")}
           onChange={(e) => setInitDate(e.target.value)}
         />
         <input
           type="date"
           className="filterSelect"
-          aria-label="Fecha final"
+          aria-label={t("Fecha final")}
           onChange={(e) => setFinalDate(e.target.value)}
         />
         <button
@@ -185,19 +187,19 @@ export default function AdminMovements() {
             setFinalDate("");
           }}
         >
-          Limpiar filtros
+          {t("Limpiar filtros")}
         </button>
       </section>
 
       <section className="principalSection">
         <ul className="infoList">
           <li className="lineList">
-            <p className="listInfo">Tipo</p>
-            <p className="listInfo">Fecha</p>
-            <p className="listInfo">Cantidad</p>
-            <p className="listInfo">Categoria</p>
-            <p className="listInfo">Producto</p>
-            <p className="listInfo">Usuario</p>
+            <p className="listInfo">{t("Tipo")}</p>
+            <p className="listInfo">{t("Fecha")}</p>
+            <p className="listInfo">{t("Cantidad")}</p>
+            <p className="listInfo">{t("Categoria")}</p>
+            <p className="listInfo">{t("Producto")}</p>
+            <p className="listInfo">{t("Usuario")}</p>
           </li>
           {movementsArray.map((movement) => (
             <li
@@ -205,22 +207,22 @@ export default function AdminMovements() {
               value={movement.idmovements}
               className="lineList"
             >
-              <p className="listInfo lastInfo" data-label="Tipo">
-                {movement.movement_type}
+              <p className="listInfo lastInfo" data-label={t("Tipo")}>
+                {t(movement.movement_type)}
               </p>
-              <p className="listInfo lastInfo" data-label="Fecha">
+              <p className="listInfo lastInfo" data-label={t("Fecha")}>
                 {movement.date_movement.split("T")[0]}
               </p>
-              <p className="listInfo lastInfo" data-label="Cantidad">
+              <p className="listInfo lastInfo" data-label={t("Cantidad")}>
                 {movement.amount}
               </p>
-              <p className="listInfo lastInfo" data-label="Categoría">
+              <p className="listInfo lastInfo" data-label={t("Categoria")}>
                 {movement.category}
               </p>
-              <p className="listInfo lastInfo" data-label="Producto">
+              <p className="listInfo lastInfo" data-label={t("Producto")}>
                 {movement.product_name}
               </p>
-              <p className="listInfo lastInfo" data-label="Usuario">
+              <p className="listInfo lastInfo" data-label={t("Usuario")}>
                 {movement.idusers}
               </p>
             </li>

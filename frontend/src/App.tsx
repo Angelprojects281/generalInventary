@@ -16,6 +16,7 @@ import AdminCategory from "./admin/categories/adminCategory";
 import AdminProviders from "./admin/providers/adminProviders";
 import AdminMovements from "./admin/movements/movements";
 import ProductsReg from "./regular/products/productsReg";
+import { useTranslation } from "./i18n";
 
 function BackNavigationGuard() {
   const location = useLocation();
@@ -71,6 +72,7 @@ function BackNavigationGuard() {
 type Theme = "light" | "dark";
 
 function App() {
+  const { language, toggleLanguage, t } = useTranslation();
   const [theme, setTheme] = useState<Theme>(
     document.documentElement.dataset.theme === "dark" ? "dark" : "light",
   );
@@ -90,11 +92,20 @@ function App() {
   return (
     <BrowserRouter>
       <button
+        className="languageToggle"
+        type="button"
+        aria-label={t("Cambiar idioma")}
+        title={t("Cambiar idioma")}
+        onClick={toggleLanguage}
+      >
+        {language === "es" ? "EN" : "ES"}
+      </button>
+      <button
         className="themeToggle"
         type="button"
-        aria-label={`Cambiar a tema ${theme === "dark" ? "claro" : "oscuro"}`}
+        aria-label={`${t("Cambiar a tema")} ${t(theme === "dark" ? "claro" : "oscuro")}`}
         aria-pressed={theme === "dark"}
-        title={`Cambiar a tema ${theme === "dark" ? "claro" : "oscuro"}`}
+        title={`${t("Cambiar a tema")} ${t(theme === "dark" ? "claro" : "oscuro")}`}
         onClick={toggleTheme}
       >
         <span aria-hidden="true">{theme === "dark" ? "☾" : "☀"}</span>

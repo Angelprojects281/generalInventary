@@ -297,10 +297,10 @@ body,
   animation: actionHover 180ms ease-out both;
 }
 
+.languageToggle,
 .themeToggle {
   position: fixed;
   right: 18px;
-  bottom: 18px;
   z-index: 1200;
   display: grid;
   place-items: center;
@@ -317,10 +317,22 @@ body,
   cursor: pointer;
 }
 
+.languageToggle {
+  bottom: 76px;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.themeToggle {
+  bottom: 18px;
+}
+
+.languageToggle:hover,
 .themeToggle:hover {
   background: var(--color-surface-muted);
 }
 
+.languageToggle:focus-visible,
 .themeToggle:focus-visible {
   outline: 2px solid var(--color-ink);
   outline-offset: 3px;

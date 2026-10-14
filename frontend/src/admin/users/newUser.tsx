@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { mostrarAlerta } from "../../alerts/alert";
+import { useTranslation } from "../../i18n";
 
 interface formProps {
   onAcept: () => void;
@@ -10,6 +11,7 @@ function FormUsers({ onAcept, onCancel }: formProps) {
   const [idusers, setIdusers] = useState("");
   const [password, setPassword] = useState("");
   const [rol, setRol] = useState("");
+  const { t } = useTranslation();
 
   const newUser = async () => {
     if (!idusers || !password || !rol) {
@@ -48,10 +50,10 @@ function FormUsers({ onAcept, onCancel }: formProps) {
 
   return (
     <div className="formContainer">
-      <p className="listInfo">Nuevo usuario</p>
+      <p className="listInfo">{t("Nuevo usuario")}</p>
       <input
         className="userInput"
-        placeholder="usuario"
+        placeholder={t("usuario")}
         type="text"
         onChange={(e) => {
           setIdusers(e.target.value);
@@ -59,7 +61,7 @@ function FormUsers({ onAcept, onCancel }: formProps) {
       ></input>
       <input
         className="userInput"
-        placeholder="contraseña"
+        placeholder={t("contraseña")}
         type="password"
         onChange={(e) => {
           setPassword(e.target.value);
@@ -71,17 +73,17 @@ function FormUsers({ onAcept, onCancel }: formProps) {
           setRol(e.target.value);
         }}
       >
-        <option value="">seleccione un rol</option>
-        <option value="admin">administrador</option>
-        <option value="regular">regular</option>
+        <option value="">{t("seleccione un rol")}</option>
+        <option value="admin">{t("administrador")}</option>
+        <option value="regular">{t("regular")}</option>
       </select>
 
       <section className="buttonsSection">
         <button className="optionButton" onClick={newUser}>
-          Crear
+          {t("Crear")}
         </button>
         <button className="optionButton secundary" onClick={onCancel}>
-          Cancelar
+          {t("Cancelar")}
         </button>
       </section>
     </div>

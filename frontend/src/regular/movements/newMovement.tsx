@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { mostrarAlerta } from "../../alerts/alert";
 import { jwtDecode } from "jwt-decode";
+import { useTranslation } from "../../i18n";
 
 interface formProps {
   onAcept: () => void;
@@ -24,6 +25,7 @@ function FormMovement({
 }: formProps) {
   const [type, setType] = useState("");
   const [amount, setAmount] = useState<number | "">("");
+  const { t } = useTranslation();
 
   const tokenLocal = localStorage.getItem("token");
 
@@ -74,11 +76,11 @@ function FormMovement({
   return (
     <div className="formContainer">
       <p className="listInfo">
-        Nuevo Movimiento para el producto {product_name}
+        {t("Nuevo Movimiento para el producto")} {product_name}
       </p>
       <input
         className="userInput"
-        placeholder="cantidad"
+        placeholder={t("cantidad")}
         type="number"
         onChange={(e) => {
           setAmount(Number(e.target.value));
@@ -86,17 +88,17 @@ function FormMovement({
       ></input>
 
       <select className="userInput" onChange={(e) => setType(e.target.value)}>
-        <option value="">seleccione el tipo:</option>
-        <option value="entrada">Entrada</option>
-        <option value="salida">Salida</option>
+        <option value="">{t("seleccione el tipo:")}</option>
+        <option value="entrada">{t("Entrada")}</option>
+        <option value="salida">{t("Salida")}</option>
       </select>
 
       <section className="buttonsSection">
         <button className="optionButton" onClick={newMovement}>
-          Crear
+          {t("Crear")}
         </button>
         <button className="optionButton secundary" onClick={onCancel}>
-          Cancelar
+          {t("Cancelar")}
         </button>
       </section>
     </div>
