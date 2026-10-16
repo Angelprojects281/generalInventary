@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { mostrarAlerta } from "../../alerts/alert";
+import { mostrarAlerta, mostrarConfirmacion } from "../../alerts/alert";
 import listCategories from "../../admin/categories/listCategories";
 import listProviders, {
   type ProviderInterface,
@@ -9,6 +9,15 @@ import { useTranslation } from "../../i18n";
 interface formProps {
   onAcept: () => void;
   onCancel: () => void;
+  product?: {
+    idproducts: number;
+    product_code: string;
+    product_name: string;
+    amount: number;
+    description: string;
+    category: string;
+    provider_name: string;
+  };
 }
 
 interface ClassInterface {
@@ -16,17 +25,24 @@ interface ClassInterface {
   category: string;
 }
 
-function FormProduct({ onAcept, onCancel }: formProps) {
-  const [product_code, setProductCode] = useState("");
-  const [product_name, setProductName] = useState("");
-  const [amount, setAmount] = useState<number | "">("");
-  const [description, setDescription] = useState("");
-  const [categoryName, setCategory] = useState("");
-  const [providerName, setProviderName] = useState("");
+function FormProduct({ onAcept, onCancel, product }: formProps) {
+  const [product_code, setProductCode] = useState(
+    product?.product_code ?? "",
+  );
+  const [product_name, setProductName] = useState(
+    product?.product_name ?? "",
+  );
+  const [amount, setAmount] = useState<number | "">(product?.amount ?? "");
+  const [description, setDescription] = useState(product?.description ?? "");
+  const [categoryName, setCategory] = useState(product?.category ?? "");
+  const [providerName, setProviderName] = useState(
+    product?.provider_name ?? "",
+  );
 
   const [categotyArray, setCategoriesArray] = useState<ClassInterface[]>([]);
   const [providersArray, setProvidersArray] = useState<ProviderInterface[]>([]);
   const { t } = useTranslation();
+  const esEdicion = Boolean(product);
 
   const fetchCategories = async () => {
     const categoryList = await listCategories();
@@ -82,6 +98,63 @@ function FormProduct({ onAcept, onCancel }: formProps) {
     );
   };
 
+  const editProduct = async () => {
+    if (
+      !product ||
+      !product_code.trim() ||
+      !product_name ||
+      amount === "" ||
+      !description ||
+      !categoryName ||
+      !providerName
+    ) {
+      mostrarAlerta(
+        "error",
+        "No se pudieron guardar los cambios",
+        "Complete todos los campos obligatorios.",
+      );
+      return;
+    }
+
+    const result = await mostrarConfirmacion(
+      "question",
+      "¿Deseas guardar los cambios?",
+      "Verifica los datos antes de guardar.",
+    );
+
+    if (!result.isConfirmed) {
+      return;
+    }
+
+    const res = await fetch("http://localhost:3000/updateProduct", {
+      method: "PUT",
+      headers: { "Content-type": "application/json" },
+      body: JSON.stringify({
+        idproducts: product.idproducts,
+        product_code: product_code.trim(),
+        product_name,
+        amount,
+        description,
+        categoryName,
+        provider_name: providerName,
+      }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      mostrarAlerta("error", "No se pudieron guardar los cambios", data.error);
+      return;
+    }
+    onAcept();
+
+    mostrarAlerta(
+      "success",
+      "Cambios guardados",
+      `El producto ${product_name} se actualizó correctamente.`,
+    );
+  };
+
   useEffect(() => {
     fetchCategories();
     fetchProviders();
@@ -89,7 +162,9 @@ function FormProduct({ onAcept, onCancel }: formProps) {
 
   return (
     <div className="formContainer">
-      <p className="listInfo">{t("Nuevo producto")}</p>
+      <p className="listInfo">
+        {esEdicion ? t("Editar producto") : t("Nuevo producto")}
+      </p>
       <input
         className="userInput"
         placeholder={t("código único")}
@@ -102,6 +177,7 @@ function FormProduct({ onAcept, onCancel }: formProps) {
         className="userInput"
         placeholder={t("producto")}
         type="text"
+        value={product_name}
         onChange={(e) => {
           setProductName(e.target.value);
         }}
@@ -110,6 +186,7 @@ function FormProduct({ onAcept, onCancel }: formProps) {
         className="userInput"
         placeholder={t("cantidad")}
         type="number"
+        value={amount}
         onChange={(e) => {
           setAmount(Number(e.target.value));
         }}
@@ -118,6 +195,7 @@ function FormProduct({ onAcept, onCancel }: formProps) {
         className="userInput"
         placeholder={t("descripcion")}
         type="text"
+        value={description}
         onChange={(e) => {
           setDescription(e.target.value);
         }}
@@ -125,6 +203,7 @@ function FormProduct({ onAcept, onCancel }: formProps) {
 
       <select
         className="userInput"
+        value={categoryName}
         onChange={(e) => setCategory(e.target.value)}
       >
         <option value="">{t("seleccione una categoria:")}</option>
@@ -149,8 +228,11 @@ function FormProduct({ onAcept, onCancel }: formProps) {
       </select>
 
       <section className="buttonsSection">
-        <button className="optionButton" onClick={newProduct}>
-          {t("Crear")}
+        <button
+          className="optionButton"
+          onClick={esEdicion ? editProduct : newProduct}
+        >
+          {esEdicion ? t("Guardar") : t("Crear")}
         </button>
         <button className="optionButton secundary" onClick={onCancel}>
           {t("Cancelar")}

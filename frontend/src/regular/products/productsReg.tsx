@@ -10,6 +10,7 @@ import { useTranslation } from "../../i18n";
 
 interface ProductInterface {
   idproducts: number;
+  product_code: string;
   product_name: string;
   amount: number;
   description: string;
@@ -35,6 +36,9 @@ export default function ProductsReg() {
   );
   const [showFormNewProduct, setShowFormNewProduct] = useState(false);
   const [showFormNewMovement, setShowFormNewMovement] = useState(false);
+  const [productToEdit, setProductToEdit] = useState<ProductInterface | null>(
+    null,
+  );
   const [filtersExpanded, setFiltersExpanded] = useState(false);
   const { t } = useTranslation();
 
@@ -78,11 +82,13 @@ export default function ProductsReg() {
   const handleCloseForm = () => {
     setShowFormNewProduct(false);
     setShowFormNewMovement(false);
+    setProductToEdit(null);
   };
 
   const successfulCreation = () => {
     setShowFormNewProduct(false);
     setShowFormNewMovement(false);
+    setProductToEdit(null);
     fetchProducts();
   };
 
@@ -92,7 +98,10 @@ export default function ProductsReg() {
         <h3 className="tittle">{t("Administrador de productos")}</h3>
         <section
           className="actionButton"
-          onClick={() => setShowFormNewProduct(true)}
+          onClick={() => {
+            setProductToEdit(null);
+            setShowFormNewProduct(true);
+          }}
         >
           <p>{t("Nuevo producto +")}</p>
         </section>
@@ -172,6 +181,7 @@ export default function ProductsReg() {
             <p className="listInfo">{t("Descripcion")}</p>
             <p className="listInfo">{t("Categoria")}</p>
             <p className="listInfo">{t("Proveedor")}</p>
+            <p className="listInfo">{t("Editar producto")}</p>
             <p className="listInfo">{t("Nuevo movimiento")}</p>
             <p className="listInfo">{t("Eliminar producto")}</p>
           </li>
@@ -195,6 +205,16 @@ export default function ProductsReg() {
               </p>
               <p className="listInfo lastInfo" data-label={t("Proveedor")}>
                 {product.provider_name}
+              </p>
+              <p
+                className="listInfo lastInfo Update"
+                data-label={t("Accion")}
+                onClick={() => {
+                  setProductToEdit(product);
+                  setShowFormNewProduct(true);
+                }}
+              >
+                {t("Editar producto")}
               </p>
               <p
                 className="listInfo lastInfo Update"
@@ -232,6 +252,7 @@ export default function ProductsReg() {
         <FormProduct
           onAcept={successfulCreation}
           onCancel={handleCloseForm}
+          product={productToEdit ?? undefined}
         ></FormProduct>
       )}
     </div>

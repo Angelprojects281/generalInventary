@@ -17,6 +17,10 @@ const filterMovements = require("../controllers/movements/filterMovements");
 const newProvider = require("../controllers/providers/newProvider");
 const listProviders = require("../controllers/providers/listProviders");
 const deleteProvider = require("../controllers/providers/deleteProvider");
+const updateUser = require("../controllers/users/updateUser");
+const updateCategory = require("../controllers/category/updateCategory");
+const updateProvider = require("../controllers/providers/updateProvider");
+const updateProduct = require("../controllers/products/updateProduct");
 
 router.post("/newUser", newUser);
 
@@ -49,5 +53,13 @@ router.post("/newProvider", newProvider);
 router.get("/listProviders", listProviders);
 
 router.delete("/deleteProvider/:provider_name", deleteProvider);
+
+router.put("/updateUser", updateUser);
+
+router.put("/updateCategory", updateCategory);
+
+router.put("/updateProvider", updateProvider);
+
+router.put("/updateProduct", updateProduct);
 
 module.exports = router;

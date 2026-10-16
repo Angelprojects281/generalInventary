@@ -264,6 +264,33 @@ const translations: Record<string, string> = {
   "Usuario creado correctamente.": "User created successfully.",
   "Usuario eliminado correctamente.": "User deleted successfully.",
   "Contraseña actualizada correctamente.": "Password updated successfully.",
+  "Editar usuario": "Edit User",
+  "Editar categoria": "Edit Category",
+  "Editar proveedor": "Edit Provider",
+  "Editar producto": "Edit Product",
+  Guardar: "Save",
+  "¿Deseas guardar los cambios?": "Do you want to save the changes?",
+  "Verifica los datos antes de guardar.": "Check the data before saving.",
+  "Cambios guardados": "Changes saved",
+  "No se pudieron guardar los cambios": "Changes could not be saved",
+  "Usuario actualizado correctamente.": "User updated successfully.",
+  "Categoría actualizada correctamente.": "Category updated successfully.",
+  "Proveedor actualizado correctamente.": "Provider updated successfully.",
+  "Producto actualizado correctamente.": "Product updated successfully.",
+  "No se pudo verificar el usuario. Inténtelo de nuevo.":
+    "Could not verify the user. Please try again.",
+  "No se pudo actualizar el usuario. Inténtelo de nuevo.":
+    "Could not update the user. Please try again.",
+  "No se pudo actualizar la categoría. Inténtelo de nuevo.":
+    "Could not update the category. Please try again.",
+  "No se pudo actualizar el proveedor. Inténtelo de nuevo.":
+    "Could not update the provider. Please try again.",
+  "No se pudo actualizar el producto. Inténtelo de nuevo.":
+    "Could not update the product. Please try again.",
+  "No se puede editar el proveedor predeterminado.":
+    "The default provider cannot be edited.",
+  "El nombre de la categoría no puede superar los 50 caracteres.":
+    "The category name cannot exceed 50 characters.",
 };
 
 const dynamicTranslations: [RegExp, string][] = [
@@ -275,6 +302,10 @@ const dynamicTranslations: [RegExp, string][] = [
   [/^El usuario (.+) se eliminó correctamente\.$/, "User $1 was deleted successfully."],
   [/^El proveedor (.+) se creó correctamente\.$/, "Provider $1 was created successfully."],
   [/^El proveedor (.+) y sus productos asociados se eliminaron\.$/, "Provider $1 and its associated products were deleted."],
+  [/^El usuario (.+) se actualizó correctamente\.$/, "User $1 was updated successfully."],
+  [/^La categoría (.+) se actualizó correctamente\.$/, "Category $1 was updated successfully."],
+  [/^El proveedor (.+) se actualizó correctamente\.$/, "Provider $1 was updated successfully."],
+  [/^El producto (.+) se actualizó correctamente\.$/, "Product $1 was updated successfully."],
 ];
 
 function getStoredLanguage(): Language {

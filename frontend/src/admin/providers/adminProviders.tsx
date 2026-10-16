@@ -7,6 +7,8 @@ import { useTranslation } from "../../i18n";
 export default function AdminProviders() {
   const [providers, setProviders] = useState<ProviderInterface[]>([]);
   const [showForm, setShowForm] = useState(false);
+  const [providerToEdit, setProviderToEdit] =
+    useState<ProviderInterface | null>(null);
   const { t } = useTranslation();
 
   const fetchProviders = async () => {
@@ -27,6 +29,7 @@ export default function AdminProviders() {
 
   const handleCreate = () => {
     setShowForm(false);
+    setProviderToEdit(null);
     fetchProviders();
   };
 
@@ -40,7 +43,13 @@ export default function AdminProviders() {
     <div className="mainScreen">
       <header className="headerScreen">
         <h3 className="tittle">{t("Administrador de proveedores")}</h3>
-        <section className="actionButton" onClick={() => setShowForm(true)}>
+        <section
+          className="actionButton"
+          onClick={() => {
+            setProviderToEdit(null);
+            setShowForm(true);
+          }}
+        >
           <p>{t("Nuevo proveedor +")}</p>
         </section>
       </header>
@@ -50,6 +59,7 @@ export default function AdminProviders() {
             <p className="listInfo">{t("Numero")}</p>
             <p className="listInfo">{t("Proveedor")}</p>
             <p className="listInfo">{t("Contacto")}</p>
+            <p className="listInfo">{t("Editar proveedor")}</p>
             <p className="listInfo">{t("Eliminar proveedor")}</p>
           </li>
           {providers.map((provider, index) => (
@@ -63,6 +73,22 @@ export default function AdminProviders() {
               <p className="listInfo lastInfo" data-label={t("Contacto")}>
                 {provider.contact}
               </p>
+              {provider.idprovider === 0 ? (
+                <p className="listInfo lastInfo" data-label={t("Accion")}>
+                  —
+                </p>
+              ) : (
+                <p
+                  className="listInfo lastInfo Update"
+                  data-label={t("Accion")}
+                  onClick={() => {
+                    setProviderToEdit(provider);
+                    setShowForm(true);
+                  }}
+                >
+                  {t("Editar proveedor")}
+                </p>
+              )}
               {provider.idprovider === 0 ? (
                 <p className="listInfo lastInfo" data-label={t("Estado")}>
                   {t("Proveedor protegido")}
@@ -83,7 +109,11 @@ export default function AdminProviders() {
       {showForm && (
         <FormProvider
           onAcept={handleCreate}
-          onCancel={() => setShowForm(false)}
+          onCancel={() => {
+            setShowForm(false);
+            setProviderToEdit(null);
+          }}
+          provider={providerToEdit ?? undefined}
         />
       )}
     </div>

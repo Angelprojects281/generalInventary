@@ -1,17 +1,19 @@
 import { useState } from "react";
-import { mostrarAlerta } from "../../alerts/alert";
+import { mostrarAlerta, mostrarConfirmacion } from "../../alerts/alert";
 import { useTranslation } from "../../i18n";
 
 interface formProps {
   onAcept: () => void;
   onCancel: () => void;
+  user?: { idusers: string; rol: string };
 }
 
-function FormUsers({ onAcept, onCancel }: formProps) {
-  const [idusers, setIdusers] = useState("");
+function FormUsers({ onAcept, onCancel, user }: formProps) {
+  const [idusers, setIdusers] = useState(user?.idusers ?? "");
   const [password, setPassword] = useState("");
-  const [rol, setRol] = useState("");
+  const [rol, setRol] = useState(user?.rol ?? "");
   const { t } = useTranslation();
+  const esEdicion = Boolean(user);
 
   const newUser = async () => {
     if (!idusers || !password || !rol) {
@@ -48,27 +50,78 @@ function FormUsers({ onAcept, onCancel }: formProps) {
     );
   };
 
+  const editUser = async () => {
+    if (!user || !idusers || !rol) {
+      mostrarAlerta(
+        "error",
+        "No se pudieron guardar los cambios",
+        "Complete todos los campos obligatorios.",
+      );
+      return;
+    }
+
+    const result = await mostrarConfirmacion(
+      "question",
+      "¿Deseas guardar los cambios?",
+      "Verifica los datos antes de guardar.",
+    );
+
+    if (!result.isConfirmed) {
+      return;
+    }
+
+    const res = await fetch("http://localhost:3000/updateUser", {
+      method: "PUT",
+      headers: { "Content-type": "application/json" },
+      body: JSON.stringify({
+        idusers: user.idusers,
+        newIdusers: idusers,
+        rol,
+      }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      mostrarAlerta("error", "No se pudieron guardar los cambios", data.error);
+      return;
+    }
+    onAcept();
+
+    mostrarAlerta(
+      "success",
+      "Cambios guardados",
+      `El usuario ${idusers} se actualizó correctamente.`,
+    );
+  };
+
   return (
     <div className="formContainer">
-      <p className="listInfo">{t("Nuevo usuario")}</p>
+      <p className="listInfo">
+        {esEdicion ? t("Editar usuario") : t("Nuevo usuario")}
+      </p>
       <input
         className="userInput"
         placeholder={t("usuario")}
         type="text"
+        value={idusers}
         onChange={(e) => {
           setIdusers(e.target.value);
         }}
       ></input>
-      <input
-        className="userInput"
-        placeholder={t("contraseña")}
-        type="password"
-        onChange={(e) => {
-          setPassword(e.target.value);
-        }}
-      ></input>
+      {!esEdicion && (
+        <input
+          className="userInput"
+          placeholder={t("contraseña")}
+          type="password"
+          onChange={(e) => {
+            setPassword(e.target.value);
+          }}
+        ></input>
+      )}
       <select
         className="userInput"
+        value={rol}
         onChange={(e) => {
           setRol(e.target.value);
         }}
@@ -79,8 +132,8 @@ function FormUsers({ onAcept, onCancel }: formProps) {
       </select>
 
       <section className="buttonsSection">
-        <button className="optionButton" onClick={newUser}>
-          {t("Crear")}
+        <button className="optionButton" onClick={esEdicion ? editUser : newUser}>
+          {esEdicion ? t("Guardar") : t("Crear")}
         </button>
         <button className="optionButton secundary" onClick={onCancel}>
           {t("Cancelar")}

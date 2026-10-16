@@ -16,6 +16,7 @@ export default function AdminUsers() {
   const [showFormUser, setShowForm] = useState(false);
   const [showFormUpdate, setShowFormUpdate] = useState(false);
   const [idUsuario, setIdUsuario] = useState("");
+  const [userToEdit, setUserToEdit] = useState<usersInterface | null>(null);
   const [filtersExpanded, setFiltersExpanded] = useState(false);
   const { t } = useTranslation();
 
@@ -40,6 +41,7 @@ export default function AdminUsers() {
   const closeForm = () => {
     setShowForm(false);
     setShowFormUpdate(false);
+    setUserToEdit(null);
   };
 
   const usuarioCreado = () => {
@@ -54,6 +56,7 @@ export default function AdminUsers() {
         <section
           className="actionButton"
           onClick={() => {
+            setUserToEdit(null);
             setShowForm(true);
           }}
         >
@@ -88,6 +91,7 @@ export default function AdminUsers() {
           <li className="lineList">
             <p className="listInfo">{t("Usuario")}</p>
             <p className="listInfo">{t("Rol")}</p>
+            <p className="listInfo">{t("Editar usuario")}</p>
             <p className="listInfo">{t("Cambiar contraseña")}</p>
             <p className="listInfo">{t("Eliminar usuario")}</p>
           </li>
@@ -98,6 +102,16 @@ export default function AdminUsers() {
               </p>
               <p className="listInfo lastInfo" data-label={t("Rol")}>
                 {t(users.rol === "admin" ? "administrador" : "regular")}
+              </p>
+              <p
+                className="listInfo lastInfo Update"
+                data-label={t("Accion")}
+                onClick={() => {
+                  setUserToEdit(users);
+                  setShowForm(true);
+                }}
+              >
+                {t("Editar usuario")}
               </p>
               <p
                 className="listInfo lastInfo Update"
@@ -124,7 +138,11 @@ export default function AdminUsers() {
         </ul>
       </section>
       {showFormUser && (
-        <FormUsers onAcept={usuarioCreado} onCancel={closeForm} />
+        <FormUsers
+          onAcept={usuarioCreado}
+          onCancel={closeForm}
+          user={userToEdit ?? undefined}
+        />
       )}
 
       {showFormUpdate && (

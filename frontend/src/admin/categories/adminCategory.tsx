@@ -12,6 +12,9 @@ interface ClassInterface {
 export default function AdminCategory() {
   const [Category, setCategory] = useState<ClassInterface[]>([]);
   const [showForm, setShowForm] = useState(false);
+  const [categoryToEdit, setCategoryToEdit] = useState<ClassInterface | null>(
+    null,
+  );
   const { t } = useTranslation();
 
   const fetchData = async () => {
@@ -24,18 +27,26 @@ export default function AdminCategory() {
 
   const handleFormAcept = () => {
     setShowForm(false);
+    setCategoryToEdit(null);
     fetchData();
   };
 
   const handleFormCancel = () => {
     setShowForm(false);
+    setCategoryToEdit(null);
   };
 
   return (
     <div className="mainScreen">
       <header className="headerScreen">
         <h3 className="tittle">{t("Administrador de categorias")}</h3>
-        <section className="actionButton" onClick={() => setShowForm(true)}>
+        <section
+          className="actionButton"
+          onClick={() => {
+            setCategoryToEdit(null);
+            setShowForm(true);
+          }}
+        >
           <p>{t("Nueva categoria +")}</p>
         </section>
       </header>
@@ -44,6 +55,7 @@ export default function AdminCategory() {
           <li className="lineList">
             <p className="listInfo">{t("Numero")}</p>
             <p className="listInfo">{t("Categoria")}</p>
+            <p className="listInfo">{t("Editar categoria")}</p>
             <p className="listInfo">{t("Eliminar categoria")}</p>
           </li>
           {Category.map((category, index) => (
@@ -57,6 +69,16 @@ export default function AdminCategory() {
               </p>
               <p className="listInfo lastInfo" data-label={t("Categoria")}>
                 {category.category}
+              </p>
+              <p
+                className="listInfo lastInfo Update"
+                data-label={t("Accion")}
+                onClick={() => {
+                  setCategoryToEdit(category);
+                  setShowForm(true);
+                }}
+              >
+                {t("Editar categoria")}
               </p>
               <p
                 className="listInfo lastInfo Delete"
@@ -73,7 +95,11 @@ export default function AdminCategory() {
         </ul>
       </section>
       {showForm && (
-        <FormCategory onAcept={handleFormAcept} onCancel={handleFormCancel} />
+        <FormCategory
+          onAcept={handleFormAcept}
+          onCancel={handleFormCancel}
+          category={categoryToEdit ?? undefined}
+        />
       )}
     </div>
   );
