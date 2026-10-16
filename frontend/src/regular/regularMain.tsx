@@ -1,11 +1,11 @@
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "../i18n";
+import { confirmarCierreSesion } from "../session/session";
 export default function MainRegular() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const handleLogOut = async () => {
-    localStorage.removeItem("token");
-    navigate("/", { replace: true });
+    await confirmarCierreSesion(navigate);
   };
   return (
     <div className="mainScreen">

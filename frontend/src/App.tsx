@@ -16,12 +16,20 @@ import AdminCategory from "./admin/categories/adminCategory";
 import AdminProviders from "./admin/providers/adminProviders";
 import AdminMovements from "./admin/movements/movements";
 import ProductsReg from "./regular/products/productsReg";
+import InactivityTimer from "./session/inactivityTimer";
+import { confirmarCierreSesion } from "./session/session";
 import { useTranslation } from "./i18n";
 
 function BackNavigationGuard() {
   const location = useLocation();
   const navigate = useNavigate();
   const historyIndex = useRef<number | null>(null);
+  const closingDialogOpen = useRef(false);
+  const navigateRef = useRef(navigate);
+
+  useEffect(() => {
+    navigateRef.current = navigate;
+  }, [navigate]);
 
   useEffect(() => {
     const currentIndex = window.history.state?.idx;
@@ -38,15 +46,35 @@ function BackNavigationGuard() {
       historyIndex.current =
         typeof nextIndex === "number" ? nextIndex : historyIndex.current;
 
-      if (wentBack) {
-        localStorage.removeItem("token");
-        navigate("/", { replace: true });
+      if (!wentBack) {
+        return;
       }
+
+      if (!localStorage.getItem("token")) {
+        navigateRef.current("/", { replace: true });
+        return;
+      }
+
+      if (closingDialogOpen.current) {
+        return;
+      }
+
+      closingDialogOpen.current = true;
+      confirmarCierreSesion(navigateRef.current).then((sessionClosed) => {
+        closingDialogOpen.current = false;
+
+        if (!sessionClosed) {
+          window.history.forward();
+        }
+      });
     };
 
+    // El listener se adjunta una sola vez: si se readjunta en cada render, el
+    // router remueve el listener durante el despacho del propio popstate y el
+    // navegador lo omite antes de invocarlo.
     window.addEventListener("popstate", handlePopState);
     return () => window.removeEventListener("popstate", handlePopState);
-  }, [navigate]);
+  }, []);
 
   useEffect(() => {
     const handlePageShow = (event: PageTransitionEvent) => {
@@ -61,7 +89,13 @@ function BackNavigationGuard() {
 
   useEffect(() => {
     const currentIndex = window.history.state?.idx;
-    if (typeof currentIndex === "number") {
+    // Solo se actualiza si el índice avanza (push o "adelante"). Si el router
+    // procesa un popstate antes que el handler, sobrescribir hacia atrás haría
+    // que wentBack fuera siempre false y la confirmación nunca apareciera.
+    if (
+      typeof currentIndex === "number" &&
+      (historyIndex.current === null || currentIndex > historyIndex.current)
+    ) {
       historyIndex.current = currentIndex;
     }
   }, [location.pathname]);
@@ -111,6 +145,7 @@ function App() {
         <span aria-hidden="true">{theme === "dark" ? "☾" : "☀"}</span>
       </button>
       <BackNavigationGuard />
+      <InactivityTimer />
       <Routes>
         <Route path="/" element={<Login />} />
         <Route

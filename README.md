@@ -219,9 +219,9 @@ npm run preview
 6. Según el valor de `rol`:
    - `admin`: accede al panel de usuarios, categorías y movimientos.
    - `regular`: accede al panel de productos y al registro de movimientos desde la gestión de productos.
-7. Para cerrar sesión, utiliza el botón correspondiente. El token se elimina de `localStorage`.
+7. Para cerrar sesión, utiliza el botón correspondiente; se pedirá confirmación antes de salir. El token se elimina de `localStorage`.
 
-El frontend también elimina el token al volver atrás en el historial del navegador y al cargar nuevamente la pantalla de inicio de sesión.
+Al volver atrás en el historial del navegador también se pide confirmación antes de cerrar la sesión; si se confirma, el token se elimina y no se puede volver con los botones del navegador. El token solo se elimina al confirmar el cierre (botón de salida o botón atrás) o automáticamente a los 20 minutos de inactividad, momento en el que se muestra un aviso al usuario.
 
 ## Base de datos
 

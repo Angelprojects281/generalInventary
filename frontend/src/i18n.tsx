@@ -291,6 +291,12 @@ const translations: Record<string, string> = {
     "The default provider cannot be edited.",
   "El nombre de la categoría no puede superar los 50 caracteres.":
     "The category name cannot exceed 50 characters.",
+  "¿Deseas cerrar sesión?": "Do you want to log out?",
+  "Tendrás que iniciar sesión de nuevo para acceder.":
+    "You will have to log in again to access.",
+  "Sesión cerrada por inactividad": "Session closed due to inactivity",
+  "La sesión se cerró automáticamente después de 20 minutos de inactividad.":
+    "The session was automatically closed after 20 minutes of inactivity.",
 };
 
 const dynamicTranslations: [RegExp, string][] = [
