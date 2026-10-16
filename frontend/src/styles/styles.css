@@ -441,6 +441,7 @@ body:has(.formContainer)::before {
   width: min(680px, calc(100vw - 32px));
   box-sizing: border-box;
   max-height: 90vh;
+  max-height: 90dvh;
   overflow-y: auto;
   animation: formEnter 260ms cubic-bezier(0.2, 0.75, 0.25, 1) both;
 }
@@ -486,6 +487,17 @@ body:has(.formContainer)::before {
   color: var(--color-ink);
   box-shadow: 0 16px 48px rgb(0 0 0 / 24%);
   max-height: 90vh;
+}
+
+/* Botones de las alertas: separación entre ellos y anulación de los
+   márgenes heredados de .mainButton (margin-top: 100px) que aplastaban
+   el bloque de acciones dentro del diálogo. */
+.alertContainer .swal2-actions {
+  gap: 12px;
+}
+
+.alertContainer .swal2-actions .mainButton {
+  margin: 0;
 }
 
 .mainScreen > .headerScreen > .actionButton,
@@ -679,6 +691,42 @@ body:has(.formContainer)::before {
   to {
     opacity: 1;
     transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+/* Formularios compactos en pantallas estrechas o bajas (móvil vertical y
+   celular apaisado): el formulario medía más que el contenedor y "Cancelar"
+   quedaba cortado contra el borde inferior. El espaciado entre campos lo da
+   el gap del grid, así que se elimina el margin-top de los campos. */
+@media (max-width: 680px), (max-height: 500px) {
+  .formContainer {
+    gap: 16px;
+    padding-bottom: 36px;
+  }
+
+  .formContainer > .userInput {
+    margin-top: 0;
+    padding: 12px;
+  }
+
+  .formContainer > .buttonsSection > .optionButton {
+    min-height: 44px;
+    margin-top: 14px;
+  }
+
+  .formContainer > .buttonsSection > .optionButton:first-child {
+    margin-top: 0;
+  }
+}
+
+/* Teléfonos muy angostos (320px): el formulario aún no cabía del todo. */
+@media (max-width: 360px) {
+  .formContainer {
+    gap: 14px;
+  }
+
+  .formContainer > .userInput {
+    padding: 10px;
   }
 }
 
