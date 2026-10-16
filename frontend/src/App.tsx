@@ -55,6 +55,13 @@ function BackNavigationGuard() {
         return;
       }
 
+      // La confirmación solo aplica cuando la vuelta atrás sale de la app
+      // hacia el login. Las rutas internas (panel, productos, etc.) navegan
+      // sin preguntar, ya que no cierran la sesión.
+      if (window.location.pathname !== "/") {
+        return;
+      }
+
       if (closingDialogOpen.current) {
         return;
       }

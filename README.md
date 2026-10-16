@@ -221,7 +221,7 @@ npm run preview
    - `regular`: accede al panel de productos y al registro de movimientos desde la gestión de productos.
 7. Para cerrar sesión, utiliza el botón correspondiente; se pedirá confirmación antes de salir. El token se elimina de `localStorage`.
 
-Al volver atrás en el historial del navegador también se pide confirmación antes de cerrar la sesión; si se confirma, el token se elimina y no se puede volver con los botones del navegador. El token solo se elimina al confirmar el cierre (botón de salida o botón atrás) o automáticamente a los 20 minutos de inactividad, momento en el que se muestra un aviso al usuario.
+Al volver atrás en el historial del navegador hacia la pantalla de inicio de sesión también se pide confirmación antes de cerrar la sesión; las vueltas atrás dentro de la aplicación (por ejemplo, de productos al panel) navegan normalmente sin preguntar. Si se confirma el cierre, el token se elimina y no se puede volver con los botones del navegador. El token solo se elimina al confirmar el cierre (botón de salida o botón atrás) o automáticamente a los 20 minutos de inactividad, momento en el que se muestra un aviso al usuario.
 
 ## Base de datos
 
