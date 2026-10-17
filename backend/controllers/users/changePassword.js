@@ -3,9 +3,10 @@ const bcrypt = require("bcrypt");
 const zxcvbn = require("zxcvbn");
 
 const changePassword = async (req, res) => {
-  const { idusers, newPassword, confirmPassword } = req.body;
+  const { currentPassword, newPassword, confirmPassword } = req.body;
+  const idusers = req.user.idusers;
 
-  if (!idusers || !newPassword || !confirmPassword) {
+  if (!currentPassword || !newPassword || !confirmPassword) {
     return res.status(400).json({
       error: "Complete todos los campos obligatorios.",
     });
@@ -25,27 +26,48 @@ const changePassword = async (req, res) => {
     });
   }
 
-  const hashedPassword = bcrypt.hashSync(newPassword, 10);
+  const accountQuery = "SELECT * FROM users WHERE BINARY idusers = ?";
 
-  const updatePasswordQuery =
-    "UPDATE users SET password = ? WHERE BINARY idusers = ?";
-
-  db.query(updatePasswordQuery, [hashedPassword, idusers], (err, results) => {
+  db.query(accountQuery, [idusers], (err, results) => {
     if (err) {
       return res.status(500).json({
-        error: "No se pudo actualizar la contraseña. Inténtelo de nuevo.",
+        error: "No se pudo verificar la cuenta. Inténtelo de nuevo.",
       });
     }
 
-    if (results.affectedRows === 0) {
+    if (results.length === 0) {
       return res.status(400).json({
-        error: "No se encontró el usuario.",
+        error: "La cuenta no existe o ya fue eliminada.",
       });
     }
 
-    return res
-      .status(200)
-      .json({ message: "Contraseña actualizada correctamente." });
+    const currentPasswordMatch = bcrypt.compareSync(
+      currentPassword,
+      results[0].password,
+    );
+
+    if (!currentPasswordMatch) {
+      return res.status(400).json({
+        error: "La contraseña actual es incorrecta.",
+      });
+    }
+
+    const hashedPassword = bcrypt.hashSync(newPassword, 10);
+
+    const updatePasswordQuery =
+      "UPDATE users SET password = ? WHERE BINARY idusers = ?";
+
+    db.query(updatePasswordQuery, [hashedPassword, idusers], (err, results) => {
+      if (err) {
+        return res.status(500).json({
+          error: "No se pudo actualizar la contraseña. Inténtelo de nuevo.",
+        });
+      }
+
+      return res
+        .status(200)
+        .json({ message: "Contraseña actualizada correctamente." });
+    });
   });
 };
 

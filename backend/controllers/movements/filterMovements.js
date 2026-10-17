@@ -9,8 +9,11 @@ const filterMovements = (req, res) => {
     initDate,
     finalDate,
   } = req.query;
-  let principalQuery = "SELECT * FROM movements WHERE 1=1";
-  const values = [];
+  const idusers = req.user.idusers;
+
+  let principalQuery =
+    "SELECT * FROM movements WHERE BINARY idusers = ?";
+  const values = [idusers];
 
   if (type) {
     principalQuery += " AND movement_type = ?";

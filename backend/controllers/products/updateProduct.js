@@ -10,6 +10,7 @@ const updateProduct = (req, res) => {
     categoryName,
     provider_name,
   } = req.body;
+  const idusers = req.user.idusers;
   const productCode =
     typeof product_code === "string" ? product_code.trim() : "";
 
@@ -27,15 +28,17 @@ const updateProduct = (req, res) => {
   }
 
   const checkProduct =
-    "SELECT idproducts FROM products WHERE idproducts = ?";
+    "SELECT idproducts FROM products WHERE BINARY idusers = ? AND idproducts = ?";
   const checkProductCode =
-    "SELECT idproducts FROM products WHERE product_code = ? AND idproducts != ?";
+    "SELECT idproducts FROM products WHERE BINARY idusers = ? AND product_code = ? AND idproducts != ?";
   const checkProductName =
-    "SELECT idproducts FROM products WHERE product_name = ? AND idproducts != ?";
-  const checkCategory = "SELECT * FROM categories WHERE category = ?";
-  const checkProvider = "SELECT * FROM providers WHERE provider_name = ?";
+    "SELECT idproducts FROM products WHERE BINARY idusers = ? AND product_name = ? AND idproducts != ?";
+  const checkCategory =
+    "SELECT * FROM categories WHERE BINARY idusers = ? AND category = ?";
+  const checkProvider =
+    "SELECT * FROM providers WHERE BINARY idusers = ? AND provider_name = ?";
 
-  db.query(checkProduct, [idproducts], (err, results) => {
+  db.query(checkProduct, [idusers, idproducts], (err, results) => {
     if (err) {
       return res.status(500).json({
         error: "No se pudo verificar el producto. Inténtelo de nuevo.",
@@ -48,118 +51,136 @@ const updateProduct = (req, res) => {
       });
     }
 
-    db.query(checkProductCode, [productCode, idproducts], (err, results) => {
-      if (err) {
-        return res.status(500).json({
-          error: "No se pudo verificar el código único. Inténtelo de nuevo.",
-        });
-      }
+    db.query(
+      checkProductCode,
+      [idusers, productCode, idproducts],
+      (err, results) => {
+        if (err) {
+          return res.status(500).json({
+            error: "No se pudo verificar el código único. Inténtelo de nuevo.",
+          });
+        }
 
-      if (results.length > 0) {
-        return res
-          .status(400)
-          .json({ error: "Ya existe un producto con ese código único." });
-      }
+        if (results.length > 0) {
+          return res
+            .status(400)
+            .json({ error: "Ya existe un producto con ese código único." });
+        }
 
-      db.query(
-        checkProductName,
-        [product_name, idproducts],
-        (err, results) => {
-          if (err) {
-            return res.status(500).json({
-              error: "No se pudo verificar el producto. Inténtelo de nuevo.",
-            });
-          }
-
-          if (results.length > 0) {
-            return res
-              .status(400)
-              .json({ error: "Ya existe un producto con ese nombre." });
-          }
-
-          db.query(checkCategory, [categoryName], (err, results) => {
+        db.query(
+          checkProductName,
+          [idusers, product_name, idproducts],
+          (err, results) => {
             if (err) {
               return res.status(500).json({
-                error: "No se pudo verificar la categoría. Inténtelo de nuevo.",
+                error: "No se pudo verificar el producto. Inténtelo de nuevo.",
               });
             }
 
-            if (results.length === 0) {
-              return res.status(400).json({
-                error: "La categoría seleccionada no existe.",
-              });
+            if (results.length > 0) {
+              return res
+                .status(400)
+                .json({ error: "Ya existe un producto con ese nombre." });
             }
 
-            const category = results[0];
-
-            db.query(checkProvider, [provider_name], (err, results) => {
-              if (err) {
-                return res.status(500).json({
-                  error:
-                    "No se pudo verificar el proveedor. Inténtelo de nuevo.",
-                });
-              }
-
-              if (results.length === 0) {
-                return res.status(400).json({
-                  error: "El proveedor seleccionado no existe.",
-                });
-              }
-
-              const provider = results[0];
-              const setClauses = [
-                "product_code = ?",
-                "product_name = ?",
-                "idcategoria = ?",
-                "idprovider = ?",
-              ];
-              const valuesToUpdate = [
-                productCode,
-                product_name,
-                category.idcategoria,
-                provider.idprovider,
-              ];
-
-              if (amount !== undefined && amount !== null && amount !== "") {
-                setClauses.push("amount = ?");
-                valuesToUpdate.push(amount);
-              }
-
-              if (
-                description !== undefined &&
-                description !== null &&
-                description !== ""
-              ) {
-                setClauses.push("description = ?");
-                valuesToUpdate.push(description);
-              }
-
-              valuesToUpdate.push(idproducts);
-
-              const query = `UPDATE products SET ${setClauses.join(", ")} WHERE idproducts = ?`;
-
-              db.query(query, valuesToUpdate, (err) => {
+            db.query(
+              checkCategory,
+              [idusers, categoryName],
+              (err, results) => {
                 if (err) {
-                  if (err.code === "ER_DUP_ENTRY") {
-                    return res.status(400).json({
-                      error: "Ya existe un producto con ese código único.",
-                    });
-                  }
-
                   return res.status(500).json({
-                    error: "No se pudo actualizar el producto. Inténtelo de nuevo.",
+                    error:
+                      "No se pudo verificar la categoría. Inténtelo de nuevo.",
                   });
                 }
 
-                return res
-                  .status(200)
-                  .json({ message: "Producto actualizado correctamente." });
-              });
-            });
-          });
-        },
-      );
-    });
+                if (results.length === 0) {
+                  return res.status(400).json({
+                    error: "La categoría seleccionada no existe.",
+                  });
+                }
+
+                const category = results[0];
+
+                db.query(
+                  checkProvider,
+                  [idusers, provider_name],
+                  (err, results) => {
+                    if (err) {
+                      return res.status(500).json({
+                        error:
+                          "No se pudo verificar el proveedor. Inténtelo de nuevo.",
+                      });
+                    }
+
+                    if (results.length === 0) {
+                      return res.status(400).json({
+                        error: "El proveedor seleccionado no existe.",
+                      });
+                    }
+
+                    const provider = results[0];
+                    const setClauses = [
+                      "product_code = ?",
+                      "product_name = ?",
+                      "idcategoria = ?",
+                      "idprovider = ?",
+                    ];
+                    const valuesToUpdate = [
+                      productCode,
+                      product_name,
+                      category.idcategoria,
+                      provider.idprovider,
+                    ];
+
+                    if (
+                      amount !== undefined &&
+                      amount !== null &&
+                      amount !== ""
+                    ) {
+                      setClauses.push("amount = ?");
+                      valuesToUpdate.push(amount);
+                    }
+
+                    if (
+                      description !== undefined &&
+                      description !== null &&
+                      description !== ""
+                    ) {
+                      setClauses.push("description = ?");
+                      valuesToUpdate.push(description);
+                    }
+
+                    valuesToUpdate.push(idusers, idproducts);
+
+                    const query = `UPDATE products SET ${setClauses.join(", ")} WHERE BINARY idusers = ? AND idproducts = ?`;
+
+                    db.query(query, valuesToUpdate, (err) => {
+                      if (err) {
+                        if (err.code === "ER_DUP_ENTRY") {
+                          return res.status(400).json({
+                            error: "Ya existe un producto con ese código único.",
+                          });
+                        }
+
+                        return res.status(500).json({
+                          error:
+                            "No se pudo actualizar el producto. Inténtelo de nuevo.",
+                        });
+                      }
+
+                      return res.status(200).json({
+                        message: "Producto actualizado correctamente.",
+                      });
+                    });
+                  },
+                );
+              },
+            );
+          },
+        );
+      },
+    );
   });
 };
 

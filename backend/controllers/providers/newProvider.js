@@ -2,6 +2,7 @@ const db = require("../../db/db");
 
 const newProvider = async (req, res) => {
   const { provider_name, contact } = req.body;
+  const idusers = req.user.idusers;
 
   if (!provider_name || !contact) {
     return res.status(400).json({
@@ -9,9 +10,10 @@ const newProvider = async (req, res) => {
     });
   }
 
-  const checkQuery = "SELECT * FROM providers WHERE provider_name = ?";
+  const checkQuery =
+    "SELECT * FROM providers WHERE BINARY idusers = ? AND provider_name = ?";
 
-  db.query(checkQuery, [provider_name], (err, results) => {
+  db.query(checkQuery, [idusers, provider_name], (err, results) => {
     if (err) {
       return res.status(500).json({
         error: "No se pudo verificar el proveedor. Inténtelo de nuevo.",
@@ -25,10 +27,16 @@ const newProvider = async (req, res) => {
     }
 
     const query =
-      "INSERT INTO providers (provider_name, contact) VALUES (?, ?)";
+      "INSERT INTO providers (idusers, provider_name, contact) VALUES (?, ?, ?)";
 
-    db.query(query, [provider_name, contact], (err, results) => {
+    db.query(query, [idusers, provider_name, contact], (err, results) => {
       if (err) {
+        if (err.code === "ER_DUP_ENTRY") {
+          return res.status(400).json({
+            error: "Ya existe un proveedor con ese nombre.",
+          });
+        }
+
         return res.status(500).json({
           error: "No se pudo crear el proveedor. Inténtelo de nuevo.",
         });

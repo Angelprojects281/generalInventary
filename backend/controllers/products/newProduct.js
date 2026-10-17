@@ -9,6 +9,7 @@ const newProduct = (req, res) => {
     categoryName,
     provider_name,
   } = req.body;
+  const idusers = req.user.idusers;
   const productCode =
     typeof product_code === "string" ? product_code.trim() : "";
 
@@ -26,14 +27,17 @@ const newProduct = (req, res) => {
   }
 
   const checkProductCode =
-    "SELECT idproducts FROM products WHERE product_code = ?";
-  const checkProduct = "SELECT * FROM products WHERE product_name = ?";
+    "SELECT idproducts FROM products WHERE BINARY idusers = ? AND product_code = ?";
+  const checkProduct =
+    "SELECT * FROM products WHERE BINARY idusers = ? AND product_name = ?";
 
-  const checkCategory = "SELECT * FROM categories WHERE category = ?";
+  const checkCategory =
+    "SELECT * FROM categories WHERE BINARY idusers = ? AND category = ?";
 
-  const checkProvider = "SELECT * FROM providers WHERE provider_name = ?";
+  const checkProvider =
+    "SELECT * FROM providers WHERE BINARY idusers = ? AND provider_name = ?";
 
-  db.query(checkProductCode, [productCode], (err, results) => {
+  db.query(checkProductCode, [idusers, productCode], (err, results) => {
     if (err) {
       return res.status(500).json({
         error: "No se pudo verificar el código único. Inténtelo de nuevo.",
@@ -46,7 +50,7 @@ const newProduct = (req, res) => {
         .json({ error: "Ya existe un producto con ese código único." });
     }
 
-    db.query(checkProduct, [product_name], (err, results) => {
+    db.query(checkProduct, [idusers, product_name], (err, results) => {
       if (err) {
         return res.status(500).json({
           error: "No se pudo verificar el producto. Inténtelo de nuevo.",
@@ -59,7 +63,7 @@ const newProduct = (req, res) => {
           .json({ error: "Ya existe un producto con ese nombre." });
       }
 
-      db.query(checkCategory, [categoryName], (err, results) => {
+      db.query(checkCategory, [idusers, categoryName], (err, results) => {
         if (err) {
           return res.status(500).json({
             error: "No se pudo verificar la categoría. Inténtelo de nuevo.",
@@ -75,7 +79,7 @@ const newProduct = (req, res) => {
         const category = results[0];
         const idCategory = category.idcategoria;
 
-        db.query(checkProvider, [provider_name], (err, results) => {
+        db.query(checkProvider, [idusers, provider_name], (err, results) => {
           if (err) {
             return res.status(500).json({
               error: "No se pudo verificar el proveedor. Inténtelo de nuevo.",
@@ -115,6 +119,9 @@ const newProduct = (req, res) => {
             columns.splice(columns.length - 2, 0, "description");
             valuesToInsert.splice(valuesToInsert.length - 2, 0, description);
           }
+
+          columns.unshift("idusers");
+          valuesToInsert.unshift(idusers);
 
           const placeholders = columns.map(() => "?").join(", ");
           const query = `INSERT INTO products (${columns.join(", ")}) VALUES (${placeholders})`;

@@ -2,10 +2,12 @@ const db = require("../../db/db");
 
 const filterProducts = (req, res) => {
   const { product_code, categoryName, amount, provider_name } = req.query;
+  const idusers = req.user.idusers;
 
   let principalQuery = `
-    SELECT 
+    SELECT
       products.idproducts,
+      products.idusers,
       products.product_code,
       products.product_name,
       products.amount,
@@ -13,13 +15,14 @@ const filterProducts = (req, res) => {
       categories.category AS category,
       providers.provider_name AS provider_name
     FROM products
-    INNER JOIN categories 
+    INNER JOIN categories
       ON products.idcategoria = categories.idcategoria
+      AND categories.idusers = products.idusers
     LEFT JOIN providers
       ON products.idprovider = providers.idprovider
-    WHERE 1=1
+    WHERE BINARY products.idusers = ?
   `;
-  const values = [];
+  const values = [idusers];
 
   if (product_code) {
     principalQuery += " AND products.product_code = ?";
@@ -32,7 +35,7 @@ const filterProducts = (req, res) => {
   }
 
   if (amount) {
-    principalQuery += " AND amount <= ?";
+    principalQuery += " AND products.amount <= ?";
     values.push(amount);
   }
 

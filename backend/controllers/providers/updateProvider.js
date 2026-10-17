@@ -2,6 +2,7 @@ const db = require("../../db/db");
 
 const updateProvider = (req, res) => {
   const { idprovider, provider_name, contact } = req.body;
+  const idusers = req.user.idusers;
 
   if (!idprovider || !provider_name || !contact) {
     return res.status(400).json({
@@ -23,9 +24,10 @@ const updateProvider = (req, res) => {
     });
   }
 
-  const checkProviderQuery = "SELECT * FROM providers WHERE idprovider = ?";
+  const checkProviderQuery =
+    "SELECT * FROM providers WHERE BINARY idusers = ? AND idprovider = ?";
 
-  db.query(checkProviderQuery, [idprovider], (err, results) => {
+  db.query(checkProviderQuery, [idusers, idprovider], (err, results) => {
     if (err) {
       return res.status(500).json({
         error: "No se pudo consultar el proveedor. Inténtelo de nuevo.",
@@ -39,11 +41,11 @@ const updateProvider = (req, res) => {
     }
 
     const checkNameQuery =
-      "SELECT * FROM providers WHERE provider_name = ? AND idprovider != ?";
+      "SELECT * FROM providers WHERE BINARY idusers = ? AND provider_name = ? AND idprovider != ?";
 
     db.query(
       checkNameQuery,
-      [provider_name, idprovider],
+      [idusers, provider_name, idprovider],
       (err, results) => {
         if (err) {
           return res.status(500).json({
@@ -58,13 +60,19 @@ const updateProvider = (req, res) => {
         }
 
         const updateQuery =
-          "UPDATE providers SET provider_name = ?, contact = ? WHERE idprovider = ?";
+          "UPDATE providers SET provider_name = ?, contact = ? WHERE BINARY idusers = ? AND idprovider = ?";
 
         db.query(
           updateQuery,
-          [provider_name, parsedContact, idprovider],
+          [provider_name, parsedContact, idusers, idprovider],
           (err) => {
             if (err) {
+              if (err.code === "ER_DUP_ENTRY") {
+                return res
+                  .status(400)
+                  .json({ error: "Ya existe un proveedor con ese nombre." });
+              }
+
               return res.status(500).json({
                 error: "No se pudo actualizar el proveedor. Inténtelo de nuevo.",
               });

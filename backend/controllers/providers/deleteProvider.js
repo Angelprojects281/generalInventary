@@ -2,6 +2,7 @@ const db = require("../../db/db");
 
 const deleteProvider = async (req, res) => {
   const { provider_name } = req.params;
+  const idusers = req.user.idusers;
 
   if (!provider_name) {
     return res.status(400).json({
@@ -9,9 +10,10 @@ const deleteProvider = async (req, res) => {
     });
   }
 
-  const checkQuery = "SELECT * FROM providers WHERE provider_name = ?";
+  const checkQuery =
+    "SELECT * FROM providers WHERE BINARY idusers = ? AND provider_name = ?";
 
-  db.query(checkQuery, [provider_name], (err, results) => {
+  db.query(checkQuery, [idusers, provider_name], (err, results) => {
     if (err) {
       return res.status(500).json({
         error: "No se pudo consultar el proveedor. Inténtelo de nuevo.",
@@ -32,34 +34,40 @@ const deleteProvider = async (req, res) => {
       });
     }
 
-    const deleteProducts = "DELETE FROM products WHERE idprovider = ?";
-    const deleteProviderQuery = "DELETE FROM providers WHERE idprovider = ?";
+    const deleteProducts =
+      "DELETE FROM products WHERE BINARY idusers = ? AND idprovider = ?";
+    const deleteProviderQuery =
+      "DELETE FROM providers WHERE BINARY idusers = ? AND idprovider = ?";
 
-    db.query(deleteProducts, [providerInfo.idprovider], (err, results) => {
-      if (err) {
-        return res.status(500).json({
-          error:
-            "No se pudieron eliminar los productos asociados. Inténtelo de nuevo.",
-        });
-      }
-
-      db.query(
-        deleteProviderQuery,
-        [providerInfo.idprovider],
-        (err, results) => {
-          if (err) {
-            return res.status(500).json({
-              error: "No se pudo eliminar el proveedor. Inténtelo de nuevo.",
-            });
-          }
-
-          return res.status(200).json({
-            message:
-              "El proveedor y sus productos relacionados se eliminaron correctamente.",
+    db.query(
+      deleteProducts,
+      [idusers, providerInfo.idprovider],
+      (err, results) => {
+        if (err) {
+          return res.status(500).json({
+            error:
+              "No se pudieron eliminar los productos asociados. Inténtelo de nuevo.",
           });
-        },
-      );
-    });
+        }
+
+        db.query(
+          deleteProviderQuery,
+          [idusers, providerInfo.idprovider],
+          (err, results) => {
+            if (err) {
+              return res.status(500).json({
+                error: "No se pudo eliminar el proveedor. Inténtelo de nuevo.",
+              });
+            }
+
+            return res.status(200).json({
+              message:
+                "El proveedor y sus productos relacionados se eliminaron correctamente.",
+            });
+          },
+        );
+      },
+    );
   });
 };
 

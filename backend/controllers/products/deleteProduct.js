@@ -2,6 +2,7 @@ const db = require("../../db/db");
 
 const deleteProduct = (req, res) => {
   const { product_name } = req.params;
+  const idusers = req.user.idusers;
 
   if (!product_name) {
     return res.status(400).json({
@@ -9,9 +10,10 @@ const deleteProduct = (req, res) => {
     });
   }
 
-  const checkProduct = "SELECT * FROM products WHERE product_name = ?";
+  const checkProduct =
+    "SELECT * FROM products WHERE BINARY idusers = ? AND product_name = ?";
 
-  db.query(checkProduct, [product_name], (err, results) => {
+  db.query(checkProduct, [idusers, product_name], (err, results) => {
     if (err) {
       return res.status(500).json({
         error: "No se pudo verificar el producto. Inténtelo de nuevo.",
@@ -24,9 +26,10 @@ const deleteProduct = (req, res) => {
       });
     }
 
-    const deleteQuery = "DELETE FROM products WHERE product_name = ?";
+    const deleteQuery =
+      "DELETE FROM products WHERE BINARY idusers = ? AND product_name = ?";
 
-    db.query(deleteQuery, [product_name], (err, results) => {
+    db.query(deleteQuery, [idusers, product_name], (err, results) => {
       if (err) {
         return res.status(500).json({
           error: "No se pudo eliminar el producto. Inténtelo de nuevo.",

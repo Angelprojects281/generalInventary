@@ -7,15 +7,14 @@ import {
   useNavigate,
 } from "react-router-dom";
 import "./styles/styles.css";
-import Login from "./general/login";
-import MainAdmin from "./admin/mainAdmin";
-import MainRegular from "./regular/regularMain";
-import AdminUsers from "./admin/users/adminUsers";
+import Welcome from "./welcome/welcome";
 import ProtectRoute from "./ruteProtection/protectionRute";
-import AdminCategory from "./admin/categories/adminCategory";
-import AdminProviders from "./admin/providers/adminProviders";
-import AdminMovements from "./admin/movements/movements";
-import ProductsReg from "./regular/products/productsReg";
+import MainPanel from "./panel/mainPanel";
+import ProductsScreen from "./panel/productsScreen";
+import CategoriesScreen from "./panel/categoriesScreen";
+import ProvidersScreen from "./panel/providersScreen";
+import MovementsScreen from "./panel/movementsScreen";
+import AccountScreen from "./panel/accountScreen";
 import InactivityTimer from "./session/inactivityTimer";
 import { confirmarCierreSesion } from "./session/session";
 import { useTranslation } from "./i18n";
@@ -56,8 +55,8 @@ function BackNavigationGuard() {
       }
 
       // La confirmación solo aplica cuando la vuelta atrás sale de la app
-      // hacia el login. Las rutas internas (panel, productos, etc.) navegan
-      // sin preguntar, ya que no cierran la sesión.
+      // hacia la bienvenida. Las rutas internas (panel, productos, etc.)
+      // navegan sin preguntar, ya que no cierran la sesión.
       if (window.location.pathname !== "/") {
         return;
       }
@@ -132,71 +131,80 @@ function App() {
 
   return (
     <BrowserRouter>
-      <button
-        className="languageToggle"
-        type="button"
-        aria-label={t("Cambiar idioma")}
-        title={t("Cambiar idioma")}
-        onClick={toggleLanguage}
-      >
-        {language === "es" ? "EN" : "ES"}
-      </button>
-      <button
-        className="themeToggle"
-        type="button"
-        aria-label={`${t("Cambiar a tema")} ${t(theme === "dark" ? "claro" : "oscuro")}`}
-        aria-pressed={theme === "dark"}
-        title={`${t("Cambiar a tema")} ${t(theme === "dark" ? "claro" : "oscuro")}`}
-        onClick={toggleTheme}
-      >
-        <span aria-hidden="true">{theme === "dark" ? "☾" : "☀"}</span>
-      </button>
+      <div className="appToggles">
+        <button
+          className="languageToggle"
+          type="button"
+          aria-label={t("Cambiar idioma")}
+          title={t("Cambiar idioma")}
+          onClick={toggleLanguage}
+        >
+          {language === "es" ? "EN" : "ES"}
+        </button>
+        <button
+          className="themeToggle"
+          type="button"
+          aria-label={`${t("Cambiar a tema")} ${t(theme === "dark" ? "claro" : "oscuro")}`}
+          aria-pressed={theme === "dark"}
+          title={`${t("Cambiar a tema")} ${t(theme === "dark" ? "claro" : "oscuro")}`}
+          onClick={toggleTheme}
+        >
+          <span aria-hidden="true">{theme === "dark" ? "☾" : "☀"}</span>
+        </button>
+      </div>
       <BackNavigationGuard />
       <InactivityTimer />
       <Routes>
-        <Route path="/" element={<Login />} />
+        <Route path="/" element={<Welcome />} />
         <Route
-          path="/adminMain"
-          element={<ProtectRoute page={<MainAdmin />} authorizedRol="admin" />}
-        />
-        <Route
-          path="/regularMain"
+          path="/panel"
           element={
-            <ProtectRoute page={<MainRegular />} authorizedRol="regular" />
+            <ProtectRoute>
+              <MainPanel />
+            </ProtectRoute>
           }
         />
         <Route
-          path="/adminUsers"
-          element={<ProtectRoute page={<AdminUsers />} authorizedRol="admin" />}
-        />
-
-        <Route
-          path="/adminCategory"
+          path="/products"
           element={
-            <ProtectRoute page={<AdminCategory />} authorizedRol="admin" />
+            <ProtectRoute>
+              <ProductsScreen />
+            </ProtectRoute>
           }
         />
-
         <Route
-          path="/adminProviders"
+          path="/categories"
           element={
-            <ProtectRoute page={<AdminProviders />} authorizedRol="admin" />
+            <ProtectRoute>
+              <CategoriesScreen />
+            </ProtectRoute>
           }
         />
-
         <Route
-          path="/adminMovements"
+          path="/providers"
           element={
-            <ProtectRoute page={<AdminMovements />} authorizedRol="admin" />
+            <ProtectRoute>
+              <ProvidersScreen />
+            </ProtectRoute>
           }
         />
-
         <Route
-          path="/productsReg"
+          path="/movements"
           element={
-            <ProtectRoute page={<ProductsReg />} authorizedRol="regular" />
+            <ProtectRoute>
+              <MovementsScreen />
+            </ProtectRoute>
           }
         />
+        <Route
+          path="/account"
+          element={
+            <ProtectRoute>
+              <AccountScreen />
+            </ProtectRoute>
+          }
+        />
+        <Route path="*" element={<Welcome />} />
       </Routes>
     </BrowserRouter>
   );

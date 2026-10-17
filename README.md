@@ -1,6 +1,6 @@
 # Sistema de inventario
 
-Aplicación web para administrar usuarios, categorías, proveedores, productos, existencias y movimientos de inventario. El proyecto está dividido en un frontend construido con React + TypeScript y Vite, un backend construido con Node.js + Express y una base de datos MySQL.
+Aplicación web multiempresa para administrar categorías, proveedores, productos, existencias y movimientos de inventario. Cada cuenta corresponde a una empresa con su inventario completamente aislado. El proyecto está dividido en un frontend construido con React + TypeScript y Vite, un backend construido con Node.js + Express y una base de datos MySQL.
 
 ## Contenido
 
@@ -15,6 +15,7 @@ Aplicación web para administrar usuarios, categorías, proveedores, productos, 
 - [Uso de la aplicación](#uso-de-la-aplicación)
 - [Base de datos](#base-de-datos)
 - [API REST](#api-rest)
+- [Rutas del frontend](#rutas-del-frontend)
 - [Estructura del proyecto](#estructura-del-proyecto)
 - [Seguridad](#seguridad)
 - [Problemas frecuentes](#problemas-frecuentes)
@@ -22,41 +23,37 @@ Aplicación web para administrar usuarios, categorías, proveedores, productos, 
 
 ## Características
 
+- Registro público de cuentas: usuario, nombre de empresa y contraseña.
 - Inicio de sesión con usuario y contraseña.
-- Contraseñas almacenadas con `bcrypt`.
-- Tokens JWT con duración de una hora.
-- Separación de permisos por rol: `admin` y `regular`.
-- Administración de usuarios:
-  - Crear usuarios.
-  - Filtrar usuarios por rol.
-  - Cambiar contraseñas.
-  - Eliminar usuarios, excepto el usuario que realiza la operación.
-- Administración de categorías:
-  - Crear categorías.
-  - Listar categorías.
-  - Eliminar categorías y sus productos relacionados.
-- Administración de proveedores mediante la API: crear, listar y eliminar proveedores.
-- Administración de productos:
-  - Crear productos con cantidad y descripción opcionales.
-  - Filtrar productos por categoría, proveedor y cantidad máxima.
-  - Eliminar productos.
-- Registro de movimientos de entrada y salida.
-- Actualización automática del stock al registrar un movimiento.
-- Filtrado de movimientos por tipo, categoría, producto y rango de fechas.
+- Cada cuenta/empresa tiene su propio inventario: categorías, proveedores, productos y movimientos aislados.
+- Sin roles: todas las cuentas tienen los mismos permisos sobre su propio inventario.
+- Contraseñas almacenadas con `bcrypt` y validadas con `zxcvbn`.
+- Tokens JWT con duración de una hora, verificados en el backend mediante middleware.
+- Cuenta:
+  - Cambiar el nombre de usuario y el nombre de la empresa (con verificación de contraseña actual implícita en la sesión y token nuevo tras el cambio).
+  - Cambiar la contraseña exigiendo la contraseña actual.
+  - Eliminar la cuenta exigiendo la contraseña; borra en cascada todo el inventario de la empresa.
+- Administración de categorías: crear, listar, editar y eliminar (elimina también sus productos).
+- Administración de proveedores: crear, listar, editar y eliminar (elimina también sus productos). El proveedor predeterminado "SIN PROVEEDOR" está protegido.
+- Administración de productos: crear con cantidad y descripción, filtrar por categoría, proveedor y cantidad máxima, editar y eliminar.
+- Registro de movimientos de entrada y salida con actualización automática del stock.
+- Filtrado de movimientos por tipo, categoría, producto, código y rango de fechas.
 - Alertas visuales en el frontend mediante SweetAlert2, con mensajes de error consistentes.
 - Interfaz en español e inglés, con botón para cambiar el idioma y preferencia guardada en el navegador.
 
 ## Interfaz y mensajes
 
-- La interfaz usa una paleta monocromática; las acciones para editar y eliminar conservan sus acentos azul y rojo.
-- Los formularios muestran sus campos en dos columnas cuando hay espacio y se adaptan a una columna en pantallas estrechas.
-- Al abrir un formulario, el fondo se atenúa y desenfoca mientras el formulario permanece nítido.
-- Las pantallas, filas, formularios y controles tienen animaciones de entrada definidas con `@keyframes` en `frontend/src/styles/styles.css`. Se respeta la preferencia del sistema por reducir el movimiento.
-- Un botón fijo en la esquina inferior derecha alterna entre el tema claro y el oscuro. La preferencia se guarda en `localStorage` con la clave `inventario-theme` y se aplica al cargar la página para evitar parpadeos.
+- La interfaz usa una paleta monocromática de grises con acento azul suave (`--color-accent`); las acciones para editar conservan su acento azul y las de eliminar su acento rojo. Tipografía de sistema (`system-ui`, Segoe UI, Roboto) y tarjetas con radios y sombras amplios.
+- La página de bienvenida es un héroe a dos columnas: titular y textos a la izquierda, composición ilustrativa (icono grande de `lucide-react` sobre formas flotantes) a la derecha, botones de crear cuenta e iniciar sesión en fila y una franja de tres tarjetas de características.
+- Tras autenticarse se accede al panel (`/panel`), con saludo y botón de cerrar sesión a la derecha de la cabecera y una rejilla de tarjetas con icono y descripción por sección (Productos, Categorías, Proveedores, Movimientos y una tarjeta destacada de Mi cuenta). Cada sección tiene su propia pantalla; la pantalla de cuenta muestra una tarjeta de identidad con el monograma de la empresa y las acciones en fila.
+- El fondo de la bienvenida y del panel lleva una malla 3D animada (efecto NET de Vanta sobre three.js) con la paleta del tema; el resto de la página usa un degradado radial fijo en `body`. Si el sistema pide movimiento reducido, Vanta no se monta y solo queda el degradado.
+- Los formularios muestran sus campos en dos columnas cuando hay espacio y se adaptan a una columna en pantallas estrechas. Sus botones van en fila.
+- Al abrir un formulario, el fondo se atenúa y desenfoca mientras el formulario permanece nítido; los formularios flotantes entran y salen animados con `motion` (`AnimatePresence`).
+- Las pantallas, filas, tarjetas y controles tienen animaciones de entrada y hover definidas con `motion` y con `@keyframes` en `frontend/src/styles/styles.css`. Se respeta la preferencia del sistema por reducir el movimiento (`MotionConfig reducedMotion="user"` y consulta `prefers-reduced-motion`).
+- Un botón fijo en la esquina inferior derecha alterna entre el tema claro y el oscuro. La preferencia se guarda en `localStorage` con la clave `inventario-theme`.
 - Junto al botón de tema hay un botón de idioma que alterna entre español e inglés y muestra `ES` o `EN` según el idioma activo.
 - El idioma predeterminado es español y la selección se guarda en `localStorage` con la clave `inventario-language`.
 - El sistema de traducciones vive en `frontend/src/i18n.tsx`. El texto visible se envuelve con la función `t()` del hook `useTranslation`, y las alertas usan `translateText`. Las claves se escriben en español; si una clave no tiene traducción, se muestra el texto original.
-- Al cambiar el idioma también se actualizan el atributo `lang` del documento y el título de la pestaña: `Inventario` en español e `Inventory` en inglés.
 - Los errores de la API se devuelven en la propiedad `error`, con mensajes breves en español y sin detalles internos de la base de datos. Las operaciones exitosas que devuelven confirmación usan `message`.
 
 ## Arquitectura
@@ -65,19 +62,20 @@ Aplicación web para administrar usuarios, categorías, proveedores, productos, 
 Navegador
    |
    | React + TypeScript + Vite (http://localhost:4000)
-   |
+   | Authorization: Bearer <JWT>
    | HTTP / JSON
    v
 API Express (http://localhost:3000)
+   | middleware auth: verifica el JWT y fija req.user.idusers
    |
    | mysql2
    v
 MySQL - base de datos inventary
 ```
 
-El frontend guarda el JWT en `localStorage` con la clave `token` y la preferencia de idioma en `inventario-language`. El rol incluido en el token determina la pantalla inicial y las rutas visibles. El backend expone actualmente las rutas directamente desde `/`; no se utiliza un prefijo como `/api`.
-
-> Importante: las rutas de protección del frontend mejoran la experiencia de navegación, pero no sustituyen un middleware de autorización en el backend. Para un despliegue real, las operaciones administrativas deben validar el JWT y el rol en el servidor.
+- El frontend guarda el JWT en `localStorage` con la clave `token` y lo adjunta a todas las llamadas mediante el helper `frontend/src/api.ts` (`apiFetch`). Si el backend responde `401`, se cierra la sesión y se vuelve a la bienvenida.
+- El backend expone las rutas directamente desde `/`; no se utiliza un prefijo como `/api`.
+- Todas las operaciones de inventario se filtran por `req.user.idusers`: una cuenta solo puede ver o modificar su propio inventario.
 
 ## Tecnologías
 
@@ -87,8 +85,10 @@ El frontend guarda el JWT en `localStorage` con la clave `token` y la preferenci
 - TypeScript `6`.
 - Vite `8`.
 - React Router.
-- `jwt-decode` para leer el rol del token.
 - SweetAlert2 para mostrar mensajes.
+- `lucide-react` para los iconos de la interfaz.
+- `motion` para las animaciones de entrada, salida y hover.
+- `vanta` con `three` para el fondo 3D animado de la bienvenida y el panel (carga diferida).
 - ESLint para validación de estilo y errores comunes.
 
 ### Backend
@@ -108,7 +108,7 @@ Antes de instalar el proyecto se necesita:
 - Node.js y npm instalados.
 - MySQL Server en ejecución.
 - Un cliente de MySQL, por ejemplo MySQL Workbench o el cliente `mysql`.
-- Acceso a dos terminales para ejecutar frontend y backend al mismo tiempo.
+- Dos terminales para ejecutar frontend y backend al mismo tiempo.
 
 Las versiones exactas de las dependencias se encuentran en:
 
@@ -153,17 +153,7 @@ La conexión actual está definida en `backend/db/db.js` y utiliza estos valores
 | Base de datos | `inventary`                          |
 | Zona horaria  | `local`                              |
 
-Para otros entornos, modifica la configuración de conexión y evita dejar credenciales reales escritas directamente en el código. Lo recomendable es migrar estos valores a variables de entorno, por ejemplo:
-
-```env
-DB_HOST=localhost
-DB_USER=root
-DB_PASSWORD=tu_password
-DB_NAME=inventary
-DB_TIMEZONE=local
-JWT_SECRET=tu_secreto_jwt
-PORT=3000
-```
+Lo recomendable es migrar host, usuario, contraseña y nombre de base de datos a variables de entorno y evitar dejar credenciales reales escritas directamente en el código.
 
 ### URLs y puertos
 
@@ -171,7 +161,7 @@ PORT=3000
 - Frontend: `http://localhost:4000`.
 - CORS del backend: permite actualmente `http://localhost:4000`.
 
-Si se cambia el puerto del frontend, también debe actualizarse el origen permitido en `backend/app.js` y las URLs usadas por las llamadas `fetch` del frontend.
+Si se cambia el puerto del frontend, también debe actualizarse el origen permitido en `backend/app.js` y la constante `API_URL` de `frontend/src/api.ts`.
 
 ## Ejecución
 
@@ -184,7 +174,7 @@ cd backend
 npm start
 ```
 
-El servidor escucha en el puerto `3000`, salvo que el entorno defina `PORT`.
+El servidor escucha en el puerto `3000`, sal que el entorno defina `PORT`.
 
 ### Frontend
 
@@ -214,169 +204,95 @@ npm run preview
 1. Inicia MySQL.
 2. Inicia el backend en el puerto `3000`.
 3. Inicia el frontend en el puerto `4000`.
-4. Abre `http://localhost:4000`.
-5. Inicia sesión con un usuario existente.
-6. Según el valor de `rol`:
-   - `admin`: accede al panel de usuarios, categorías y movimientos.
-   - `regular`: accede al panel de productos y al registro de movimientos desde la gestión de productos.
-7. Para cerrar sesión, utiliza el botón correspondiente; se pedirá confirmación antes de salir. El token se elimina de `localStorage`.
+4. Abre `http://localhost:4000`: se muestra la página de bienvenida.
+5. Crea una cuenta con "Crear una cuenta" (usuario, nombre de empresa y contraseña) o inicia sesión con una existente. Ambas acciones abren un formulario flotante.
+6. Tras autenticarse accedes al panel, con un botón por sección: Productos, Categorías, Proveedores, Movimientos y Mi cuenta.
+7. Cada sección es una pantalla propia con su cabecera y su botón de creación ("Nuevo producto +", "Nueva categoria +", "Nuevo proveedor +"); se vuelve al panel con el botón "atrás" del navegador.
+8. En la pantalla Mi cuenta puedes cambiar tu usuario y el nombre de la empresa, cambiar tu contraseña (pide la actual), eliminar tu cuenta (pide la contraseña y borra todo el inventario) o cerrar sesión. También puedes cerrar sesión desde el panel.
 
-Al volver atrás en el historial del navegador hacia la pantalla de inicio de sesión también se pide confirmación antes de cerrar la sesión; las vueltas atrás dentro de la aplicación (por ejemplo, de productos al panel) navegan normalmente sin preguntar. Si se confirma el cierre, el token se elimina y no se puede volver con los botones del navegador. El token solo se elimina al confirmar el cierre (botón de salida o botón atrás) o automáticamente a los 20 minutos de inactividad, momento en el que se muestra un aviso al usuario.
+Al volver atrás en el historial del navegador desde cualquier pantalla hacia la bienvenida se pide confirmación antes de cerrar la sesión; las vueltas atrás dentro del panel navegan normalmente sin preguntar. El token solo se elimina al confirmar el cierre, al eliminar la cuenta, ante un `401` del backend o automáticamente a los 20 minutos de inactividad, momento en el que se muestra un aviso al usuario.
 
 ## Base de datos
 
-La aplicación espera una base de datos MySQL llamada `inventary` con cinco tablas principales:
+La aplicación espera una base de datos MySQL llamada `inventary` con cinco tablas. Cada tabla de inventario lleva una columna `idusers` que identifica a la empresa propietaria:
 
 ```text
+users       1 ---- N categories
+users       1 ---- N providers
+users       1 ---- N products
 users       1 ---- N movements
 categories  1 ---- N products
 providers   1 ---- N products
 ```
 
-El esquema consolidado del proyecto está disponible en [`database/schema.sql`](database/schema.sql). Este archivo crea la base de datos y las cinco tablas, y elimina y recrea las tablas si ya existen.
+El esquema consolidado del proyecto está disponible en [`database/schema.sql`](database/schema.sql). Este archivo crea la base de datos y las cinco tablas, y elimina y recrea las tablas si ya existen: ejecútalo solo cuando quieras empezar de cero.
 
 ### Tablas esperadas
 
 #### `users`
 
-| Columna    | Uso                                                                                                                |
-| ---------- | ------------------------------------------------------------------------------------------------------------------ |
-| `idusers`  | Identificador o nombre de usuario. Se consulta de forma sensible a mayúsculas y minúsculas en algunas operaciones. |
-| `password` | Hash generado con `bcrypt`.                                                                                        |
-| `rol`      | Rol de la cuenta, normalmente `admin` o `regular`.                                                                 |
+| Columna       | Uso                                                                                                                |
+| ------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `idusers`     | Identificador o nombre de usuario (PK). Se consulta de forma sensible a mayúsculas y minúsculas con `BINARY`.        |
+| `company_name`| Nombre de la empresa propietaria del inventario.                                                                    |
+| `password`    | Hash generado con `bcrypt`.                                                                                         |
+
+No existe la columna `rol`: todas las cuentas tienen los mismos permisos sobre su propio inventario.
 
 #### `categories`
 
-| Columna       | Uso                            |
-| ------------- | ------------------------------ |
-| `idcategoria` | Identificador de la categoría. |
-| `category`    | Nombre de la categoría.        |
+| Columna       | Uso                                                             |
+| ------------- | --------------------------------------------------------------- |
+| `idcategoria` | Identificador de la categoría.                                  |
+| `idusers`     | Empresa propietaria (FK a `users`, con `ON UPDATE/DELETE CASCADE`). |
+| `category`    | Nombre de la categoría; único por empresa.                      |
 
 #### `providers`
 
-| Columna         | Uso                               |
-| --------------- | --------------------------------- |
-| `idprovider`    | Identificador del proveedor.      |
-| `provider_name` | Nombre del proveedor.             |
-| `contact`       | Número de contacto del proveedor. |
+| Columna         | Uso                                                                 |
+| --------------- | ------------------------------------------------------------------- |
+| `idprovider`    | Identificador del proveedor.                                        |
+| `idusers`       | Empresa propietaria (nullable solo para la centinela global).        |
+| `provider_name` | Nombre del proveedor; único por empresa.                            |
+| `contact`       | Número de contacto del proveedor.                                   |
+
+La fila `idprovider = 0` ("SIN PROVEEDOR", `idusers NULL`) es una centinela global que usan los productos sin proveedor; al listar por empresa nunca aparece y no se puede editar ni eliminar.
 
 #### `products`
 
 | Columna        | Uso                                                                              |
 | -------------- | -------------------------------------------------------------------------------- |
 | `idproducts`   | Identificador del producto.                                                      |
-| `product_name` | Nombre único usado por las operaciones actuales.                                 |
+| `idusers`      | Empresa propietaria (FK con cascade).                                            |
+| `product_code` | Código único por empresa.                                                        |
+| `product_name` | Nombre único por empresa.                                                        |
 | `amount`       | Cantidad disponible en inventario.                                               |
-| `description`  | Descripción opcional; el dump usa `SIN DESCRIPCION` por defecto.                 |
-| `idcategoria`  | Referencia a `categories.idcategoria`.                                           |
-| `idprovider`   | Referencia a `providers.idprovider`; `0` representa el proveedor predeterminado. |
+| `description`  | Descripción opcional; el esquema usa `SIN DESCRIPCION` por defecto.              |
+| `idcategoria`  | Referencia a `categories.idcategoria` (cascade al eliminar la categoría).        |
+| `idprovider`   | Referencia a `providers.idprovider`; `0` representa la centinela predeterminada. |
 
 #### `movements`
 
-| Columna         | Uso                                                  |
-| --------------- | ---------------------------------------------------- |
-| `movement_type` | Tipo de movimiento: `entrada` o `salida`.            |
-| `date_movement` | Fecha del movimiento. El dump la define como `DATE`. |
-| `amount`        | Cantidad movida.                                     |
-| `category`      | Categoría registrada en el movimiento.               |
-| `product_name`  | Producto afectado.                                   |
-| `idusers`       | Usuario que registra el movimiento.                  |
-
-### Restaurar el dump disponible
-
-El volcado disponible en `C:\Users\l\Documents\dumps\Dump20260909` contiene estos archivos:
-
-- `inventary_users.sql`
-- `inventary_categories.sql`
-- `inventary_products.sql`
-- `inventary_movements.sql`
-
-Son dumps de estructura generados con MySQL 8.0.44. Cada archivo crea o selecciona la base de datos `inventary`, elimina la tabla del mismo nombre si ya existe y vuelve a crearla. El volcado contiene la definición de las tablas; no sustituye una copia de los datos de producción.
-
-Este volcado no incluye `providers`, tabla que requiere la versión actual de la aplicación. Para crear el esquema completo, utiliza `database/schema.sql`; ten en cuenta que este script elimina y recrea las cinco tablas.
-
-Puedes restaurarlos desde la carpeta del proyecto con el cliente de MySQL. Importa primero las tablas independientes y después las tablas que dependen lógicamente de ellas:
-
-```bash
-mysql -u root -p < "C:\\Users\\l\\Documents\\dumps\\Dump20260909\\inventary_users.sql"
-mysql -u root -p < "C:\\Users\\l\\Documents\\dumps\\Dump20260909\\inventary_categories.sql"
-mysql -u root -p < "C:\\Users\\l\\Documents\\dumps\\Dump20260909\\inventary_products.sql"
-mysql -u root -p < "C:\\Users\\l\\Documents\\dumps\\Dump20260909\\inventary_movements.sql"
-```
-
-También puedes ejecutar los archivos desde MySQL Workbench. No ejecutes estos scripts si necesitas conservar las tablas actuales, porque cada uno contiene `DROP TABLE IF EXISTS`.
-
-El esquema real del dump es el siguiente:
-
-- `users.idusers`: `VARCHAR(50)`, clave primaria.
-- `users.rol`: `VARCHAR(50)` obligatorio.
-- `users.password`: `VARCHAR(5000)` obligatorio.
-- `categories.idcategoria`: `INT` autoincremental, clave primaria.
-- `categories.category`: `VARCHAR(50)` obligatorio.
-- `products.idproducts`: `INT` autoincremental, clave primaria.
-- `products.product_name`: `VARCHAR(100)` obligatorio.
-- `products.amount`: `INT` obligatorio, valor predeterminado `0`.
-- `products.description`: `VARCHAR(500)`, valor predeterminado `SIN DESCRIPCION`.
-- `products.idcategoria`: `INT` obligatorio, con índice `categoryKey_idx`.
-- `movements.idmovements`: `INT` autoincremental, clave primaria.
-- `movements.movement_type`: `VARCHAR(50)` obligatorio.
-- `movements.date_movement`: `DATE` obligatorio.
-- `movements.amount`: `INT` obligatorio.
-- `movements.category`: `VARCHAR(50)` obligatorio.
-- `movements.product_name`: `VARCHAR(50)` obligatorio.
-- `movements.idusers`: `VARCHAR(50)` obligatorio.
-
-El dump no declara claves foráneas entre `products`, `categories`, `movements` y `users`; esas relaciones se mantienen mediante la lógica de los controladores. El backend usa nombres de columnas concretos en sus consultas. Si el esquema local utiliza nombres distintos, las consultas de los controladores también deben actualizarse.
-
-Si no tienes acceso al dump, puedes crear una estructura inicial manual. Este ejemplo debe revisarse y adaptarse antes de producción:
-
-```sql
-CREATE DATABASE IF NOT EXISTS inventary;
-USE inventary;
-
-CREATE TABLE users (
-  idusers VARCHAR(100) PRIMARY KEY,
-  password VARCHAR(255) NOT NULL,
-  rol VARCHAR(20) NOT NULL
-);
-
-CREATE TABLE categories (
-  idcategoria INT AUTO_INCREMENT PRIMARY KEY,
-  category VARCHAR(100) NOT NULL UNIQUE
-);
-
-CREATE TABLE products (
-  idproducts INT AUTO_INCREMENT PRIMARY KEY,
-  product_name VARCHAR(150) NOT NULL UNIQUE,
-  amount INT NOT NULL DEFAULT 0,
-  description TEXT NULL,
-  idcategoria INT NOT NULL,
-  CONSTRAINT fk_products_categories
-    FOREIGN KEY (idcategoria) REFERENCES categories(idcategoria)
-);
-
-CREATE TABLE movements (
-  idmovement INT AUTO_INCREMENT PRIMARY KEY,
-  movement_type VARCHAR(20) NOT NULL,
-  date_movement DATE NOT NULL,
-  amount INT NOT NULL,
-  category VARCHAR(100) NOT NULL,
-  product_name VARCHAR(150) NOT NULL,
-  idusers VARCHAR(100) NOT NULL
-);
-```
-
-El backend usa nombres de columnas concretos en sus consultas. Si el esquema local utiliza nombres distintos, las consultas de los controladores también deben actualizarse.
+| Columna         | Uso                                                                   |
+| --------------- | --------------------------------------------------------------------- |
+| `idmovements`   | Identificador del movimiento.                                         |
+| `idusers`       | Empresa propietaria (FK con cascade).                                 |
+| `movement_type` | Tipo de movimiento: `entrada` o `salida`.                             |
+| `date_movement` | Fecha del movimiento. El esquema la define como `DATE`.               |
+| `amount`        | Cantidad movida.                                                      |
+| `category`      | Categoría registrada en el movimiento (copia histórica).              |
+| `product_name`  | Producto afectado (copia histórica).                                  |
+| `product_code`  | Código del producto en ese momento.                                   |
 
 ### Reglas de inventario
 
-- Un producto requiere una categoría existente.
+- Un producto requiere una categoría existente de la misma empresa.
 - `amount` representa el stock actual del producto.
-- Una `entrada` incrementa el stock.
-- Una `salida` disminuye el stock.
+- Una `entrada` incrementa el stock; una `salida` lo disminuye.
 - No se permite una salida mayor que el stock disponible.
-- Al eliminar una categoría, el backend elimina primero los productos asociados y después la categoría.
-- El registro de movimientos conserva el nombre de producto y categoría usados en ese momento.
+- Al eliminar una categoría o un proveedor, el backend elimina primero los productos asociados y después el registro.
+- Al renombrar el usuario de una cuenta, las claves foráneas con `ON UPDATE CASCADE` arrastran el inventario e historial al nuevo identificador.
+- Al eliminar una cuenta se eliminan sus movimientos, productos, proveedores, categorías y finalmente la cuenta.
 
 ## API REST
 
@@ -386,11 +302,37 @@ Todas las respuestas usan JSON. La URL base local es:
 http://localhost:3000
 ```
 
-Actualmente no hay un middleware general que exija el JWT en cada endpoint. El frontend controla el acceso visual por rol, pero el backend debe reforzarse antes de exponerlo fuera de un entorno local.
+Salvo `/register` y `/logIn`, todos los endpoints exigen el header:
 
-Cuando una solicitud falla, la API responde con un objeto JSON que contiene `error`. Las respuestas exitosas de operaciones de escritura pueden incluir `message`; las consultas de listas devuelven arreglos.
+```text
+Authorization: Bearer <token>
+```
 
-### Autenticación y usuarios
+y operan siempre sobre el inventario de la cuenta autenticada. Cuando una solicitud falla, la API responde con un objeto JSON que contiene `error`. Las operaciones exitosas de escritura pueden incluir `message`; las consultas de listas devuelven arreglos.
+
+### Autenticación y cuenta
+
+#### `POST /register`
+
+Crea una cuenta/empresa e inicia sesión automáticamente. La contraseña debe alcanzar el nivel mínimo aceptado por `zxcvbn`.
+
+```json
+{
+  "idusers": "usuario1",
+  "companyName": "Ferretería Central",
+  "password": "UnaContraseñaSegura"
+}
+```
+
+Respuesta exitosa:
+
+```json
+{
+  "message": "Cuenta creada correctamente.",
+  "token": "eyJ...",
+  "companyName": "Ferretería Central"
+}
+```
 
 #### `POST /logIn`
 
@@ -408,57 +350,64 @@ Respuesta exitosa:
 ```json
 {
   "message": "Inicio de sesión exitoso.",
-  "token": "eyJ..."
+  "token": "eyJ...",
+  "companyName": "Ferretería Central"
 }
 ```
 
-#### `POST /newUser`
+#### `GET /accountInfo`
 
-Crea un usuario. La contraseña debe alcanzar el nivel mínimo aceptado por `zxcvbn`.
+Devuelve el usuario y el nombre de empresa de la cuenta autenticada.
 
 ```json
 {
   "idusers": "usuario1",
-  "password": "UnaContraseñaSegura",
-  "rol": "regular"
+  "companyName": "Ferretería Central"
 }
 ```
 
-#### `GET /listUsers?rol=regular`
+#### `PUT /updateAccount`
 
-Lista usuarios. El parámetro `rol` es opcional.
+Cambia el nombre de usuario, el nombre de la empresa o ambos. Devuelva un token nuevo porque el usuario puede haber cambiado.
+
+```json
+{
+  "newIdusers": "usuario1",
+  "companyName": "Ferretería Central 2"
+}
+```
+
+Al menos uno de los dos campos es obligatorio.
 
 #### `POST /changePassword`
 
-Cambia la contraseña y exige confirmación.
+Cambia la contraseña de la cuenta autenticada y exige la contraseña actual.
 
 ```json
 {
-  "idusers": "usuario1",
+  "currentPassword": "ContraseñaActual",
   "newPassword": "NuevaContraseñaSegura",
   "confirmPassword": "NuevaContraseñaSegura"
 }
 ```
 
-#### `DELETE /deleteUser/:idusers/:tokenUser`
+#### `DELETE /deleteAccount`
 
-Elimina un usuario. `tokenUser` se utiliza para impedir que la cuenta se elimine a sí misma.
+Elimina la cuenta autenticada y todo su inventario. Exige la contraseña.
 
-Ejemplo:
-
-```text
-DELETE /deleteUser/usuario2/usuario1
+```json
+{
+  "password": "UnaContraseñaSegura"
+}
 ```
 
 ### Categorías
 
 #### `GET /listCategories`
 
-Devuelve todas las categorías.
+Devuelve las categorías de la empresa autenticada.
 
 #### `POST /newCategory`
-
-Crea una categoría.
 
 ```json
 {
@@ -466,25 +415,26 @@ Crea una categoría.
 }
 ```
 
+#### `PUT /updateCategory`
+
+```json
+{
+  "idcategoria": 1,
+  "categoryName": "Papelería"
+}
+```
+
 #### `DELETE /deleteCategory/:categoryName`
 
-Elimina una categoría y los productos asociados a ella.
-
-Ejemplo:
-
-```text
-DELETE /deleteCategory/Papelería
-```
+Elimina una categoría de la empresa y los productos asociados a ella.
 
 ### Proveedores
 
 #### `GET /listProviders`
 
-Devuelve la lista de proveedores.
+Devuelve los proveedores de la empresa (sin incluir la centinela predeterminada).
 
 #### `POST /newProvider`
-
-Crea un proveedor. Ambos campos son obligatorios:
 
 ```json
 {
@@ -493,15 +443,27 @@ Crea un proveedor. Ambos campos son obligatorios:
 }
 ```
 
+#### `PUT /updateProvider`
+
+```json
+{
+  "idprovider": 1,
+  "provider_name": "Distribuidora Central",
+  "contact": 555123456
+}
+```
+
+El proveedor predeterminado (`idprovider = 0`) no se puede editar.
+
 #### `DELETE /deleteProvider/:provider_name`
 
-Elimina un proveedor y los productos asociados. El proveedor predeterminado no se puede eliminar.
+Elimina un proveedor de la empresa y los productos asociados. El proveedor predeterminado no se puede eliminar.
 
 ### Productos
 
 #### `GET /filterProducts`
 
-Lista productos y permite aplicar filtros opcionales:
+Lista los productos de la empresa y permite aplicar filtros opcionales:
 
 ```text
 GET /filterProducts?categoryName=Papelería&provider_name=Distribuidora%20Central&amount=10
@@ -509,18 +471,18 @@ GET /filterProducts?categoryName=Papelería&provider_name=Distribuidora%20Centra
 
 Parámetros:
 
-- `categoryName`: filtra por nombre de categoría.
-- `provider_name`: filtra por nombre de proveedor.
+- `product_code`
+- `categoryName`
+- `provider_name`
 - `amount`: devuelve productos cuya cantidad sea menor o igual al valor indicado.
-
-La respuesta incluye `idproducts`, `product_name`, `amount`, `description`, `category` y `provider_name`.
 
 #### `POST /newProduct`
 
-Crea un producto. `product_name`, `categoryName` y `provider_name` son obligatorios; `amount` y `description` son opcionales.
+`product_code`, `product_name`, `categoryName` y `provider_name` son obligatorios; `amount` y `description` son opcionales. La categoría y el proveedor deben pertenecer a la empresa.
 
 ```json
 {
+  "product_code": "PAP-001",
   "product_name": "Cuaderno",
   "amount": 25,
   "description": "Cuaderno de 100 hojas",
@@ -529,68 +491,51 @@ Crea un producto. `product_name`, `categoryName` y `provider_name` son obligator
 }
 ```
 
+#### `PUT /updateProduct`
+
+Mismos campos que `newProduct` más `idproducts`.
+
 #### `DELETE /deleteProduct/:product_name`
 
-Elimina un producto por nombre.
-
-Ejemplo:
-
-```text
-DELETE /deleteProduct/Cuaderno
-```
+Elimina un producto de la empresa por nombre.
 
 ### Movimientos
 
 #### `POST /newMovement`
 
-Registra una entrada o salida, actualiza el stock y guarda el movimiento.
+Registra una entrada o salida, actualiza el stock y guarda el movimiento. El usuario que registra el movimiento se toma del token.
 
 ```json
 {
   "type": "entrada",
   "amount": 10,
   "category_name": "Papelería",
-  "product_name": "Cuaderno",
-  "userName": "usuario1"
+  "product_name": "Cuaderno"
 }
 ```
 
-Valores válidos de `type`:
-
-- `entrada`
-- `salida`
-
-Para una salida, la cantidad no puede superar el stock disponible.
+Valores válidos de `type`: `entrada` y `salida`. Para una salida, la cantidad no puede superar el stock disponible.
 
 #### `GET /filterMovements`
 
-Lista los movimientos ordenados del más reciente al más antiguo. Todos los parámetros son opcionales:
+Lista los movimientos de la empresa ordenados del más reciente al más antiguo. Todos los parámetros son opcionales:
 
 ```text
-GET /filterMovements?type=salida&category_name=Papelería&product_name=Cuaderno&initDate=2026-01-01&finalDate=2026-12-31
+GET /filterMovements?type=salida&category_name=Papelería&product_name=Cuaderno&product_code=PAP-001&initDate=2026-01-01&finalDate=2026-12-31
 ```
-
-Parámetros:
-
-- `type`
-- `category_name`
-- `product_name`
-- `initDate`
-- `finalDate`
-
-El filtro de fechas se aplica cuando se proporcionan `initDate` y `finalDate`.
 
 ## Rutas del frontend
 
-| Ruta              | Acceso    | Pantalla                           |
-| ----------------- | --------- | ---------------------------------- |
-| `/`               | Público   | Inicio de sesión                   |
-| `/adminMain`      | `admin`   | Panel principal de administración  |
-| `/adminUsers`     | `admin`   | Administración de usuarios         |
-| `/adminCategory`  | `admin`   | Administración de categorías       |
-| `/adminMovements` | `admin`   | Consulta de movimientos            |
-| `/regularMain`    | `regular` | Panel principal de usuario regular |
-| `/productsReg`    | `regular` | Gestión de productos               |
+| Ruta         | Acceso  | Pantalla                                                     |
+| ------------ | ------- | ------------------------------------------------------------ |
+| `/`          | Público | Bienvenida: crear cuenta o iniciar sesión                    |
+| `/panel`     | Sesión  | Panel principal con acceso a cada sección                    |
+| `/products`  | Sesión  | Administrador de productos                                   |
+| `/categories`| Sesión  | Administrador de categorías                                  |
+| `/providers` | Sesión  | Administrador de proveedores                                 |
+| `/movements` | Sesión  | Administrador de movimientos                                 |
+| `/account`   | Sesión  | Mi cuenta: usuario, empresa, contraseña y eliminación        |
+| `*`          | Público | Redirige a la bienvenida                                     |
 
 ## Estructura del proyecto
 
@@ -602,43 +547,43 @@ inventario/
 │   ├── secretKey.env           # Secreto JWT local, excluido de Git
 │   ├── bin/www                  # Servidor HTTP y puerto
 │   ├── db/db.js                # Conexión MySQL
-│   ├── controllers/            # Controladores de usuarios, categorías, productos y movimientos
-│   └── routes/routes.js         # Registro de endpoints
+│   ├── middleware/auth.js      # Verificación del JWT y req.user.idusers
+│   ├── controllers/            # Controladores de cuenta, categorías, productos y movimientos
+│   └── routes/routes.js        # Registro de endpoints (auth en casi todos)
 ├── frontend/
 │   ├── package.json            # Dependencias y scripts de Vite
 │   ├── vite.config.ts          # Puerto 4000 y plugin React
 │   └── src/
-│       ├── App.tsx             # Router, rutas protegidas y botones de tema e idioma
+│       ├── App.tsx             # Router, guardia de navegación y botones de tema e idioma
+│       ├── api.ts              # apiFetch: adjunta el JWT y maneja el 401
 │       ├── main.tsx            # Punto de entrada React
 │       ├── i18n.tsx            # Traducciones (es/en), proveedor e hook de idioma
-│       ├── general/            # Inicio de sesión
-│       ├── admin/               # Vistas y operaciones administrativas
-│       ├── regular/             # Vistas para usuarios regulares
+│       ├── welcome/            # Bienvenida: héroe, tarjetas y formularios de registro e inicio de sesión
+│       ├── panel/              # Pantallas del panel (productos, categorías, proveedores, movimientos, cuenta) y sus formularios
+│       ├── visual/             # Fondo animado Vanta (three.js, importación diferida)
 │       ├── ruteProtection/      # Protección de rutas en el cliente
-│       ├── alerts/              # Alertas de interfaz
-│       └── styles/              # Estilos globales
+│       ├── session/            # Cierre de sesión y temporizador de inactividad
+│       ├── alerts/             # Alertas de interfaz
+│       └── styles/             # Estilos globales
 ├── database/
-│   └── schema.sql                # Esquema SQL consolidado de la base de datos
+│   └── schema.sql              # Esquema SQL multiempresa
 ├── .gitignore
 └── README.md
 ```
 
 ## Seguridad
 
-Antes de usar el sistema en producción, se recomienda:
-
-- Cambiar el secreto JWT por uno largo, aleatorio y exclusivo del entorno.
-- No versionar `backend/secretKey.env` ni credenciales de MySQL.
-- Mover host, usuario, contraseña y nombre de base de datos a variables de entorno.
-- Añadir middleware de autenticación JWT en el backend.
-- Validar el rol en el servidor para cada operación administrativa.
-- Usar HTTPS.
-- Validar y limitar los valores de `amount`, incluyendo explícitamente cantidades cero, decimales y valores no numéricos.
-- Usar transacciones para actualizar el stock y registrar el movimiento como una operación atómica.
-- Añadir claves foráneas e índices adecuados para productos, categorías, usuarios y movimientos.
-- Mantener las respuestas de error breves y sin detalles internos de la base de datos.
-- Configurar CORS con una lista de orígenes permitidos por entorno.
-- Rotar las credenciales si alguna contraseña o secreto ya fue expuesto.
+- El middleware `backend/middleware/auth.js` valida el JWT en todos los endpoints salvo `/register` y `/logIn`.
+- Cada consulta de inventario filtra por `req.user.idusers`; los identificadores que llegan en la petición (producto, categoría, proveedor) se contrastan siempre con la cuenta autenticada.
+- Los cambios de cuenta y la eliminación exigen la contraseña actual.
+- Antes de usar el sistema en producción se recomienda además:
+  - Cambiar el secreto JWT por uno largo, aleatorio y exclusivo del entorno.
+  - No versionar `backend/secretKey.env` ni credenciales de MySQL.
+  - Mover host, usuario, contraseña y nombre de base de datos a variables de entorno.
+  - Usar HTTPS.
+  - Usar transacciones para actualizar el stock y registrar el movimiento como una operación atómica.
+  - Configurar CORS con una lista de orígenes permitidos por entorno.
+  - Rotar las credenciales si alguna contraseña o secreto ya fue expuesto.
 
 ## Problemas frecuentes
 
@@ -649,21 +594,20 @@ Comprueba que:
 1. El backend esté ejecutándose en `http://localhost:3000`.
 2. El frontend esté ejecutándose en `http://localhost:4000`.
 3. MySQL esté iniciado.
-4. La base de datos `inventary` exista.
-5. Las tablas y columnas coincidan con las consultas del backend.
-6. El origen del frontend coincida con la configuración CORS de `backend/app.js`.
+4. La base de datos `inventary` exista con el esquema de `database/schema.sql`.
+5. El origen del frontend coincida con la configuración CORS de `backend/app.js`.
 
-### Error de conexión con MySQL
+### La aplicación vuelve sola a la página de bienvenida
 
-Revisa las credenciales de `backend/db/db.js`, el nombre `inventary`, el puerto de MySQL y que el servidor acepte conexiones locales.
+El backend respondió `401`: la sesión no es válida o el token caducó (duración de una hora). Inicia sesión de nuevo.
 
 ### El usuario no puede iniciar sesión
 
-Verifica que el registro exista, que la contraseña se haya almacenado mediante `bcrypt` y que `backend/secretKey.env` contenga `JWT_SECRET`.
+Verifica que la cuenta exista (el registro es público desde la bienvenida), que la contraseña se haya almacenado mediante `bcrypt` y que `backend/secretKey.env` contenga `JWT_SECRET`.
 
-### El acceso por rol no funciona
+### Error de conexión con MySQL
 
-El valor de `rol` debe ser exactamente `admin` o `regular`. El frontend decodifica el JWT y compara esos valores literalmente.
+Revisa las credenciales en `backend/db/db.js`, el nombre `inventary`, el puerto de MySQL y que el servidor acepte conexiones locales.
 
 ## Scripts disponibles
 
@@ -691,4 +635,4 @@ npm run preview
 
 ## Estado del proyecto
 
-El proyecto está preparado para desarrollo local. Para un entorno productivo todavía deben completarse, como mínimo, la gestión de secretos por entorno, la autorización en el backend, las migraciones de base de datos, el manejo transaccional de movimientos y una estrategia de despliegue con HTTPS.
+El proyecto está preparado para desarrollo local. Para un entorno productivo todavía deben completarse, como mínimo, la gestión de secretos por entorno, el manejo transaccional de movimientos y una estrategia de despliegue con HTTPS.

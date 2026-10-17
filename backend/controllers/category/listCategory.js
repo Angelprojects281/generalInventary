@@ -1,9 +1,10 @@
 const db = require("../../db/db");
 
 const listCategories = (req, res) => {
-  const listQuery = "SELECT * FROM categories";
+  const listQuery =
+    "SELECT * FROM categories WHERE BINARY idusers = ? ORDER BY category";
 
-  db.query(listQuery, (err, results) => {
+  db.query(listQuery, [req.user.idusers], (err, results) => {
     if (err) {
       return res.status(500).json({
         error: "No se pudieron cargar las categorías. Inténtelo de nuevo.",

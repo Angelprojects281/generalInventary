@@ -1,11 +1,13 @@
 var express = require("express");
 var router = express.Router();
 
-const newUser = require("../controllers/users/newUser");
+const auth = require("../middleware/auth");
+const register = require("../controllers/users/register");
 const logIn = require("../controllers/users/logIn");
-const listUsers = require("../controllers/users/filterUsers");
+const getAccount = require("../controllers/users/getAccount");
+const updateAccount = require("../controllers/users/updateAccount");
 const changePassword = require("../controllers/users/changePassword");
-const deleteUser = require("../controllers/users/deleteUser");
+const deleteAccount = require("../controllers/users/deleteAccount");
 const newCategory = require("../controllers/category/newCategory");
 const deleteCategory = require("../controllers/category/deleteCategory");
 const newProduct = require("../controllers/products/newProduct");
@@ -17,49 +19,51 @@ const filterMovements = require("../controllers/movements/filterMovements");
 const newProvider = require("../controllers/providers/newProvider");
 const listProviders = require("../controllers/providers/listProviders");
 const deleteProvider = require("../controllers/providers/deleteProvider");
-const updateUser = require("../controllers/users/updateUser");
 const updateCategory = require("../controllers/category/updateCategory");
 const updateProvider = require("../controllers/providers/updateProvider");
 const updateProduct = require("../controllers/products/updateProduct");
 
-router.post("/newUser", newUser);
+// Rutas publicas: registro e inicio de sesion.
+router.post("/register", register);
 
 router.post("/logIn", logIn);
 
-router.get("/listUsers", listUsers);
+// Todo lo demas exige un JWT valido; cada cuenta solo accede a su
+// propio inventario mediante req.user.idusers.
+router.get("/accountInfo", auth, getAccount);
 
-router.post("/changePassword", changePassword);
+router.put("/updateAccount", auth, updateAccount);
 
-router.delete("/deleteUser/:idusers/:tokenUser", deleteUser);
+router.post("/changePassword", auth, changePassword);
 
-router.post("/newCategory", newCategory);
+router.delete("/deleteAccount", auth, deleteAccount);
 
-router.delete("/deleteCategory/:categoryName", deleteCategory);
+router.post("/newCategory", auth, newCategory);
 
-router.post("/newProduct", newProduct);
+router.delete("/deleteCategory/:categoryName", auth, deleteCategory);
 
-router.delete("/deleteProduct/:product_name", deleteProduct);
+router.post("/newProduct", auth, newProduct);
 
-router.get("/listCategories", listCategories);
+router.delete("/deleteProduct/:product_name", auth, deleteProduct);
 
-router.get("/filterProducts", filterProducts);
+router.get("/listCategories", auth, listCategories);
 
-router.post("/newMovement", newMovement);
+router.get("/filterProducts", auth, filterProducts);
 
-router.get("/filterMovements", filterMovements);
+router.post("/newMovement", auth, newMovement);
 
-router.post("/newProvider", newProvider);
+router.get("/filterMovements", auth, filterMovements);
 
-router.get("/listProviders", listProviders);
+router.post("/newProvider", auth, newProvider);
 
-router.delete("/deleteProvider/:provider_name", deleteProvider);
+router.get("/listProviders", auth, listProviders);
 
-router.put("/updateUser", updateUser);
+router.delete("/deleteProvider/:provider_name", auth, deleteProvider);
 
-router.put("/updateCategory", updateCategory);
+router.put("/updateCategory", auth, updateCategory);
 
-router.put("/updateProvider", updateProvider);
+router.put("/updateProvider", auth, updateProvider);
 
-router.put("/updateProduct", updateProduct);
+router.put("/updateProduct", auth, updateProduct);
 
 module.exports = router;

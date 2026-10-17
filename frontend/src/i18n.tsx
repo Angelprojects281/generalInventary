@@ -9,54 +9,91 @@ import {
 export type Language = "es" | "en";
 
 const translations: Record<string, string> = {
-  "Panel de administrador": "Administrator Dashboard",
-  "Bienvenido al panel de administrador, que vas a hacer hoy?":
-    "Welcome to the administrator dashboard. What would you like to do today?",
-  "Administrar usuarios": "Manage Users",
-  "Administrar categorias": "Manage Categories",
-  "Administrar proveedores": "Manage Providers",
-  "Administrar movimientos": "Manage Movements",
   "Cerrar sesion": "Log Out",
-  "Panel regular": "Staff Dashboard",
-  "Bienvenido al panel regular, que vas a hacer hoy?":
-    "Welcome to the staff dashboard. What would you like to do today?",
-  "Administrar productos": "Manage Products",
-  "Inicio de sesion": "Log In",
-  "Introduce tu usuario y contraseña:": "Enter your username and password:",
+  "Bienvenido a tu inventario": "Welcome to your inventory",
+  "Crear una cuenta": "Create an account",
+  "Iniciar sesión": "Log in",
   usuario: "username",
   contraseña: "password",
   "INICIAR SESION": "LOG IN",
+  "nombre de la empresa": "company name",
+  "confirmar contraseña": "confirm password",
+  "CREAR CUENTA": "CREATE ACCOUNT",
+  Panel: "Dashboard",
+  "Mi cuenta": "My account",
+  "Administrador de productos": "Product Manager",
+  "Administrador de categorias": "Category Manager",
+  "Administrador de proveedores": "Provider Manager",
+  "Administrador de movimientos": "Movement Manager",
+  Hola: "Hello",
+  empresa: "company",
+  "Tu inventario, siempre bajo control": "Your inventory, always under control",
+  "Crea la cuenta de tu empresa y gestiona productos, categorías, proveedores y movimientos desde un único panel, sin complicaciones.":
+    "Create your company account and manage products, categories, providers and movements from a single panel, without hassle.",
+  "Productos y categorías organizados a tu manera":
+    "Products and categories organized your way",
+  "Entradas y salidas registradas con su historial":
+    "Inbound and outbound movements recorded with their history",
+  "Cada empresa ve solo su propio inventario":
+    "Each company only sees its own inventory",
+  "Empieza en un minuto": "Get started in a minute",
+  "Crea tu cuenta con un usuario, el nombre de tu empresa y una contraseña.":
+    "Create your account with a username, your company name and a password.",
+  "Todo en un solo panel": "Everything in a single panel",
+  "Productos, categorías, proveedores y movimientos con filtros y búsqueda rápida.":
+    "Products, categories, providers and movements with filters and fast search.",
+  "Tu inventario es tuyo": "Your inventory is yours",
+  "Los datos de cada empresa están aislados y puedes eliminar tu cuenta cuando quieras.":
+    "Each company's data is isolated and you can delete your account whenever you want.",
+  "Da de alta, edita y borra productos y consulta sus existencias.":
+    "Add, edit and delete products and check their stock.",
+  "Organiza tus productos con las categorías que necesites.":
+    "Organize your products with the categories you need.",
+  "Mantén al día el listado de proveedores de tu empresa.":
+    "Keep your company's provider list up to date.",
+  "Revisa entradas y salidas con filtros por fecha y tipo.":
+    "Review inbound and outbound movements with date and type filters.",
+  "Cambia tus datos, tu contraseña o elimina la cuenta.":
+    "Change your details, your password or delete the account.",
+  "Sin nombre de empresa": "No company name",
+  "Gestiona tu cuenta": "Manage your account",
   "Cambiar idioma": "Change language",
   "Cambiar a tema": "Switch to",
   claro: "light",
   oscuro: "dark",
+  Productos: "Products",
+  Categorias: "Categories",
+  Proveedores: "Providers",
+  Movimientos: "Movements",
+  Empresa: "Company",
+  Usuario: "User",
+  "Editar datos de la cuenta": "Edit account details",
+  "Datos de la cuenta": "Account details",
+  "Cambiar contraseña": "Change Password",
+  "Eliminar cuenta": "Delete account",
+  "Cerrar sesión": "Log out",
+  "Guardar cambios": "Save changes",
+  "Contraseña actual": "Current password",
   Accion: "Action",
+  "Más acciones": "More actions",
   Estado: "Status",
-  "Administrador de categorias": "Category Manager",
-  "Nueva categoria +": "New Category +",
   Numero: "Number",
   Categoría: "Category",
   Categoria: "Category",
   "Eliminar categoria": "Delete Category",
-  "Administrador de proveedores": "Provider Manager",
-  "Nuevo proveedor +": "New Provider +",
+  "Editar categoria": "Edit Category",
+  "Nueva categoria +": "New Category +",
+  "Nueva categoria": "New Category",
   Proveedor: "Provider",
   Contacto: "Contact",
   "Eliminar proveedor": "Delete Provider",
+  "Editar proveedor": "Edit Provider",
+  "Nuevo proveedor +": "New Provider +",
+  "Nuevo proveedor": "New Provider",
   "Proveedor protegido": "Protected Provider",
-  "Administrador de usuarios": "User Manager",
-  "Nuevo usuario +": "New User +",
   Filtros: "Filters",
   "Ocultar −": "Hide −",
   "Mostrar +": "Show +",
-  "seleccione un rol": "Select a role",
-  administrador: "administrator",
-  regular: "staff",
-  Usuario: "User",
-  Rol: "Role",
-  "Cambiar contraseña": "Change Password",
-  "Eliminar usuario": "Delete User",
-  "Administrador de movimientos": "Movement Manager",
   "seleccione un tipo": "Select a type",
   entrada: "inbound",
   salida: "outbound",
@@ -71,28 +108,23 @@ const translations: Record<string, string> = {
   Fecha: "Date",
   Cantidad: "Quantity",
   Producto: "Product",
-  "Administrador de productos": "Product Manager",
   "Nuevo producto +": "New Product +",
+  "Nuevo producto": "New Product",
+  "Editar producto": "Edit Product",
+  "Eliminar producto": "Delete Product",
+  "Nuevo movimiento": "New Movement",
   "Todos los proveedores": "All providers",
   "cantidad menor que": "quantity less than",
   Nombre: "Name",
   Descripcion: "Description",
   Descripción: "Description",
-  "Nuevo movimiento": "New Movement",
-  "Eliminar producto": "Delete Product",
-  "Nuevo usuario": "New User",
   Crear: "Create",
   Cancelar: "Cancel",
-  "Nuevo proveedor": "New Provider",
+  Guardar: "Save",
   proveedor: "provider",
   contacto: "contact",
-  "Actualizando contraseña para el usuario":
-    "Updating password for user",
   "contraseña nueva": "new password",
-  "confirmar contraseña": "confirm password",
-  "Nueva categoria": "New Category",
   categoria: "category",
-  "Nuevo producto": "New Product",
   producto: "product",
   cantidad: "quantity",
   descripcion: "description",
@@ -108,10 +140,29 @@ const translations: Record<string, string> = {
     "The username or password is incorrect.",
   "Inicio de sesión exitoso.": "Logged in successfully.",
   "Ingrese su usuario y contraseña.": "Enter your username and password.",
-  "No se pudo crear el usuario": "Could not create user",
+  "No se pudo crear la cuenta": "Could not create the account",
   "Complete todos los campos obligatorios.":
     "Complete all required fields.",
-  "Usuario creado": "User created",
+  "Las contraseñas no coinciden.": "Passwords do not match.",
+  "No se pudo cargar la cuenta": "Could not load the account",
+  "No se pudo cargar la cuenta. Inténtelo de nuevo.":
+    "Could not load the account. Please try again.",
+  "No se pudo actualizar la cuenta": "Could not update the account",
+  "No se pudo actualizar la cuenta. Inténtelo de nuevo.":
+    "Could not update the account. Please try again.",
+  "Cuenta actualizada": "Account updated",
+  "Cuenta actualizada correctamente.": "Account updated successfully.",
+  "No se pudo eliminar la cuenta": "Could not delete the account",
+  "No se pudo eliminar la cuenta. Inténtelo de nuevo.":
+    "Could not delete the account. Please try again.",
+  "Cuenta eliminada": "Account deleted",
+  "Confirma tu contraseña para eliminar la cuenta.":
+    "Confirm your password to delete the account.",
+  "Confirma tu contraseña para eliminar la cuenta y todo su inventario.":
+    "Confirm your password to delete the account and its entire inventory.",
+  "¿Deseas eliminar tu cuenta?": "Do you want to delete your account?",
+  "Se eliminarán tu inventario, productos, categorías, proveedores y movimientos. Esta acción no se puede deshacer.":
+    "Your inventory, products, categories, providers, and movements will be deleted. This action cannot be undone.",
   "No se pudo crear el proveedor": "Could not create provider",
   "Ingrese un nombre y un número de contacto válido.":
     "Enter a name and a valid contact number.",
@@ -120,8 +171,8 @@ const translations: Record<string, string> = {
     "Provider {0} was created successfully.",
   "No se pudo cambiar la contraseña": "Could not change password",
   "Complete ambos campos.": "Complete both fields.",
-  "Las contraseñas no coinciden.": "Passwords do not match.",
   "Contraseña actualizada": "Password updated",
+  "Contraseña actualizada correctamente.": "Password updated successfully.",
   "No se pudo crear la categoría": "Could not create category",
   "Ingrese el nombre de la categoría.": "Enter a category name.",
   "Categoría creada": "Category created",
@@ -133,7 +184,6 @@ const translations: Record<string, string> = {
   "Movimiento registrado": "Movement recorded",
   "No se pudieron cargar los productos": "Could not load products",
   "No se pudieron cargar los movimientos": "Could not load movements",
-  "No se pudieron cargar los usuarios": "Could not load users",
   "No se pudieron cargar las categorías": "Could not load categories",
   "No se pudieron cargar los proveedores": "Could not load providers",
   "No se pudo eliminar el producto": "Could not delete product",
@@ -142,11 +192,7 @@ const translations: Record<string, string> = {
   "Categoría eliminada": "Category deleted",
   "No se pudo eliminar el proveedor": "Could not delete provider",
   "Proveedor eliminado": "Provider deleted",
-  "No se pudo eliminar el usuario": "Could not delete user",
-  "Usuario eliminado": "User deleted",
-  "¿Deseas eliminar este usuario?": "Do you want to delete this user?",
-  "¿Deseas eliminar esta categoría?":
-    "Do you want to delete this category?",
+  "¿Deseas eliminar esta categoría?": "Do you want to delete this category?",
   "¿Deseas eliminar este proveedor?": "Do you want to delete this provider?",
   "¿Deseas eliminar este producto?": "Do you want to delete this product?",
   "Revisa la información antes de continuar. Esta acción no se puede deshacer.":
@@ -239,48 +285,52 @@ const translations: Record<string, string> = {
     "Could not load categories. Please try again.",
   "No se pudieron cargar los proveedores. Inténtelo de nuevo.":
     "Could not load providers. Please try again.",
-  "No se pudieron cargar los usuarios. Inténtelo de nuevo.":
-    "Could not load users. Please try again.",
-  "El usuario no existe o ya fue eliminado.":
-    "The user does not exist or was already deleted.",
-  "No se pudo identificar al usuario que desea eliminar.":
-    "Could not identify the user you want to delete.",
-  "No puede eliminar su propia cuenta.": "You cannot delete your own account.",
-  "No se pudo eliminar el usuario. Inténtelo de nuevo.":
-    "Could not delete the user. Please try again.",
-  "Ingrese el usuario y la contraseña.": "Enter a username and password.",
-  "El usuario ya existe.": "The user already exists.",
   "Ya existe una cuenta con ese usuario.":
     "An account with that username already exists.",
-  "No se pudo verificar si el usuario ya existe.":
-    "Could not check whether the user already exists.",
-  "No se pudo crear el usuario. Inténtelo de nuevo.":
-    "Could not create the user. Please try again.",
+  "No se pudo verificar si la cuenta ya existe.":
+    "Could not check whether the account already exists.",
+  "No se pudo crear la cuenta. Inténtelo de nuevo.":
+    "Could not create the account. Please try again.",
   "No se pudo actualizar la contraseña. Inténtelo de nuevo.":
     "Could not update the password. Please try again.",
-  "No se encontró el usuario.": "The user was not found.",
   "La contraseña no cumple los requisitos de seguridad.":
     "The password does not meet the security requirements.",
-  "Usuario creado correctamente.": "User created successfully.",
-  "Usuario eliminado correctamente.": "User deleted successfully.",
-  "Contraseña actualizada correctamente.": "Password updated successfully.",
-  "Editar usuario": "Edit User",
-  "Editar categoria": "Edit Category",
-  "Editar proveedor": "Edit Provider",
-  "Editar producto": "Edit Product",
-  Guardar: "Save",
+  "Cuenta creada correctamente.": "Account created successfully.",
+  "El usuario no puede superar los 50 caracteres.":
+    "The username cannot exceed 50 characters.",
+  "El nombre de la empresa no puede superar los 100 caracteres.":
+    "The company name cannot exceed 100 characters.",
+  "La sesión no es válida. Inicie sesión de nuevo.":
+    "Your session is not valid. Please log in again.",
+  "La sesión expiró. Inicie sesión de nuevo.":
+    "Your session expired. Please log in again.",
+  "La cuenta no existe o ya fue eliminada.":
+    "The account does not exist or was already deleted.",
+  "No se pudo verificar la cuenta. Inténtelo de nuevo.":
+    "Could not verify the account. Please try again.",
+  "La contraseña actual es incorrecta.": "The current password is incorrect.",
+  "La contraseña es incorrecta.": "The password is incorrect.",
+  "No se pudo eliminar el historial. Inténtelo de nuevo.":
+    "Could not delete the movement history. Please try again.",
+  "No se pudieron eliminar los productos. Inténtelo de nuevo.":
+    "Could not delete the products. Please try again.",
+  "No se pudieron eliminar los proveedores. Inténtelo de nuevo.":
+    "Could not delete the providers. Please try again.",
+  "No se pudieron eliminar las categorías. Inténtelo de nuevo.":
+    "Could not delete the categories. Please try again.",
+  "La cuenta y su inventario se eliminaron correctamente.":
+    "The account and its inventory were deleted successfully.",
+  "Ingrese el nuevo usuario o el nombre de la empresa.":
+    "Enter the new username or the company name.",
   "¿Deseas guardar los cambios?": "Do you want to save the changes?",
   "Verifica los datos antes de guardar.": "Check the data before saving.",
   "Cambios guardados": "Changes saved",
   "No se pudieron guardar los cambios": "Changes could not be saved",
-  "Usuario actualizado correctamente.": "User updated successfully.",
   "Categoría actualizada correctamente.": "Category updated successfully.",
   "Proveedor actualizado correctamente.": "Provider updated successfully.",
   "Producto actualizado correctamente.": "Product updated successfully.",
   "No se pudo verificar el usuario. Inténtelo de nuevo.":
     "Could not verify the user. Please try again.",
-  "No se pudo actualizar el usuario. Inténtelo de nuevo.":
-    "Could not update the user. Please try again.",
   "No se pudo actualizar la categoría. Inténtelo de nuevo.":
     "Could not update the category. Please try again.",
   "No se pudo actualizar el proveedor. Inténtelo de nuevo.":
@@ -300,15 +350,11 @@ const translations: Record<string, string> = {
 };
 
 const dynamicTranslations: [RegExp, string][] = [
-  [/^El usuario (.+) se creó correctamente con el rol (.+)\.$/, "User $1 was created successfully with the role $2."],
-  [/^La contraseña del usuario (.+) se actualizó correctamente\.$/, "The password for user $1 was updated successfully."],
   [/^La categoría (.+) se creó correctamente\.$/, "Category $1 was created successfully."],
   [/^La categoría (.+) se eliminó correctamente\.$/, "Category $1 was deleted successfully."],
   [/^El producto (.+) se creó correctamente\.$/, "Product $1 was created successfully."],
-  [/^El usuario (.+) se eliminó correctamente\.$/, "User $1 was deleted successfully."],
   [/^El proveedor (.+) se creó correctamente\.$/, "Provider $1 was created successfully."],
   [/^El proveedor (.+) y sus productos asociados se eliminaron\.$/, "Provider $1 and its associated products were deleted."],
-  [/^El usuario (.+) se actualizó correctamente\.$/, "User $1 was updated successfully."],
   [/^La categoría (.+) se actualizó correctamente\.$/, "Category $1 was updated successfully."],
   [/^El proveedor (.+) se actualizó correctamente\.$/, "Provider $1 was updated successfully."],
   [/^El producto (.+) se actualizó correctamente\.$/, "Product $1 was updated successfully."],

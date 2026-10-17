@@ -39,15 +39,14 @@ const logIn = async (req, res) => {
       });
     }
 
-    const token = jwt.sign(
-      { idusers: user.idusers, rol: user.rol },
-      process.env.JWT_SECRET,
-      { expiresIn: "1h" },
-    );
+    const token = jwt.sign({ idusers: user.idusers }, process.env.JWT_SECRET, {
+      expiresIn: "1h",
+    });
 
     return res.status(200).json({
       message: "Inicio de sesión exitoso.",
       token,
+      companyName: user.company_name,
     });
   });
 };
