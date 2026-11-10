@@ -40,17 +40,18 @@ Aplicación web multiempresa para administrar categorías, proveedores, producto
 - Filtrado de movimientos por tipo, categoría, producto, código y rango de fechas.
 - Alertas visuales en el frontend mediante SweetAlert2, con mensajes de error consistentes.
 - Interfaz en español e inglés, con botón para cambiar el idioma y preferencia guardada en el navegador.
+- Selección de tema con 10 variantes (claro, oscuro y verde, morado, naranja y rosa en versión clara y oscura), con preferencia guardada en el navegador.
 
 ## Interfaz y mensajes
 
-- La interfaz usa una paleta monocromática de grises con acento azul suave (`--color-accent`); las acciones para editar conservan su acento azul y las de eliminar su acento rojo. Tipografía de sistema (`system-ui`, Segoe UI, Roboto) y tarjetas con radios y sombras amplios.
+- La interfaz usa una paleta monocromática de grises con un acento de color (`--color-accent`) que depende del tema elegido; las acciones para editar usan el acento del tema y las de eliminar su acento rojo. Tipografía de sistema (`system-ui`, Segoe UI, Roboto) y tarjetas con radios y sombras amplios.
 - La página de bienvenida es un héroe a dos columnas: titular y textos a la izquierda, composición ilustrativa (icono grande de `lucide-react` sobre formas flotantes) a la derecha, botones de crear cuenta e iniciar sesión en fila y una franja de tres tarjetas de características.
 - Tras autenticarse se accede al panel (`/panel`), con saludo y botón de cerrar sesión a la derecha de la cabecera y una rejilla de tarjetas con icono y descripción por sección (Productos, Categorías, Proveedores, Movimientos y una tarjeta destacada de Mi cuenta). Cada sección tiene su propia pantalla; la pantalla de cuenta muestra una tarjeta de identidad con el monograma de la empresa y las acciones en fila.
 - El fondo de la bienvenida y del panel lleva una malla 3D animada (efecto NET de Vanta sobre three.js) con la paleta del tema; el resto de la página usa un degradado radial fijo en `body`. Si el sistema pide movimiento reducido, Vanta no se monta y solo queda el degradado.
 - Los formularios muestran sus campos en dos columnas cuando hay espacio y se adaptan a una columna en pantallas estrechas. Sus botones van en fila.
 - Al abrir un formulario, el fondo se atenúa y desenfoca mientras el formulario permanece nítido; los formularios flotantes entran y salen animados con `motion` (`AnimatePresence`).
 - Las pantallas, filas, tarjetas y controles tienen animaciones de entrada y hover definidas con `motion` y con `@keyframes` en `frontend/src/styles/styles.css`. Se respeta la preferencia del sistema por reducir el movimiento (`MotionConfig reducedMotion="user"` y consulta `prefers-reduced-motion`).
-- Un botón fijo en la esquina inferior derecha alterna entre el tema claro y el oscuro. La preferencia se guarda en `localStorage` con la clave `inventario-theme`.
+- Un botón fijo en la esquina inferior derecha abre un selector con 10 temas: `claro`, `oscuro` y verde, morado, naranja y rosa en versión clara y oscura (`verde-oscuro`, `morado-oscuro`, `naranja-oscuro`, `rosa-oscuro`). El menú muestra un círculo de color por tema, marca el activo y se cierra al elegir o al pulsar fuera. La preferencia se guarda en `localStorage` con la clave `inventario-theme`; los valores antiguos `light`/`dark` se migran a `claro`/`oscuro` al cargar.
 - Junto al botón de tema hay un botón de idioma que alterna entre español e inglés y muestra `ES` o `EN` según el idioma activo.
 - El idioma predeterminado es español y la selección se guarda en `localStorage` con la clave `inventario-language`.
 - El sistema de traducciones vive en `frontend/src/i18n.tsx`. El texto visible se envuelve con la función `t()` del hook `useTranslation`, y las alertas usan `translateText`. Las claves se escriben en español; si una clave no tiene traducción, se muestra el texto original.

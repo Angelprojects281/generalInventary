@@ -27,7 +27,11 @@
   --radius-card: 16px;
 }
 
-:root[data-theme="dark"] {
+/* Paleta base oscura una sola vez: la comparte "oscuro" y cualquier variante
+   con sufijo -oscuro, que luego solo pisa sus variables de acento. */
+:root[data-theme="dark"],
+:root[data-theme="oscuro"],
+:root[data-theme$="-oscuro"] {
   color-scheme: dark;
   --color-page: #12161d;
   --color-surface: #1b212b;
@@ -51,6 +55,88 @@
   --shadow-card: 0 4px 16px rgb(0 0 0 / 32%);
   --shadow-card-hover: 0 12px 28px rgb(0 0 0 / 46%);
   --radius-card: 16px;
+}
+
+/* Variantes de color: cada tema solo pisa las variables de acento, por lo
+   que hereda la paleta base que ya aplique (clara u oscura). */
+:root[data-theme="verde"] {
+  --color-accent: #2f8f5b;
+  --color-accent-hover: #25734a;
+  --color-accent-soft: rgb(47 143 91 / 10%);
+  --color-accent-fade: rgb(47 143 91 / 0%);
+  --color-action: #45a06e;
+  --color-button: #1e6b44;
+  --color-button-hover: #155333;
+}
+
+:root[data-theme="verde-oscuro"] {
+  --color-accent: #5fd39a;
+  --color-accent-hover: #7fe0b1;
+  --color-accent-soft: rgb(95 211 154 / 14%);
+  --color-accent-fade: rgb(95 211 154 / 0%);
+  --color-action: #72dcab;
+  --color-button: #185c3b;
+  --color-button-hover: #1f724a;
+}
+
+:root[data-theme="morado"] {
+  --color-accent: #7c4dcc;
+  --color-accent-hover: #653cae;
+  --color-accent-soft: rgb(124 77 204 / 10%);
+  --color-accent-fade: rgb(124 77 204 / 0%);
+  --color-action: #9468e0;
+  --color-button: #4d2d8e;
+  --color-button-hover: #3d2473;
+}
+
+:root[data-theme="morado-oscuro"] {
+  --color-accent: #a982f0;
+  --color-accent-hover: #bd9df6;
+  --color-accent-soft: rgb(169 130 240 / 14%);
+  --color-accent-fade: rgb(169 130 240 / 0%);
+  --color-action: #b491f4;
+  --color-button: #5636ad;
+  --color-button-hover: #6a48c9;
+}
+
+:root[data-theme="naranja"] {
+  --color-accent: #d4712f;
+  --color-accent-hover: #b35d25;
+  --color-accent-soft: rgb(212 113 47 / 10%);
+  --color-accent-fade: rgb(212 113 47 / 0%);
+  --color-action: #e08552;
+  --color-button: #8f4a1b;
+  --color-button-hover: #733b15;
+}
+
+:root[data-theme="naranja-oscuro"] {
+  --color-accent: #f5a05f;
+  --color-accent-hover: #ffb680;
+  --color-accent-soft: rgb(245 160 95 / 14%);
+  --color-accent-fade: rgb(245 160 95 / 0%);
+  --color-action: #ffa873;
+  --color-button: #7c4315;
+  --color-button-hover: #965426;
+}
+
+:root[data-theme="rosa"] {
+  --color-accent: #d44f86;
+  --color-accent-hover: #b23f70;
+  --color-accent-soft: rgb(212 79 134 / 10%);
+  --color-accent-fade: rgb(212 79 134 / 0%);
+  --color-action: #e26a9a;
+  --color-button: #8c3159;
+  --color-button-hover: #6f2747;
+}
+
+:root[data-theme="rosa-oscuro"] {
+  --color-accent: #ff8fb5;
+  --color-accent-hover: #ffa8c6;
+  --color-accent-soft: rgb(255 143 181 / 14%);
+  --color-accent-fade: rgb(255 143 181 / 0%);
+  --color-action: #ff9dbc;
+  --color-button: #8f2d56;
+  --color-button-hover: #b72c69;
 }
 
 body {
@@ -395,6 +481,70 @@ body,
 .themeToggle:focus-visible {
   outline: 2px solid var(--color-ink);
   outline-offset: 3px;
+}
+
+/* Selector de temas: el botón queda envuelto en un contenedor que ancla el
+   popover por debajo, alineado a la derecha con el propio botón. */
+.themePicker {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: max-content;
+}
+
+/* Popover con la lista plana de temas: fila de botones-círculo. */
+.themeMenu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  width: max-content;
+  max-width: min(360px, calc(100vw - 28px));
+  box-sizing: border-box;
+  padding: 10px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  box-shadow: 0 10px 26px rgb(0 0 0 / 24%);
+}
+
+.themeSwatch {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  aspect-ratio: 1;
+  padding: 0;
+  border: 1px solid var(--color-border);
+  border-radius: 50%;
+  cursor: pointer;
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.themeSwatch:hover {
+  transform: translateY(-1px) scale(1.06);
+}
+
+.themeSwatch:focus-visible {
+  outline: 2px solid var(--color-ink);
+  outline-offset: 2px;
+}
+
+/* El tema activo se marca con un anillo, sin cambiar el tamaño del círculo. */
+.themeSwatch[aria-pressed="true"] {
+  box-shadow:
+    0 0 0 2px var(--color-surface),
+    0 0 0 4px var(--color-ink);
+}
+
+/* Estado abierto del botón que controla el popover. */
+.themeToggle[aria-expanded="true"] {
+  background: var(--color-surface-muted);
+  box-shadow: 0 5px 16px rgb(0 0 0 / 26%);
 }
 
 .infoList {
@@ -1029,6 +1179,17 @@ body:has(.formContainer)::before {
   .rowActionsPopover {
     right: auto;
     left: 0;
+  }
+
+  /* El selector de temas se estrecha para no desbordar en móvil. */
+  .themeMenu {
+    gap: 5px;
+    max-width: calc(100vw - 24px);
+    padding: 8px;
+  }
+
+  .themeSwatch {
+    width: 26px;
   }
 }
 

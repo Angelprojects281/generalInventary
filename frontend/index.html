@@ -7,8 +7,26 @@
     <title>Inventario</title>
     <script>
       try {
-        if (localStorage.getItem("inventario-theme") === "dark") {
-          document.documentElement.dataset.theme = "dark";
+        const themes = [
+          "claro",
+          "oscuro",
+          "verde",
+          "verde-oscuro",
+          "morado",
+          "morado-oscuro",
+          "naranja",
+          "naranja-oscuro",
+          "rosa",
+          "rosa-oscuro",
+        ];
+        const stored = localStorage.getItem("inventario-theme");
+        const migrated =
+          stored === "light" ? "claro" : stored === "dark" ? "oscuro" : stored;
+        if (migrated && themes.includes(migrated)) {
+          if (migrated !== stored) {
+            localStorage.setItem("inventario-theme", migrated);
+          }
+          document.documentElement.dataset.theme = migrated;
         }
       } catch {
         // The default light theme remains available when storage is disabled.

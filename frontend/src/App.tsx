@@ -109,25 +109,89 @@ function BackNavigationGuard() {
   return null;
 }
 
-type Theme = "light" | "dark";
+type Theme =
+  | "claro"
+  | "oscuro"
+  | "verde"
+  | "verde-oscuro"
+  | "morado"
+  | "morado-oscuro"
+  | "naranja"
+  | "naranja-oscuro"
+  | "rosa"
+  | "rosa-oscuro";
+
+const THEMES: { id: Theme; swatch: string; labelKey: string }[] = [
+  { id: "claro", swatch: "#f3f5f9", labelKey: "claro" },
+  { id: "oscuro", swatch: "#12161d", labelKey: "oscuro" },
+  { id: "verde", swatch: "#2f8f5b", labelKey: "verde" },
+  { id: "verde-oscuro", swatch: "#5fd39a", labelKey: "verde oscuro" },
+  { id: "morado", swatch: "#7c4dcc", labelKey: "morado" },
+  { id: "morado-oscuro", swatch: "#a982f0", labelKey: "morado oscuro" },
+  { id: "naranja", swatch: "#d4712f", labelKey: "naranja" },
+  { id: "naranja-oscuro", swatch: "#f5a05f", labelKey: "naranja oscuro" },
+  { id: "rosa", swatch: "#d44f86", labelKey: "rosa" },
+  { id: "rosa-oscuro", swatch: "#ff8fb5", labelKey: "rosa oscuro" },
+];
+
+const THEME_IDS: readonly string[] = THEMES.map(({ id }) => id);
+
+// Acepta también los valores antiguos ("light"/"dark") por si el script del
+// index.html no llegó a migrarlos; cualquier otro valor cae en el default.
+function normalizeTheme(value?: string): Theme {
+  if (value === "light") return "claro";
+  if (value === "dark") return "oscuro";
+  return THEME_IDS.includes(value ?? "") ? (value as Theme) : "claro";
+}
+
+// El atributo data-theme se fija desde una función fuera del componente:
+// react-hooks/immutability no permite asignar a document en los closures
+// creados durante el render (p. ej. el onClick de cada swatch del menú).
+function applyThemeAttribute(id: Theme) {
+  document.documentElement.dataset.theme = id;
+}
 
 function App() {
   const { language, toggleLanguage, t } = useTranslation();
-  const [theme, setTheme] = useState<Theme>(
-    document.documentElement.dataset.theme === "dark" ? "dark" : "light",
+  const [theme, setTheme] = useState<Theme>(() =>
+    normalizeTheme(document.documentElement.dataset.theme),
   );
+  const [themeMenuOpen, setThemeMenuOpen] = useState(false);
+  const themePickerRef = useRef<HTMLDivElement>(null);
 
-  const toggleTheme = () => {
-    const nextTheme = theme === "dark" ? "light" : "dark";
-    document.documentElement.dataset.theme = nextTheme;
-    setTheme(nextTheme);
+  const selectTheme = (id: Theme) => {
+    applyThemeAttribute(id);
+    setTheme(id);
+    setThemeMenuOpen(false);
 
     try {
-      localStorage.setItem("inventario-theme", nextTheme);
+      localStorage.setItem("inventario-theme", id);
     } catch {
       // The current theme still applies until the page is reloaded.
     }
   };
+
+  // El popover se cierra al pulsar fuera del selector de temas.
+  useEffect(() => {
+    if (!themeMenuOpen) {
+      return;
+    }
+
+    const handlePointerDown = (event: PointerEvent) => {
+      if (
+        themePickerRef.current &&
+        event.target instanceof Node &&
+        !themePickerRef.current.contains(event.target)
+      ) {
+        setThemeMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("pointerdown", handlePointerDown);
+    return () => document.removeEventListener("pointerdown", handlePointerDown);
+  }, [themeMenuOpen]);
+
+  const darkTheme = theme === "oscuro" || theme.endsWith("-oscuro");
 
   return (
     <BrowserRouter>
@@ -141,16 +205,40 @@ function App() {
         >
           {language === "es" ? "EN" : "ES"}
         </button>
-        <button
-          className="themeToggle"
-          type="button"
-          aria-label={`${t("Cambiar a tema")} ${t(theme === "dark" ? "claro" : "oscuro")}`}
-          aria-pressed={theme === "dark"}
-          title={`${t("Cambiar a tema")} ${t(theme === "dark" ? "claro" : "oscuro")}`}
-          onClick={toggleTheme}
-        >
-          <span aria-hidden="true">{theme === "dark" ? "☾" : "☀"}</span>
-        </button>
+        <div className="themePicker" ref={themePickerRef}>
+          <button
+            className="themeToggle"
+            type="button"
+            aria-label={t("Elegir tema")}
+            aria-expanded={themeMenuOpen}
+            aria-controls="themeMenu"
+            title={t("Elegir tema")}
+            onClick={() => setThemeMenuOpen((open) => !open)}
+          >
+            <span aria-hidden="true">{darkTheme ? "☾" : "☀"}</span>
+          </button>
+          {themeMenuOpen && (
+            <div
+              className="themeMenu"
+              id="themeMenu"
+              role="group"
+              aria-label={t("Tema")}
+            >
+              {THEMES.map((option) => (
+                <button
+                  key={option.id}
+                  className="themeSwatch"
+                  type="button"
+                  style={{ backgroundColor: option.swatch }}
+                  aria-label={t(option.labelKey)}
+                  aria-pressed={option.id === theme}
+                  title={t(option.labelKey)}
+                  onClick={() => selectTheme(option.id)}
+                />
+              ))}
+            </div>
+          )}
+        </div>
       </div>
       <BackNavigationGuard />
       <InactivityTimer />

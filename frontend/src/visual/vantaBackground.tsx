@@ -10,6 +10,34 @@ const THEME_DARK = {
   backgroundColor: 0x12161d,
 };
 
+type Theme =
+  | "claro"
+  | "oscuro"
+  | "verde"
+  | "verde-oscuro"
+  | "morado"
+  | "morado-oscuro"
+  | "naranja"
+  | "naranja-oscuro"
+  | "rosa"
+  | "rosa-oscuro";
+
+// Paleta de la malla por tema: base clara u oscura con el acento del color.
+const PALETTES: Record<Theme, { color: number; backgroundColor: number }> = {
+  claro: THEME_LIGHT,
+  oscuro: THEME_DARK,
+  verde: { color: 0x2f8f5b, backgroundColor: 0xf3f5f9 },
+  "verde-oscuro": { color: 0x5fd39a, backgroundColor: 0x12161d },
+  morado: { color: 0x7c4dcc, backgroundColor: 0xf3f5f9 },
+  "morado-oscuro": { color: 0xa982f0, backgroundColor: 0x12161d },
+  naranja: { color: 0xd4712f, backgroundColor: 0xf3f5f9 },
+  "naranja-oscuro": { color: 0xf5a05f, backgroundColor: 0x12161d },
+  rosa: { color: 0xd44f86, backgroundColor: 0xf3f5f9 },
+  "rosa-oscuro": { color: 0xff8fb5, backgroundColor: 0x12161d },
+};
+
+const THEME_IDS: readonly string[] = Object.keys(PALETTES);
+
 function prefersReducedMotion() {
   return (
     typeof window !== "undefined" &&
@@ -17,8 +45,11 @@ function prefersReducedMotion() {
   );
 }
 
-function readTheme() {
-  return document.documentElement.dataset.theme === "dark" ? "dark" : "light";
+function readTheme(): Theme {
+  const value = document.documentElement.dataset.theme;
+  if (value === "light") return "claro";
+  if (value === "dark") return "oscuro";
+  return THEME_IDS.includes(value ?? "") ? (value as Theme) : "claro";
 }
 
 interface VantaBackgroundProps {
@@ -32,7 +63,7 @@ export default function VantaBackground({
   variant = "hero",
 }: VantaBackgroundProps = {}) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [theme, setTheme] = useState<"light" | "dark">(() => readTheme());
+  const [theme, setTheme] = useState<Theme>(() => readTheme());
 
   // El tema vive en un atributo de <html>: se observa para re pintar el fondo.
   useEffect(() => {
@@ -57,7 +88,7 @@ export default function VantaBackground({
       return;
     }
 
-    const palette = theme === "dark" ? THEME_DARK : THEME_LIGHT;
+    const palette = PALETTES[theme];
     const subtle = variant === "subtle";
     let disposed = false;
     let effect: { destroy: () => void } | null = null;
