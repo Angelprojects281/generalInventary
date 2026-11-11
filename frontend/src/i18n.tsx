@@ -486,6 +486,34 @@ const translations: Record<string, string> = {
     "The units will be added to the products' stock when you confirm.",
   "Al confirmar se descontarán las unidades del stock de los productos.":
     "The units will be deducted from the products' stock when you confirm.",
+  // Generador de reportes con descarga en PDF.
+  Reportes: "Reports",
+  "Analiza tus movimientos por rango de fechas y descarga el informe.":
+    "Analyze your movements by date range and download the report.",
+  "Reporte de movimientos": "Movement report",
+  "Reporte-movimientos": "Movement-report",
+  "Inventario": "Inventory",
+  "Rango de fechas": "Date range",
+  "Generar reporte": "Generate report",
+  "Descargar PDF": "Download PDF",
+  "Total de gastos": "Total expenses",
+  "Total de ganancias": "Total earnings",
+  "Gran total": "Grand total",
+  Periodo: "Period",
+  "Generado el": "Generated on",
+  "Página": "Page",
+  "No hay movimientos en el rango seleccionado.":
+    "There are no movements in the selected range.",
+  "La fecha inicial no puede ser posterior a la fecha final.":
+    "The start date cannot be later than the end date.",
+  "Selecciona un rango de fechas para generar el reporte.":
+    "Select a date range to generate the report.",
+  "No se pudo generar el reporte. Inténtelo de nuevo.":
+    "The report could not be generated. Please try again.",
+  "Reporte generado correctamente.": "Report generated successfully.",
+  "El rango seleccionado contiene muchos movimientos; el informe será extenso.":
+    "The selected range contains many movements; the report will be long.",
+  "Generando el informe...": "Generating the report...",
 };
 
 const dynamicTranslations: [RegExp, string][] = [

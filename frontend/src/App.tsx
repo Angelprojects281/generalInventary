@@ -14,6 +14,7 @@ import ProductsScreen from "./panel/productsScreen";
 import CategoriesScreen from "./panel/categoriesScreen";
 import ProvidersScreen from "./panel/providersScreen";
 import MovementsScreen from "./panel/movementsScreen";
+import ReportsScreen from "./panel/reportsScreen";
 import FaqScreen from "./panel/faqScreen";
 import AccountScreen from "./panel/accountScreen";
 import InactivityTimer from "./session/inactivityTimer";
@@ -282,6 +283,14 @@ function App() {
           element={
             <ProtectRoute>
               <MovementsScreen />
+            </ProtectRoute>
+          }
+        />
+        <Route
+          path="/reports"
+          element={
+            <ProtectRoute>
+              <ReportsScreen />
             </ProtectRoute>
           }
         />

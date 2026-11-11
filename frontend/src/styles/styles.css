@@ -2316,3 +2316,125 @@ body:has(.formContainer)::before {
     font-size: 12.5px;
   }
 }
+
+/* ---------- Pantalla de reportes de movimientos ---------- */
+.reportFilterSection {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr));
+  align-items: center;
+  gap: 12px;
+  padding: 14px clamp(12px, 3vw, 36px);
+}
+
+.reportFilterSection .filterText {
+  padding-left: 0;
+}
+
+.reportFilterSection .filterLabel {
+  grid-column: 1 / -1;
+}
+
+.reportDocument {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: clamp(18px, 3vw, 34px);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-card);
+}
+
+.reportHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.reportHeaderTitle {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--color-ink);
+}
+
+.reportHeaderLine {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 13.5px;
+  color: var(--color-muted);
+}
+
+.reportSummary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 14px;
+}
+
+.reportSummaryCard {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px 16px;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: var(--color-surface-muted);
+}
+
+.reportSummaryLabel {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-muted);
+}
+
+.reportSummaryValue {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 22px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-ink);
+}
+
+/* Color del total: verde si es positivo, rojo si es negativo (mismo
+   criterio que --color-gain / --color-loss del historial). */
+.reportPositive {
+  color: var(--color-gain);
+}
+
+.reportNegative {
+  color: var(--color-loss);
+}
+
+.reportEmpty {
+  margin: 0;
+  padding: 18px 0;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  text-align: center;
+  color: var(--color-muted);
+}
+
+/* Móvil: el resumen se apila y la cabecera del informe se ajusta. */
+@media (max-width: 680px) {
+  .reportDocument {
+    padding: 18px 14px 26px;
+  }
+
+  .reportSummary {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .reportSummaryValue {
+    font-size: 20px;
+  }
+}

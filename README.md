@@ -41,6 +41,7 @@ Aplicación web multiempresa para administrar categorías, proveedores, producto
 - Total del movimiento en vivo: al crear un movimiento, el importe que va a generar se muestra mientras se compone (valor de venta en salidas y de compra en entradas).
 - Confirmación antes de registrar el movimiento: al pulsar "Crear" se muestra un resumen con el tipo, una fila por línea (producto, cantidad, valor e importe) y el total; si se cancela no se registra nada y el composer conserva sus datos.
 - Preguntas frecuentes: sección con las dudas más habituales sobre el funcionamiento del inventario, disponible desde el panel.
+- Reportes de movimientos por rango de fechas (por defecto, el mes en curso): muestra el total de gastos, el total de ganancias y el gran total, y permite descargar el informe en PDF con los datos de la empresa en la cabecera de cada página.
 - Filtrado de movimientos por tipo, categoría, producto, código y rango de fechas.
 - Alertas visuales en el frontend mediante SweetAlert2, con mensajes de error consistentes.
 - Interfaz en español e inglés, con botón para cambiar el idioma y preferencia guardada en el navegador.
@@ -50,8 +51,9 @@ Aplicación web multiempresa para administrar categorías, proveedores, producto
 
 - La interfaz usa una paleta monocromática de grises con un acento de color (`--color-accent`) que depende del tema elegido; las acciones para editar usan el acento del tema y las de eliminar su acento rojo. Tipografía de sistema (`system-ui`, Segoe UI, Roboto) y tarjetas con radios y sombras amplios.
 - La página de bienvenida es un héroe a dos columnas: titular y textos a la izquierda, composición ilustrativa (icono grande de `lucide-react` sobre formas flotantes) a la derecha, botones de crear cuenta e iniciar sesión en fila y una franja de tres tarjetas de características.
-- Tras autenticarse se accede al panel (`/panel`), con saludo y botón de cerrar sesión a la derecha de la cabecera y una rejilla de tarjetas con icono y descripción por sección (Productos, Categorías, Proveedores, Movimientos, Preguntas frecuentes y una tarjeta destacada de Mi cuenta). Cada sección tiene su propia pantalla; la pantalla de cuenta muestra una tarjeta de identidad con el monograma de la empresa y las acciones en fila.
+- Tras autenticarse se accede al panel (`/panel`), con saludo y botón de cerrar sesión a la derecha de la cabecera y una rejilla de tarjetas con icono y descripción por sección (Productos, Categorías, Proveedores, Movimientos, Reportes, Preguntas frecuentes y una tarjeta destacada de Mi cuenta). Cada sección tiene su propia pantalla; la pantalla de cuenta muestra una tarjeta de identidad con el monograma de la empresa y las acciones en fila.
 - El fondo de la bienvenida y del panel lleva una malla 3D animada (efecto NET de Vanta sobre three.js) con la paleta del tema; el resto de la página usa un degradado radial fijo en `body`. Si el sistema pide movimiento reducido, Vanta no se monta y solo queda el degradado.
+- La pantalla de reportes presenta el informe como un documento: cabecera con los datos de la empresa, resumen con los tres totales (gastos, ganancias y gran total) y tabla de movimientos. El PDF reproduce esa estructura con los datos de la empresa repetidos en la cabecera de cada página, la fila de cabecera de la tabla repetida en cada página, la paginación al pie ("Página X de Y") y los totales al final.
 - Los formularios muestran sus campos en dos columnas cuando hay espacio y se adaptan a una columna en pantallas estrechas. Sus botones van en fila.
 - Al abrir un formulario, el fondo se atenúa y desenfoca mientras el formulario permanece nítido; los formularios flotantes entran y salen animados con `motion` (`AnimatePresence`).
 - Las pantallas, filas, tarjetas y controles tienen animaciones de entrada y hover definidas con `motion` y con `@keyframes` en `frontend/src/styles/styles.css`. Se respeta la preferencia del sistema por reducir el movimiento (`MotionConfig reducedMotion="user"` y consulta `prefers-reduced-motion`).
@@ -95,6 +97,7 @@ MySQL - base de datos inventary
 - `lucide-react` para los iconos de la interfaz.
 - `motion` para las animaciones de entrada, salida y hover.
 - `vanta` con `three` para el fondo 3D animado de la bienvenida y el panel (carga diferida).
+- `pdfmake` para generar el PDF de los reportes de movimientos (carga diferida: solo se descarga al pulsar "Descargar PDF").
 - ESLint para validación de estilo y errores comunes.
 
 ### Backend
@@ -212,8 +215,8 @@ npm run preview
 3. Inicia el frontend en el puerto `4000`.
 4. Abre `http://localhost:4000`: se muestra la página de bienvenida.
 5. Crea una cuenta con "Crear una cuenta" (usuario, nombre de empresa y contraseña) o inicia sesión con una existente. Ambas acciones abren un formulario flotante.
-6. Tras autenticarse accedes al panel, con un botón por sección: Productos, Categorías, Proveedores, Movimientos, Preguntas frecuentes y Mi cuenta.
-7. Cada sección es una pantalla propia con su cabecera y su botón de creación ("Nuevo producto +", "Nueva categoria +", "Nuevo proveedor +"); se vuelve al panel con el botón "atrás" del navegador. En "Productos", el formulario de movimiento muestra el total en vivo mientras lo compones y, al pulsar "Crear", pide confirmación con un resumen del movimiento (tipo, productos, cantidades, importes y total); si se cancela, no se registra nada y el formulario sigue abierto con sus datos.
+6. Tras autenticarse accedes al panel, con un botón por sección: Productos, Categorías, Proveedores, Movimientos, Reportes, Preguntas frecuentes y Mi cuenta.
+7. Cada sección es una pantalla propia con su cabecera y su botón de creación ("Nuevo producto +", "Nueva categoria +", "Nuevo proveedor +"); se vuelve al panel con el botón "atrás" del navegador. En "Productos", el formulario de movimiento muestra el total en vivo mientras lo compones y, al pulsar "Crear", pide confirmación con un resumen del movimiento (tipo, productos, cantidades, importes y total); si se cancela, no se registra nada y el formulario sigue abierto con sus datos. En "Reportes" eliges un rango de fechas (por defecto, el mes en curso), pulsas "Generar reporte" para ver el informe con sus tres totales y "Descargar PDF" para guardarlo.
 8. En la pantalla Mi cuenta puedes cambiar tu usuario y el nombre de la empresa, cambiar tu contraseña (pide la actual), eliminar tu cuenta (pide la contraseña y borra todo el inventario) o cerrar sesión. También puedes cerrar sesión desde el panel.
 
 Al volver atrás en el historial del navegador desde cualquier pantalla hacia la bienvenida se pide confirmación antes de cerrar la sesión; las vueltas atrás dentro del panel navegan normalmente sin preguntar. El token solo se elimina al confirmar el cierre, al eliminar la cuenta, ante un `401` del backend o automáticamente a los 20 minutos de inactividad, momento en el que se muestra un aviso al usuario.
@@ -589,6 +592,7 @@ La respuesta agrupa cada movimiento con su detalle y total:
 | `/categories`| Sesión  | Administrador de categorías                                  |
 | `/providers` | Sesión  | Administrador de proveedores                                 |
 | `/movements` | Sesión  | Administrador de movimientos                                 |
+| `/reports`   | Sesión  | Reportes de movimientos por rango de fechas y descarga en PDF |
 | `/faq`       | Sesión  | Preguntas frecuentes: dudas habituales sobre el uso           |
 | `/account`   | Sesión  | Mi cuenta: usuario, empresa, contraseña y eliminación        |
 | `*`          | Público | Redirige a la bienvenida                                     |
@@ -615,9 +619,12 @@ inventario/
 │       ├── main.tsx            # Punto de entrada React
 │       ├── i18n.tsx            # Traducciones (es/en), proveedor e hook de idioma
 │       ├── welcome/            # Bienvenida: héroe, tarjetas y formularios de registro e inicio de sesión
-│       ├── panel/              # Pantallas del panel (productos, categorías, proveedores, movimientos, preguntas frecuentes, cuenta) y sus formularios
+│       ├── panel/              # Pantallas del panel (productos, categorías, proveedores, movimientos, reportes, preguntas frecuentes, cuenta) y sus formularios
 │       │   ├── faqScreen.tsx   # Pantalla de preguntas frecuentes (/faq)
-│       │   └── faqContent.ts   # Contenido estático de la FAQ: grupos, preguntas y respuestas
+│       │   ├── faqContent.ts   # Contenido estático de la FAQ: grupos, preguntas y respuestas
+│       │   ├── reportsScreen.tsx # Pantalla de reportes de movimientos (/reports)
+│       │   ├── reportBuilder.ts # Lógica pura del reporte: tipos, fechas y agregados
+│       │   └── reportPdf.ts     # Generación del PDF (pdfmake, cargado bajo demanda)
 │       ├── visual/             # Fondo animado Vanta (three.js, importación diferida)
 │       ├── ruteProtection/      # Protección de rutas en el cliente
 │       ├── session/            # Cierre de sesión y temporizador de inactividad

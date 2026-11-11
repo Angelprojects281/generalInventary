@@ -5,6 +5,7 @@ import {
   ArrowLeftRight,
   Boxes,
   CircleHelp,
+  FileText,
   LogOut,
   Tags,
   Truck,
@@ -71,6 +72,12 @@ export default function MainPanel() {
       icon: ArrowLeftRight,
       title: t("Movimientos"),
       text: t("Revisa entradas y salidas con filtros por fecha y tipo."),
+    },
+    {
+      path: "/reports",
+      icon: FileText,
+      title: t("Reportes"),
+      text: t("Analiza tus movimientos por rango de fechas y descarga el informe."),
     },
     {
       path: "/faq",
