@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "motion/react";
 import { Trash2 } from "lucide-react";
-import { mostrarAlerta } from "../alerts/alert";
+import { mostrarAlerta, mostrarConfirmacionDetalle, type ResumenDetalle } from "../alerts/alert";
 import apiFetch from "../api";
 import { useTranslation } from "../i18n";
 
@@ -33,6 +33,48 @@ interface MovementItemInterface {
 }
 
 type MovementType = "" | "entrada" | "salida";
+
+// Valor unitario que se aplicará a la línea según el tipo de movimiento.
+// Es la misma regla que usa el backend al congelar el valor unitario.
+function unitValueFor(
+  item: MovementItemInterface,
+  type: MovementType,
+): number | null {
+  if (type === "entrada") return item.purchase_value;
+  if (type === "salida") return item.sale_value;
+  return null;
+}
+
+// Total estimado del movimiento: suma de cantidad x valor unitario.
+// Se redondea a dos decimales al final para evitar el ruido de coma
+// flotante (los valores del producto son DECIMAL(12,2)).
+function calculateMovementTotal(
+  items: MovementItemInterface[],
+  type: MovementType,
+): number {
+  if (type !== "entrada" && type !== "salida") return 0;
+
+  const sum = items.reduce((acc, item) => {
+    const amount = item.amount;
+    if (amount === "" || !Number.isFinite(amount) || amount <= 0) return acc;
+    const unit = unitValueFor(item, type);
+    if (unit === null) return acc;
+    return acc + amount * unit;
+  }, 0);
+
+  return Math.round(sum * 100) / 100;
+}
+
+// Importe de una línea: cantidad x valor unitario, redondeado a céntimos
+// igual que hace el backend al guardar el detalle del movimiento.
+function lineTotalFor(
+  item: MovementItemInterface,
+  type: MovementType,
+): number {
+  const unit = unitValueFor(item, type);
+  if (unit === null || item.amount === "") return 0;
+  return Math.round(item.amount * unit * 100) / 100;
+}
 
 // Búsqueda combinada: código exacto y nombre parcial, como en
 // productsScreen. Si no hay texto no se consulta la API.
@@ -70,6 +112,10 @@ function FormMovement({ onAcept, onCancel }: formProps) {
   >([]);
   const [items, setItems] = useState<MovementItemInterface[]>([]);
   const { t } = useTranslation();
+
+  // Total en vivo: valor derivado del estado durante el render (no es
+  // estado nuevo ni efecto), recalculado en cada pulsación del teclado.
+  const total = calculateMovementTotal(items, type);
 
   // Las cargas se encadenan con .then para no fijar estado de forma
   // síncrona dentro del efecto; sin texto la búsqueda resuelve [] y
@@ -199,6 +245,37 @@ function FormMovement({ onAcept, onCancel }: formProps) {
       }
     }
 
+    // Confirmación antes de enviar: se muestra el resumen del movimiento
+    // (tipo, una fila por línea con producto, cantidad, valor e importe y el
+    // total). Si el usuario cancela, no se envía nada y el composer conserva
+    // su estado. El resumen se construye aquí, dentro del manejador.
+    const detalle: ResumenDetalle = {
+      tipo:
+        type === "salida" ? "Movimiento de salida" : "Movimiento de entrada",
+      cabecera: ["Producto", "Cantidad", "Valor", "Importe"],
+      filas: items.map((item) => [
+        `${item.product_name} (${item.product_code})`,
+        String(item.amount),
+        (unitValueFor(item, type) ?? 0).toFixed(2),
+        lineTotalFor(item, type).toFixed(2),
+      ]),
+      total: { etiqueta: "Total", valor: total.toFixed(2) },
+      nota:
+        type === "salida"
+          ? "Al confirmar se descontarán las unidades del stock de los productos."
+          : "Al confirmar se sumarán las unidades al stock de los productos.",
+    };
+
+    const resultado = await mostrarConfirmacionDetalle(
+      "question",
+      "¿Deseas registrar el movimiento?",
+      detalle,
+    );
+
+    if (!resultado.isConfirmed) {
+      return;
+    }
+
     const res = await apiFetch("/newMovement", {
       method: "POST",
       body: JSON.stringify({
@@ -222,7 +299,7 @@ function FormMovement({ onAcept, onCancel }: formProps) {
     mostrarAlerta(
       "success",
       "Movimiento registrado",
-      "Movimiento registrado correctamente.",
+      `Movimiento registrado correctamente. Total: ${total.toFixed(2)}`,
     );
   };
 
@@ -333,12 +410,7 @@ function FormMovement({ onAcept, onCancel }: formProps) {
               type === "salida" &&
               item.amount !== "" &&
               item.amount > item.stock;
-            const unitValue =
-              type === "entrada"
-                ? item.purchase_value
-                : type === "salida"
-                  ? item.sale_value
-                  : null;
+            const unitValue = unitValueFor(item, type);
 
             return (
               <div
@@ -387,6 +459,27 @@ function FormMovement({ onAcept, onCancel }: formProps) {
             );
           })
         )}
+      </section>
+
+      <section className="movementBlock movementTotalBar">
+        <div className="movementTotalInfo">
+          <p className="movementTotalLabel">{t("Total del movimiento")}</p>
+          <p className="movementTotalHint">
+            {type === "salida"
+              ? t("Calculado con el valor de venta de cada producto.")
+              : type === "entrada"
+                ? t("Calculado con el valor de compra de cada producto.")
+                : t("Selecciona el tipo de movimiento para ver el total.")}
+          </p>
+        </div>
+        <p
+          className={`movementTotalValue${
+            type === "salida" ? " historyGain" : type === "entrada" ? " historyLoss" : ""
+          }`}
+          aria-live="polite"
+        >
+          {type ? total.toFixed(2) : "—"}
+        </p>
       </section>
 
       <section className="buttonsSection">

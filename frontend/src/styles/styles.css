@@ -2064,3 +2064,255 @@ body:has(.formContainer)::before {
     justify-self: start;
   }
 }
+
+/* ---------- Total en vivo del composer (Parte 5) ----------
+   Bloque propio: solo usa variables ya existentes, de modo que los 10
+   temas funcionan sin tocar los bloques de tema. El color del importe lo
+   aportan historyGain/historyLoss (verde en salida, rojo en entrada). */
+.movementTotalBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 16px;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: var(--color-surface-muted);
+}
+
+.movementTotalInfo {
+  min-width: 0;
+}
+
+.movementTotalLabel {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-ink);
+}
+
+.movementTotalHint {
+  margin: 4px 0 0;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--color-muted);
+}
+
+.movementTotalValue {
+  margin: 0;
+  flex: none;
+  font-family: var(--font-sans);
+  font-size: 24px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-ink);
+}
+
+/* Móvil: la barra se apila para que el importe no se corte. */
+@media (max-width: 680px) {
+  .movementTotalBar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .movementTotalValue {
+    font-size: 22px;
+  }
+}
+
+/* ---------- Pantalla de preguntas frecuentes ----------
+   Bloque propio: clases nuevas que no reescriben reglas ajenas y solo
+   usan variables ya existentes. Las media queries van después de sus
+   estilos base. */
+.faqLayout {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+  width: 100%;
+  max-width: 980px;
+  margin: 0 auto;
+  padding: clamp(20px, 4vw, 44px);
+}
+
+.faqIntro {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--color-muted);
+}
+
+.faqGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.faqGroupTitle {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-ink);
+}
+
+.faqList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.faqItem {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+}
+
+.faqQuestion {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 18px;
+  list-style: none;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  font-size: 15.5px;
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+.faqQuestion::-webkit-details-marker {
+  display: none;
+}
+
+.faqQuestion::marker {
+  content: "";
+}
+
+.faqQuestionText {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.faqChevron {
+  flex: none;
+  color: var(--color-muted);
+  transition: transform 180ms ease;
+}
+
+.faqItem[open] .faqChevron {
+  transform: rotate(180deg);
+}
+
+.faqAnswer {
+  margin: 0;
+  padding: 0 18px 16px;
+  font-family: var(--font-sans);
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--color-muted);
+}
+
+/* Móvil: la FAQ se apila y el resumen usa menos padding. */
+@media (max-width: 680px) {
+  .faqLayout {
+    gap: 20px;
+    padding: 20px 16px 32px;
+  }
+
+  .faqQuestion {
+    padding: 14px 16px;
+    font-size: 15px;
+  }
+
+  .faqAnswer {
+    padding: 0 16px 14px;
+  }
+}
+
+/* Con movimiento reducido el chevron gira sin transición. */
+@media (prefers-reduced-motion: reduce) {
+  .faqChevron {
+    transition: none;
+  }
+}
+
+/* ---------- Resumen de confirmación del movimiento ---------- */
+.movementSummary {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  text-align: left;
+}
+
+.movementSummaryType {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--color-ink);
+}
+
+.movementSummaryTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-sans);
+  font-size: 13.5px;
+  color: var(--color-ink);
+}
+
+.movementSummaryTable th,
+.movementSummaryTable td {
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--color-border);
+  text-align: left;
+  vertical-align: top;
+  overflow-wrap: anywhere;
+}
+
+.movementSummaryTable thead th {
+  font-size: 12.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--color-muted);
+}
+
+.movementSummaryTable tbody td:nth-child(n + 2),
+.movementSummaryTable tfoot td {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.movementSummaryTable tfoot th,
+.movementSummaryTable tfoot td {
+  border-bottom: 0;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.movementSummaryNote {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--color-muted);
+}
+
+/* Móvil: la tabla se mantiene pero con menos relleno. */
+@media (max-width: 680px) {
+  .movementSummaryTable th,
+  .movementSummaryTable td {
+    padding: 5px 4px;
+    font-size: 12.5px;
+  }
+}

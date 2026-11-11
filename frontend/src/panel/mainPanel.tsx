@@ -4,6 +4,7 @@ import { motion, useReducedMotion } from "motion/react";
 import {
   ArrowLeftRight,
   Boxes,
+  CircleHelp,
   LogOut,
   Tags,
   Truck,
@@ -70,6 +71,12 @@ export default function MainPanel() {
       icon: ArrowLeftRight,
       title: t("Movimientos"),
       text: t("Revisa entradas y salidas con filtros por fecha y tipo."),
+    },
+    {
+      path: "/faq",
+      icon: CircleHelp,
+      title: t("Preguntas frecuentes"),
+      text: t("Resuelve tus dudas sobre el uso del inventario."),
     },
     {
       path: "/account",

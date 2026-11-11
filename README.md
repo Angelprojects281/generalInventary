@@ -38,6 +38,9 @@ Aplicación web multiempresa para administrar categorías, proveedores, producto
 - Administración de productos: crear con cantidad, descripción y valores de compra y venta obligatorios (el valor de compra debe ser menor que el de venta), filtrar por categoría, proveedor y cantidad máxima, editar y eliminar.
 - Registro de movimientos de entrada y salida con varios productos y cantidades distintas en una sola operación, con búsqueda de productos por código único o por nombre y comprobación de existencias antes de confirmar; el stock se actualiza automáticamente.
 - Historial de movimientos en una fila por movimiento: tipo, cada producto con su valor (salida al valor de venta en verde, entrada al valor de compra en rojo), fecha y hora, y total gastado o ganado.
+- Total del movimiento en vivo: al crear un movimiento, el importe que va a generar se muestra mientras se compone (valor de venta en salidas y de compra en entradas).
+- Confirmación antes de registrar el movimiento: al pulsar "Crear" se muestra un resumen con el tipo, una fila por línea (producto, cantidad, valor e importe) y el total; si se cancela no se registra nada y el composer conserva sus datos.
+- Preguntas frecuentes: sección con las dudas más habituales sobre el funcionamiento del inventario, disponible desde el panel.
 - Filtrado de movimientos por tipo, categoría, producto, código y rango de fechas.
 - Alertas visuales en el frontend mediante SweetAlert2, con mensajes de error consistentes.
 - Interfaz en español e inglés, con botón para cambiar el idioma y preferencia guardada en el navegador.
@@ -47,7 +50,7 @@ Aplicación web multiempresa para administrar categorías, proveedores, producto
 
 - La interfaz usa una paleta monocromática de grises con un acento de color (`--color-accent`) que depende del tema elegido; las acciones para editar usan el acento del tema y las de eliminar su acento rojo. Tipografía de sistema (`system-ui`, Segoe UI, Roboto) y tarjetas con radios y sombras amplios.
 - La página de bienvenida es un héroe a dos columnas: titular y textos a la izquierda, composición ilustrativa (icono grande de `lucide-react` sobre formas flotantes) a la derecha, botones de crear cuenta e iniciar sesión en fila y una franja de tres tarjetas de características.
-- Tras autenticarse se accede al panel (`/panel`), con saludo y botón de cerrar sesión a la derecha de la cabecera y una rejilla de tarjetas con icono y descripción por sección (Productos, Categorías, Proveedores, Movimientos y una tarjeta destacada de Mi cuenta). Cada sección tiene su propia pantalla; la pantalla de cuenta muestra una tarjeta de identidad con el monograma de la empresa y las acciones en fila.
+- Tras autenticarse se accede al panel (`/panel`), con saludo y botón de cerrar sesión a la derecha de la cabecera y una rejilla de tarjetas con icono y descripción por sección (Productos, Categorías, Proveedores, Movimientos, Preguntas frecuentes y una tarjeta destacada de Mi cuenta). Cada sección tiene su propia pantalla; la pantalla de cuenta muestra una tarjeta de identidad con el monograma de la empresa y las acciones en fila.
 - El fondo de la bienvenida y del panel lleva una malla 3D animada (efecto NET de Vanta sobre three.js) con la paleta del tema; el resto de la página usa un degradado radial fijo en `body`. Si el sistema pide movimiento reducido, Vanta no se monta y solo queda el degradado.
 - Los formularios muestran sus campos en dos columnas cuando hay espacio y se adaptan a una columna en pantallas estrechas. Sus botones van en fila.
 - Al abrir un formulario, el fondo se atenúa y desenfoca mientras el formulario permanece nítido; los formularios flotantes entran y salen animados con `motion` (`AnimatePresence`).
@@ -57,6 +60,7 @@ Aplicación web multiempresa para administrar categorías, proveedores, producto
 - El idioma predeterminado es español y la selección se guarda en `localStorage` con la clave `inventario-language`.
 - El sistema de traducciones vive en `frontend/src/i18n.tsx`. El texto visible se envuelve con la función `t()` del hook `useTranslation`, y las alertas usan `translateText`. Las claves se escriben en español; si una clave no tiene traducción, se muestra el texto original.
 - Los errores de la API se devuelven en la propiedad `error`, con mensajes breves en español y sin detalles internos de la base de datos. Las operaciones exitosas que devuelven confirmación usan `message`.
+- Las confirmaciones se muestran con SweetAlert2. Al registrar un movimiento se abre un diálogo con el resumen en tabla: tipo del movimiento, una fila por línea (producto con su código, cantidad, valor unitario e importe), el total y un aviso del efecto sobre el stock. "Registrar movimiento" es la acción por defecto y recibe el foco; "Cancelar" o `Esc` cierran el diálogo sin registrar nada y un clic fuera no lo cierra. Como SweetAlert2 interpreta el contenido como HTML, el nombre y el código del producto se escapan antes de mostrarse.
 
 ## Arquitectura
 
@@ -208,8 +212,8 @@ npm run preview
 3. Inicia el frontend en el puerto `4000`.
 4. Abre `http://localhost:4000`: se muestra la página de bienvenida.
 5. Crea una cuenta con "Crear una cuenta" (usuario, nombre de empresa y contraseña) o inicia sesión con una existente. Ambas acciones abren un formulario flotante.
-6. Tras autenticarse accedes al panel, con un botón por sección: Productos, Categorías, Proveedores, Movimientos y Mi cuenta.
-7. Cada sección es una pantalla propia con su cabecera y su botón de creación ("Nuevo producto +", "Nueva categoria +", "Nuevo proveedor +"); se vuelve al panel con el botón "atrás" del navegador.
+6. Tras autenticarse accedes al panel, con un botón por sección: Productos, Categorías, Proveedores, Movimientos, Preguntas frecuentes y Mi cuenta.
+7. Cada sección es una pantalla propia con su cabecera y su botón de creación ("Nuevo producto +", "Nueva categoria +", "Nuevo proveedor +"); se vuelve al panel con el botón "atrás" del navegador. En "Productos", el formulario de movimiento muestra el total en vivo mientras lo compones y, al pulsar "Crear", pide confirmación con un resumen del movimiento (tipo, productos, cantidades, importes y total); si se cancela, no se registra nada y el formulario sigue abierto con sus datos.
 8. En la pantalla Mi cuenta puedes cambiar tu usuario y el nombre de la empresa, cambiar tu contraseña (pide la actual), eliminar tu cuenta (pide la contraseña y borra todo el inventario) o cerrar sesión. También puedes cerrar sesión desde el panel.
 
 Al volver atrás en el historial del navegador desde cualquier pantalla hacia la bienvenida se pide confirmación antes de cerrar la sesión; las vueltas atrás dentro del panel navegan normalmente sin preguntar. El token solo se elimina al confirmar el cierre, al eliminar la cuenta, ante un `401` del backend o automáticamente a los 20 minutos de inactividad, momento en el que se muestra un aviso al usuario.
@@ -585,6 +589,7 @@ La respuesta agrupa cada movimiento con su detalle y total:
 | `/categories`| Sesión  | Administrador de categorías                                  |
 | `/providers` | Sesión  | Administrador de proveedores                                 |
 | `/movements` | Sesión  | Administrador de movimientos                                 |
+| `/faq`       | Sesión  | Preguntas frecuentes: dudas habituales sobre el uso           |
 | `/account`   | Sesión  | Mi cuenta: usuario, empresa, contraseña y eliminación        |
 | `*`          | Público | Redirige a la bienvenida                                     |
 
@@ -610,11 +615,13 @@ inventario/
 │       ├── main.tsx            # Punto de entrada React
 │       ├── i18n.tsx            # Traducciones (es/en), proveedor e hook de idioma
 │       ├── welcome/            # Bienvenida: héroe, tarjetas y formularios de registro e inicio de sesión
-│       ├── panel/              # Pantallas del panel (productos, categorías, proveedores, movimientos, cuenta) y sus formularios
+│       ├── panel/              # Pantallas del panel (productos, categorías, proveedores, movimientos, preguntas frecuentes, cuenta) y sus formularios
+│       │   ├── faqScreen.tsx   # Pantalla de preguntas frecuentes (/faq)
+│       │   └── faqContent.ts   # Contenido estático de la FAQ: grupos, preguntas y respuestas
 │       ├── visual/             # Fondo animado Vanta (three.js, importación diferida)
 │       ├── ruteProtection/      # Protección de rutas en el cliente
 │       ├── session/            # Cierre de sesión y temporizador de inactividad
-│       ├── alerts/             # Alertas de interfaz
+│       ├── alerts/             # Alertas de interfaz: avisos y confirmaciones
 │       └── styles/             # Estilos globales
 ├── database/
 │   └── schema.sql              # Esquema SQL multiempresa

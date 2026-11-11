@@ -14,6 +14,7 @@ import ProductsScreen from "./panel/productsScreen";
 import CategoriesScreen from "./panel/categoriesScreen";
 import ProvidersScreen from "./panel/providersScreen";
 import MovementsScreen from "./panel/movementsScreen";
+import FaqScreen from "./panel/faqScreen";
 import AccountScreen from "./panel/accountScreen";
 import InactivityTimer from "./session/inactivityTimer";
 import { confirmarCierreSesion } from "./session/session";
@@ -281,6 +282,14 @@ function App() {
           element={
             <ProtectRoute>
               <MovementsScreen />
+            </ProtectRoute>
+          }
+        />
+        <Route
+          path="/faq"
+          element={
+            <ProtectRoute>
+              <FaqScreen />
             </ProtectRoute>
           }
         />

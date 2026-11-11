@@ -383,6 +383,109 @@ const translations: Record<string, string> = {
   "Añade al menos un producto al movimiento.":
     "Add at least one product to the movement.",
   "Producto no válido en el movimiento.": "Invalid product in the movement.",
+  // Parte 5: total en vivo del composer y pantalla de preguntas frecuentes.
+  "Preguntas frecuentes": "Frequently asked questions",
+  "Resuelve tus dudas sobre el uso del inventario.":
+    "Find answers to your questions about using the inventory.",
+  "Las dudas más habituales sobre el funcionamiento del inventario.":
+    "The most common questions about how the inventory works.",
+  "Total del movimiento": "Movement total",
+  "Calculado con el valor de venta de cada producto.":
+    "Calculated with the sale value of each product.",
+  "Calculado con el valor de compra de cada producto.":
+    "Calculated with the purchase value of each product.",
+  "Selecciona el tipo de movimiento para ver el total.":
+    "Select a movement type to see the total.",
+  "Cuenta y acceso": "Account and access",
+  "Categorías, proveedores y productos":
+    "Categories, providers and products",
+  "Movimientos y existencias": "Movements and stock",
+  "Valores de compra y venta": "Purchase and sale values",
+  "Filtros e historial": "Filters and history",
+  "Navegación, idioma y temas": "Navigation, language and themes",
+  "¿Cómo creo mi cuenta?": "How do I create my account?",
+  "Desde la página de bienvenida, pulsa «Crear una cuenta» y completa el usuario, el nombre de la empresa y la contraseña. La contraseña debe ser segura; al crearla la sesión se inicia automáticamente.":
+    "From the welcome page, click \"Create an account\" and fill in the username, the company name and the password. The password must be strong enough; the session starts automatically once the account is created.",
+  "¿Cada empresa ve los datos de otra?": "Can one company see another company's data?",
+  "No. Cada cuenta es una empresa independiente y solo accede a sus propias categorías, proveedores, productos y movimientos. Para gestionar otra empresa necesitas otra cuenta.":
+    "No. Each account is an independent company and only accesses its own categories, providers, products and movements. You need another account to manage a different company.",
+  "¿Cómo cierro la sesión?": "How do I log out?",
+  "Con el botón «Cerrar sesion» del panel o de la pantalla «Mi cuenta». La sesión también se cierra sola tras 20 minutos de inactividad y el botón «atrás» del navegador pide confirmación antes de salir de la aplicación.":
+    "With the \"Log Out\" button on the dashboard or on the \"My account\" screen. The session also closes on its own after 20 minutes of inactivity, and the browser back button asks for confirmation before leaving the app.",
+  "¿Qué pasa si olvido la contraseña?": "What if I forget my password?",
+  "No hay recuperación por correo. La contraseña se cambia en «Mi cuenta» indicando la actual. Si no recuerdas la actual, tendrás que registrar una cuenta nueva y cargar de nuevo el inventario.":
+    "There is no email recovery. The password is changed in \"My account\" by entering the current one. If you cannot remember it, you will have to register a new account and load your inventory again.",
+  "¿Por qué un producto necesita categoría y proveedor?":
+    "Why does a product need a category and a provider?",
+  "Son datos obligatorios al dar de alta un producto y deben pertenecer a tu empresa. Si aún no tienes, créalos antes en sus respectivas secciones.":
+    "They are required when creating a product and must belong to your company. If you do not have them yet, create them first in their respective sections.",
+  "¿Qué ocurre al borrar una categoría o un proveedor?":
+    "What happens when I delete a category or a provider?",
+  "Se borran también los productos que tenía asignados. El historial de movimientos no se borra: conserva el nombre, el código y el valor con el que se registró cada movimiento.":
+    "The products assigned to them are deleted as well. The movement history is kept: it stores the name, code and value used when each movement was recorded.",
+  "¿Qué es el proveedor «SIN PROVEEDOR»?":
+    "What is the \"NO PROVIDER\" provider?",
+  "Es una fila interna reservada del sistema para los productos que no tienen proveedor. No pertenece a ninguna empresa, así que no aparece en ningún listado: ni en la pantalla de proveedores, ni en el formulario de producto, ni en los filtros. El servidor impide editarla o borrarla.":
+    "It is an internal system row reserved for products without a provider. It does not belong to any company, so it never shows up in any list: not on the providers screen, not in the product form and not in the filters. The server prevents it from being edited or deleted.",
+  "¿Por qué el valor de compra debe ser menor que el de venta?":
+    "Why must the purchase value be lower than the sale value?",
+  "Es una regla del inventario: el sistema no admite un producto cuyo valor de compra sea igual o superior al de venta.":
+    "It is an inventory rule: the system does not accept a product whose purchase value is equal to or higher than its sale value.",
+  "¿Cómo registro una entrada o una salida?":
+    "How do I record an inbound or outbound movement?",
+  "En «Productos», pulsa «Nuevo movimiento», elige el tipo, busca el producto por su código o por su nombre y pulsa «Añadir». Ajusta la cantidad de cada línea y pulsa «Crear».":
+    "On \"Products\", click \"New Movement\", choose the type, search for the product by code or by name and click \"Add\". Adjust the quantity of each line and click \"Create\".",
+  "¿Puedo registrar varios productos en el mismo movimiento?":
+    "Can I record several products in the same movement?",
+  "Sí. El formulario admite varias líneas, cada una con su producto y su cantidad, y todas se registran juntas en un único movimiento.":
+    "Yes. The form accepts several lines, each with its product and quantity, and all of them are recorded together in a single movement.",
+  "¿Qué pasa si una salida supera las existencias?":
+    "What happens if an outbound movement exceeds the stock?",
+  "El movimiento no se registra. El formulario avisa mientras la cantidad supera el stock y el servidor vuelve a validarlo antes de guardar, de modo que el stock nunca queda en negativo.":
+    "The movement is not recorded. The form warns you while the quantity exceeds the stock and the server validates it again before saving, so the stock never goes negative.",
+  "¿Veo el total antes de registrar el movimiento?":
+    "Can I see the total before recording the movement?",
+  "Sí. Mientras compones el movimiento, la barra de total muestra en vivo la suma de cantidad por valor unitario: valor de venta en las salidas y valor de compra en las entradas.":
+    "Yes. While you compose the movement, the total bar shows live the sum of quantity multiplied by unit value: sale value for outbound movements and purchase value for inbound ones.",
+  "¿Se actualiza el stock al registrar un movimiento?":
+    "Is the stock updated when a movement is recorded?",
+  "Sí. Una entrada suma las unidades al stock de cada producto y una salida las resta. El cambio se aplica al confirmar el movimiento.":
+    "Yes. An inbound movement adds the units to each product's stock and an outbound movement subtracts them. The change is applied when the movement is confirmed.",
+  "¿Puedo editar o borrar un movimiento ya registrado?":
+    "Can I edit or delete a movement that is already recorded?",
+  "No. El historial es inmutable para que los totales de cada momento sean fiables. Si te has equivocado, registra el movimiento contrario que lo corrija.":
+    "No. The history is immutable so that the totals of each moment stay reliable. If you made a mistake, record the opposite movement to correct it.",
+  "¿Qué diferencia hay entre el valor de compra y el de venta?":
+    "What is the difference between the purchase value and the sale value?",
+  "El valor de compra es lo que paga tu empresa por el producto y el de venta es lo que se cobra al cliente. En las salidas se aplica el valor de venta y en las entradas el de compra.":
+    "The purchase value is what your company pays for the product and the sale value is what the customer pays. Outbound movements use the sale value and inbound ones use the purchase value.",
+  "¿Cambiar el valor de un producto altera el historial?":
+    "Does changing a product's value alter the history?",
+  "No. Cada movimiento guarda el valor que se aplicó en el momento de registrarlo, así que los totales antiguos no cambian aunque edites el producto.":
+    "No. Each movement stores the value applied at the time it was recorded, so old totals do not change even if you edit the product.",
+  "¿Cómo busco un producto?": "How do I search for a product?",
+  "En «Productos» puedes filtrar por código, categoría, proveedor o cantidad máxima. En el formulario de movimientos la búsqueda combina el código exacto con el nombre parcial.":
+    "On \"Products\" you can filter by code, category, provider or maximum quantity. In the movement form the search combines the exact code with a partial name.",
+  "¿Cómo consulto el historial de movimientos?":
+    "How do I check the movement history?",
+  "En «Movimientos» puedes filtrar por tipo, categoría, producto, código y rango de fechas. Cada fila muestra los productos, la fecha y el total del movimiento.":
+    "On \"Movements\" you can filter by type, category, product, code and date range. Each row shows the products, the date and the total of the movement.",
+  "¿Cómo vuelvo al panel?": "How do I go back to the dashboard?",
+  "Con el botón «atrás» del navegador. Cada sección tiene su propia pantalla y, al volver atrás dentro del panel, la sesión se mantiene.":
+    "With the browser back button. Each section has its own screen and, when going back inside the dashboard, the session is kept.",
+  "¿Puedo cambiar el idioma o el tema?": "Can I change the language or the theme?",
+  "Sí. El botón de idioma alterna entre español e inglés y el selector de temas ofrece diez variantes. Ambas preferencias se guardan en el navegador.":
+    "Yes. The language button switches between Spanish and English and the theme selector offers ten variants. Both preferences are saved in the browser.",
+  // Confirmación antes de crear el movimiento.
+  "¿Deseas registrar el movimiento?": "Do you want to record the movement?",
+  "Movimiento de entrada": "Inbound movement",
+  "Movimiento de salida": "Outbound movement",
+  Importe: "Amount",
+  "Registrar movimiento": "Record movement",
+  "Al confirmar se sumarán las unidades al stock de los productos.":
+    "The units will be added to the products' stock when you confirm.",
+  "Al confirmar se descontarán las unidades del stock de los productos.":
+    "The units will be deducted from the products' stock when you confirm.",
 };
 
 const dynamicTranslations: [RegExp, string][] = [
@@ -394,6 +497,7 @@ const dynamicTranslations: [RegExp, string][] = [
   [/^La categoría (.+) se actualizó correctamente\.$/, "Category $1 was updated successfully."],
   [/^El proveedor (.+) se actualizó correctamente\.$/, "Provider $1 was updated successfully."],
   [/^El producto (.+) se actualizó correctamente\.$/, "Product $1 was updated successfully."],
+  [/^Movimiento registrado correctamente\. Total: ([\d.,]+)$/, "Movement recorded successfully. Total: $1"],
 ];
 
 function getStoredLanguage(): Language {
