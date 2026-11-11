@@ -1729,3 +1729,338 @@ body:has(.formContainer)::before {
     scroll-behavior: auto !important;
   }
 }
+
+/* ---------- Listas con 7 columnas (se añade "Venta" tras "Cantidad") ----------
+   El ancho mínimo base de 120px por columna no cabe para 7 celdas hasta
+   ~940px de ventana: en el rango intermedio (por encima del apilado en
+   tarjeta de 680px) se acota el ancho mínimo para que la fila siga en una
+   sola línea, se estrecha la cabecera para que "Descripcion" quepa en su
+   columna y los botones-icono se envuelven antes de desbordar la última. */
+@media (min-width: 681px) and (max-width: 940px) {
+  .infoList > .lineList {
+    grid-template-columns: repeat(auto-fit, minmax(78px, 1fr));
+  }
+
+  .infoList > .lineList:first-child > .listInfo {
+    font-size: 13px;
+  }
+
+  .infoList > .lineList > .rowActionsSlot > .rowActionsCell {
+    flex-wrap: wrap;
+  }
+}
+
+/* ---------- Historial de movimientos (Parte 4) ----------
+   Bloque propio: no reescribe estilos ajenos. Las variables de color se
+   declaran aquí (y en su variante oscura) para no tocar los bloques de
+   tema existentes; los tonos oscuros son más claros y mantienen el
+   contraste sobre los fondos oscuros de los 10 temas. */
+:root {
+  --color-gain: #1f9d55;
+  --color-loss: #d64545;
+}
+
+:root[data-theme="dark"],
+:root[data-theme="oscuro"],
+:root[data-theme$="-oscuro"] {
+  --color-gain: #4ade80;
+  --color-loss: #ff8f8f;
+}
+
+/* Total del movimiento: salida en verde (ganancia), entrada en rojo
+   (gasto); el color lo aporta historyGain/historyLoss. */
+.historyGain {
+  color: var(--color-gain);
+}
+
+.historyLoss {
+  color: var(--color-loss);
+}
+
+.historyTotal {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Celda de productos apilados: una línea por producto, sin viñetas. */
+.historyProducts {
+  display: block;
+  max-width: none;
+}
+
+.historyProductLines {
+  display: block;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.historyProductLine {
+  display: block;
+  overflow-wrap: anywhere;
+  font-weight: 400;
+}
+
+/* En móvil la fila ya se apila con data-label (reglas de .lineList);
+   aquí solo se refuerza que las líneas de productos no desborden. */
+@media (max-width: 680px) {
+  .historyProducts {
+    max-width: none;
+    overflow-wrap: anywhere;
+  }
+
+  .historyProductLine {
+    max-width: 100%;
+  }
+}
+
+/* ---------- Composer "Nuevo movimiento" multi-producto (Parte 3) ----------
+   Bloque propio: cabecera con dos botones y estilos del composer; no
+   reescribe estilos ajenos. Las media queries van al final del bloque. */
+
+/* Cabecera de productos: dos .actionButton dentro de .headerActions. El
+   ancho fijo (20%) y la animación de hijo directo del header no aplican
+   dentro del contenedor, así que cada botón pasa a ancho automático con
+   relleno, conserva su border-left como separador y recibe la entrada con
+   controlEnter (como antes, pero vía .headerActions). El reset de
+   border/background/font es el que necesita un <button> para conservar el
+   aspecto del resto de usos de .actionButton. */
+.headerScreen.headerWithActions > .headerActions > .actionButton {
+  width: auto;
+  min-width: 92px;
+  box-sizing: border-box;
+  padding: 10px 16px;
+  border: 0;
+  border-left: 1px solid var(--color-border);
+  background: transparent;
+  color: var(--color-ink);
+  font: inherit;
+  text-align: center;
+  white-space: nowrap;
+  animation: controlEnter 360ms ease-out both;
+}
+
+.headerScreen.headerWithActions
+  > .headerActions
+  > .actionButton:nth-of-type(2) {
+  animation-delay: 35ms;
+}
+
+/* Las secciones del composer ocupan las dos columnas del grid. */
+.movementComposer > .movementBlock {
+  grid-column: 1 / -1;
+}
+
+/* Celdas comunes de resultados y líneas. */
+.movementCell {
+  margin: 0;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-family: var(--font-sans);
+  font-weight: 400;
+  color: var(--color-ink);
+}
+
+.movementHeadCell {
+  font-weight: 700;
+}
+
+.movementEmpty {
+  margin: 0;
+  padding: 12px 0;
+  color: var(--color-muted);
+  font-family: var(--font-sans);
+  text-align: center;
+}
+
+/* Alerta local de existencias: se muestra al componer, sin enviar. */
+.movementWarning {
+  margin: 0;
+  padding: 10px 14px;
+  border: 1px solid var(--color-danger);
+  border-radius: 8px;
+  background: var(--color-surface-muted);
+  color: var(--color-danger);
+  font-family: var(--font-sans);
+  font-weight: 600;
+  text-align: center;
+}
+
+/* --- Lista de resultados de la búsqueda --- */
+.movementResults {
+  display: flex;
+  flex-direction: column;
+}
+
+.movementResultRow {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) 64px auto;
+  gap: 10px;
+  align-items: center;
+  padding: 10px 0;
+  border-top: 1px solid var(--color-border);
+}
+
+.movementAddButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 36px;
+  box-sizing: border-box;
+  padding: 6px 16px;
+  border: 1px solid var(--color-button);
+  border-radius: 8px;
+  background: var(--color-button);
+  color: var(--color-button-text);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  animation: buttonRest 180ms ease-out both;
+}
+
+.movementAddButton:hover {
+  animation: buttonHover 180ms ease-out both;
+}
+
+.movementAddButton:active {
+  animation: buttonPress 100ms ease-out both;
+}
+
+.movementAddButton:focus-visible {
+  outline: 2px solid var(--color-ink);
+  outline-offset: 2px;
+}
+
+/* --- Tabla de líneas del movimiento --- */
+.movementLineHead,
+.movementLine {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) 64px 96px 84px 44px;
+  gap: 10px;
+  align-items: center;
+}
+
+.movementLineHead {
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--color-border);
+}
+
+.movementLine {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+/* La cabecera de resultados reutiliza la de líneas con sus 4 columnas. */
+.movementResultHead {
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) 64px auto;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--color-border);
+}
+
+.movementLineInvalid {
+  border-bottom-color: var(--color-danger);
+}
+
+.movementLineInvalid .movementQuantity {
+  border-color: var(--color-danger);
+}
+
+.movementQuantity {
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 36px;
+  padding: 6px 8px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-surface);
+  color: var(--color-ink);
+  font: inherit;
+  font-size: 14px;
+}
+
+.movementQuantity:focus-visible {
+  outline: 2px solid var(--color-ink);
+  outline-offset: 2px;
+}
+
+.movementRemoveCell {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.movementRemoveButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  box-sizing: border-box;
+  padding: 0;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: var(--color-surface);
+  color: var(--color-muted);
+  font: inherit;
+  cursor: pointer;
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease,
+    background-color 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease;
+}
+
+.movementRemoveButton:hover {
+  transform: translateY(-1px);
+  border-color: var(--color-danger);
+  color: var(--color-danger);
+}
+
+.movementRemoveButton:focus-visible {
+  outline: 2px solid var(--color-ink);
+  outline-offset: 2px;
+}
+
+/* Móvil: la cabecera de la tabla se oculta y cada celda se apila con su
+   etiqueta data-label, igual que .lineList. */
+@media (max-width: 680px) {
+  .headerScreen.headerWithActions > .headerActions {
+    flex-wrap: wrap;
+  }
+
+  .headerScreen.headerWithActions > .headerActions > .actionButton {
+    min-width: 0;
+    padding: 8px 12px;
+    font-size: 14px;
+  }
+
+  .movementLineHead {
+    display: none;
+  }
+
+  .movementResultRow,
+  .movementLine {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
+    padding: 12px 0;
+  }
+
+  .movementCell {
+    display: grid;
+    grid-template-columns: minmax(84px, 36%) minmax(0, 1fr);
+    align-items: start;
+    gap: 10px;
+    width: 100%;
+    max-width: none;
+  }
+
+  .movementCell::before {
+    content: attr(data-label);
+    color: var(--color-ink);
+    font-weight: 600;
+  }
+
+  .movementRemoveCell > .movementRemoveButton {
+    justify-self: start;
+  }
+}

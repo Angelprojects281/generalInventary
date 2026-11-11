@@ -19,6 +19,8 @@ interface formProps {
     description: string;
     category: string;
     provider_name: string;
+    purchase_value: number;
+    sale_value: number;
   };
 }
 
@@ -30,6 +32,12 @@ function FormProduct({ onAcept, onCancel, product }: formProps) {
     product?.product_name ?? "",
   );
   const [amount, setAmount] = useState<number | "">(product?.amount ?? "");
+  const [purchaseValue, setPurchaseValue] = useState<number | "">(
+    product?.purchase_value ?? "",
+  );
+  const [saleValue, setSaleValue] = useState<number | "">(
+    product?.sale_value ?? "",
+  );
   const [description, setDescription] = useState(product?.description ?? "");
   const [categoryName, setCategory] = useState(product?.category ?? "");
   const [providerName, setProviderName] = useState(
@@ -40,6 +48,32 @@ function FormProduct({ onAcept, onCancel, product }: formProps) {
   const [providersArray, setProvidersArray] = useState<ProviderInterface[]>([]);
   const { t } = useTranslation();
   const esEdicion = Boolean(product);
+
+  // Los valores son obligatorios: presentes, numéricos, no negativos y con
+  // el valor de compra por debajo del de venta (misma regla que el backend).
+  const validarValores = (titulo: string) => {
+    if (purchaseValue === "" || saleValue === "") {
+      mostrarAlerta("error", titulo, "Ingrese los valores de compra y venta.");
+      return false;
+    }
+    if (!Number.isFinite(purchaseValue) || !Number.isFinite(saleValue)) {
+      mostrarAlerta("error", titulo, "Los valores deben ser números válidos.");
+      return false;
+    }
+    if (purchaseValue < 0 || saleValue < 0) {
+      mostrarAlerta("error", titulo, "Los valores no pueden ser negativos.");
+      return false;
+    }
+    if (purchaseValue >= saleValue) {
+      mostrarAlerta(
+        "error",
+        titulo,
+        "El valor de compra debe ser menor al valor de venta.",
+      );
+      return false;
+    }
+    return true;
+  };
 
   const newProduct = async () => {
     if (
@@ -57,6 +91,9 @@ function FormProduct({ onAcept, onCancel, product }: formProps) {
       );
       return;
     }
+    if (!validarValores("No se pudo crear el producto")) {
+      return;
+    }
     const res = await apiFetch("/newProduct", {
       method: "POST",
       body: JSON.stringify({
@@ -66,6 +103,8 @@ function FormProduct({ onAcept, onCancel, product }: formProps) {
         description,
         categoryName,
         provider_name: providerName,
+        purchase_value: purchaseValue,
+        sale_value: saleValue,
       }),
     });
 
@@ -101,6 +140,9 @@ function FormProduct({ onAcept, onCancel, product }: formProps) {
       );
       return;
     }
+    if (!validarValores("No se pudieron guardar los cambios")) {
+      return;
+    }
 
     const result = await mostrarConfirmacion(
       "question",
@@ -122,6 +164,8 @@ function FormProduct({ onAcept, onCancel, product }: formProps) {
         description,
         categoryName,
         provider_name: providerName,
+        purchase_value: purchaseValue,
+        sale_value: saleValue,
       }),
     });
 
@@ -190,6 +234,28 @@ function FormProduct({ onAcept, onCancel, product }: formProps) {
         value={amount}
         onChange={(e) => {
           setAmount(Number(e.target.value));
+        }}
+      ></input>
+      <input
+        className="userInput"
+        placeholder={t("valor de compra")}
+        type="number"
+        min="0"
+        step="0.01"
+        value={purchaseValue}
+        onChange={(e) => {
+          setPurchaseValue(e.target.value === "" ? "" : Number(e.target.value));
+        }}
+      ></input>
+      <input
+        className="userInput"
+        placeholder={t("valor de venta")}
+        type="number"
+        min="0"
+        step="0.01"
+        value={saleValue}
+        onChange={(e) => {
+          setSaleValue(e.target.value === "" ? "" : Number(e.target.value));
         }}
       ></input>
       <input

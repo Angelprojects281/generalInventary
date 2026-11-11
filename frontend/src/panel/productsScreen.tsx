@@ -20,6 +20,8 @@ interface ProductInterface {
   description: string;
   category: string;
   provider_name: string;
+  purchase_value: number;
+  sale_value: number;
 }
 
 function buildProductFilters(
@@ -59,9 +61,6 @@ export default function ProductsScreen() {
   const [categoryName, setCategory] = useState("");
   const [providerName, setProviderName] = useState("");
   const [amount, setAmount] = useState<number | "">("");
-  const [actualProduct, setActualProduct] = useState<ProductInterface | null>(
-    null,
-  );
   const [showFormNewProduct, setShowFormNewProduct] = useState(false);
   const [showFormNewMovement, setShowFormNewMovement] = useState(false);
   const [productToEdit, setProductToEdit] = useState<ProductInterface | null>(
@@ -115,7 +114,7 @@ export default function ProductsScreen() {
     setProductToEdit(null);
   };
 
-  const successfulCreation = () => {
+  const successfulManagement = () => {
     setShowFormNewProduct(false);
     setShowFormNewMovement(false);
     setProductToEdit(null);
@@ -130,18 +129,34 @@ export default function ProductsScreen() {
 
   return (
     <div className="mainScreen">
-      <header className="headerScreen">
+      <header className="headerScreen headerWithActions">
         <h3 className="tittle">{t("Administrador de productos")}</h3>
-        <section
-          className="actionButton"
-          onClick={() => {
-            setProductToEdit(null);
-            setShowFormNewProduct(true);
-          }}
-        >
-          <Plus size={18} aria-hidden="true" />
-          <p>{t("Nuevo producto +")}</p>
-        </section>
+        <div className="headerActions">
+          <button
+            type="button"
+            className="actionButton"
+            onClick={() => {
+              setProductToEdit(null);
+              setShowFormNewMovement(false);
+              setShowFormNewProduct(true);
+            }}
+          >
+            <Plus size={18} aria-hidden="true" />
+            <span>{t("Nuevo producto +")}</span>
+          </button>
+          <button
+            type="button"
+            className="actionButton"
+            onClick={() => {
+              setProductToEdit(null);
+              setShowFormNewProduct(false);
+              setShowFormNewMovement(true);
+            }}
+          >
+            <ArrowLeftRight size={18} aria-hidden="true" />
+            <span>{t("Nuevo movimiento")}</span>
+          </button>
+        </div>
       </header>
       <section
         className={`filterSection productFilterSection ${filtersExpanded ? "filtersExpanded" : ""}`}
@@ -215,6 +230,7 @@ export default function ProductsScreen() {
           <li className="lineList">
             <p className="listInfo">{t("Nombre")}</p>
             <p className="listInfo">{t("Cantidad")}</p>
+            <p className="listInfo">{t("Venta")}</p>
             <p className="listInfo">{t("Descripcion")}</p>
             <p className="listInfo">{t("Categoria")}</p>
             <p className="listInfo">{t("Proveedor")}</p>
@@ -231,6 +247,9 @@ export default function ProductsScreen() {
               </p>
               <p className="listInfo lastInfo" data-label={t("Cantidad")}>
                 {product.amount}
+              </p>
+              <p className="listInfo lastInfo" data-label={t("Venta")}>
+                {product.sale_value.toFixed(2)}
               </p>
               <p className="listInfo lastInfo" data-label={t("Descripcion")}>
                 {product.description}
@@ -253,14 +272,6 @@ export default function ProductsScreen() {
                       },
                     },
                     {
-                      label: "Nuevo movimiento",
-                      icon: ArrowLeftRight,
-                      onClick: () => {
-                        setActualProduct(product);
-                        setShowFormNewMovement(true);
-                      },
-                    },
-                    {
                       label: "Eliminar producto",
                       icon: Trash2,
                       danger: true,
@@ -274,23 +285,21 @@ export default function ProductsScreen() {
             </li>
           ))}
         </ul>
-        <AnimatePresence>
-          {showFormNewMovement && actualProduct && (
-            <FormMovement
-              key="movement"
-              onAcept={successfulCreation}
-              onCancel={handleCloseForm}
-              category_name={actualProduct?.category}
-              product_name={actualProduct?.product_name}
-            ></FormMovement>
-          )}
-        </AnimatePresence>
       </section>
+      <AnimatePresence>
+        {showFormNewMovement && (
+          <FormMovement
+            key="movement"
+            onAcept={successfulManagement}
+            onCancel={handleCloseForm}
+          ></FormMovement>
+        )}
+      </AnimatePresence>
       <AnimatePresence>
         {showFormNewProduct && (
           <FormProduct
             key="product"
-            onAcept={successfulCreation}
+            onAcept={successfulManagement}
             onCancel={handleCloseForm}
             product={productToEdit ?? undefined}
           ></FormProduct>

@@ -252,6 +252,15 @@ const translations: Record<string, string> = {
   "El proveedor y sus productos relacionados se eliminaron correctamente.":
     "The provider and its associated products were deleted successfully.",
   "El nombre del producto es obligatorio.": "A product name is required.",
+  "valor de compra": "purchase value",
+  "valor de venta": "sale value",
+  Venta: "Sale",
+  "Ingrese los valores de compra y venta.":
+    "Enter the purchase and sale values.",
+  "El valor de compra debe ser menor al valor de venta.":
+    "The purchase value must be less than the sale value.",
+  "Los valores no pueden ser negativos.": "Values cannot be negative.",
+  "Los valores deben ser números válidos.": "Values must be valid numbers.",
   "No se pudo verificar el producto. Inténtelo de nuevo.":
     "Could not verify the product. Please try again.",
   "El producto no existe o ya fue eliminado.":
@@ -357,6 +366,23 @@ const translations: Record<string, string> = {
   "Sesión cerrada por inactividad": "Session closed due to inactivity",
   "La sesión se cerró automáticamente después de 20 minutos de inactividad.":
     "The session was automatically closed after 20 minutes of inactivity.",
+  "Fecha y hora": "Date and time",
+  Total: "Total",
+  Ganancia: "Gain",
+  Gasto: "Expense",
+  // Parte 3: composer de movimiento multi-producto.
+  Añadir: "Add",
+  Stock: "Stock",
+  Quitar: "Remove",
+  Valor: "Value",
+  Código: "Code",
+  "nombre del producto": "product name",
+  "Busca un producto por código o nombre.":
+    "Search for a product by code or name.",
+  "No se encontraron productos.": "No products found.",
+  "Añade al menos un producto al movimiento.":
+    "Add at least one product to the movement.",
+  "Producto no válido en el movimiento.": "Invalid product in the movement.",
 };
 
 const dynamicTranslations: [RegExp, string][] = [

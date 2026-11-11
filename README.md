@@ -35,8 +35,9 @@ Aplicación web multiempresa para administrar categorías, proveedores, producto
   - Eliminar la cuenta exigiendo la contraseña; borra en cascada todo el inventario de la empresa.
 - Administración de categorías: crear, listar, editar y eliminar (elimina también sus productos).
 - Administración de proveedores: crear, listar, editar y eliminar (elimina también sus productos). El proveedor predeterminado "SIN PROVEEDOR" está protegido.
-- Administración de productos: crear con cantidad y descripción, filtrar por categoría, proveedor y cantidad máxima, editar y eliminar.
-- Registro de movimientos de entrada y salida con actualización automática del stock.
+- Administración de productos: crear con cantidad, descripción y valores de compra y venta obligatorios (el valor de compra debe ser menor que el de venta), filtrar por categoría, proveedor y cantidad máxima, editar y eliminar.
+- Registro de movimientos de entrada y salida con varios productos y cantidades distintas en una sola operación, con búsqueda de productos por código único o por nombre y comprobación de existencias antes de confirmar; el stock se actualiza automáticamente.
+- Historial de movimientos en una fila por movimiento: tipo, cada producto con su valor (salida al valor de venta en verde, entrada al valor de compra en rojo), fecha y hora, y total gastado o ganado.
 - Filtrado de movimientos por tipo, categoría, producto, código y rango de fechas.
 - Alertas visuales en el frontend mediante SweetAlert2, con mensajes de error consistentes.
 - Interfaz en español e inglés, con botón para cambiar el idioma y preferencia guardada en el navegador.
@@ -215,18 +216,20 @@ Al volver atrás en el historial del navegador desde cualquier pantalla hacia la
 
 ## Base de datos
 
-La aplicación espera una base de datos MySQL llamada `inventary` con cinco tablas. Cada tabla de inventario lleva una columna `idusers` que identifica a la empresa propietaria:
+La aplicación espera una base de datos MySQL llamada `inventary` con seis tablas. Cada tabla de inventario lleva una columna `idusers` que identifica a la empresa propietaria:
 
 ```text
-users       1 ---- N categories
-users       1 ---- N providers
-users       1 ---- N products
-users       1 ---- N movements
-categories  1 ---- N products
-providers   1 ---- N products
+users         1 ---- N categories
+users         1 ---- N providers
+users         1 ---- N products
+users         1 ---- N movements
+users         1 ---- N movement_items
+categories    1 ---- N products
+providers     1 ---- N products
+movements     1 ---- N movement_items
 ```
 
-El esquema consolidado del proyecto está disponible en [`database/schema.sql`](database/schema.sql). Este archivo crea la base de datos y las cinco tablas, y elimina y recrea las tablas si ya existen: ejecútalo solo cuando quieras empezar de cero.
+El esquema consolidado del proyecto está disponible en [`database/schema.sql`](database/schema.sql). Este archivo crea la base de datos y las seis tablas, y elimina y recrea las tablas si ya existen: ejecútalo solo cuando quieras empezar de cero. **Crea la base de datos vacía**: no incluye datos de prueba; el único `INSERT` es la fila centinela "SIN PROVEEDOR", requisito estructural de la clave foránea de los productos.
 
 ### Tablas esperadas
 
@@ -261,39 +264,57 @@ La fila `idprovider = 0` ("SIN PROVEEDOR", `idusers NULL`) es una centinela glob
 
 #### `products`
 
-| Columna        | Uso                                                                              |
-| -------------- | -------------------------------------------------------------------------------- |
-| `idproducts`   | Identificador del producto.                                                      |
-| `idusers`      | Empresa propietaria (FK con cascade).                                            |
-| `product_code` | Código único por empresa.                                                        |
-| `product_name` | Nombre único por empresa.                                                        |
-| `amount`       | Cantidad disponible en inventario.                                               |
-| `description`  | Descripción opcional; el esquema usa `SIN DESCRIPCION` por defecto.              |
-| `idcategoria`  | Referencia a `categories.idcategoria` (cascade al eliminar la categoría).        |
-| `idprovider`   | Referencia a `providers.idprovider`; `0` representa la centinela predeterminada. |
+| Columna         | Uso                                                                              |
+| --------------- | -------------------------------------------------------------------------------- |
+| `idproducts`    | Identificador del producto.                                                      |
+| `idusers`       | Empresa propietaria (FK con cascade).                                            |
+| `product_code`  | Código único por empresa.                                                        |
+| `product_name`  | Nombre único por empresa.                                                        |
+| `amount`        | Cantidad disponible en inventario.                                               |
+| `description`   | Descripción opcional; el esquema usa `SIN DESCRIPCION` por defecto.              |
+| `purchase_value`| Valor de compra obligatorio, `DECIMAL(12,2)` no negativo.                        |
+| `sale_value`    | Valor de venta obligatorio, `DECIMAL(12,2)`; debe ser mayor que el valor de compra (constraint `chk_products_values`). |
+| `idcategoria`   | Referencia a `categories.idcategoria` (cascade al eliminar la categoría).        |
+| `idprovider`    | Referencia a `providers.idprovider`; `0` representa la centinela predeterminada. |
 
 #### `movements`
+
+Cabecera de cada movimiento (una fila por movimiento, no por producto):
 
 | Columna         | Uso                                                                   |
 | --------------- | --------------------------------------------------------------------- |
 | `idmovements`   | Identificador del movimiento.                                         |
 | `idusers`       | Empresa propietaria (FK con cascade).                                 |
 | `movement_type` | Tipo de movimiento: `entrada` o `salida`.                             |
-| `date_movement` | Fecha del movimiento. El esquema la define como `DATE`.               |
-| `amount`        | Cantidad movida.                                                      |
-| `category`      | Categoría registrada en el movimiento (copia histórica).              |
-| `product_name`  | Producto afectado (copia histórica).                                  |
-| `product_code`  | Código del producto en ese momento.                                   |
+| `date_movement` | Fecha y hora del movimiento (`DATETIME`).                             |
+
+#### `movement_items`
+
+Detalle de cada movimiento con los productos que lo componen:
+
+| Columna            | Uso                                                                                     |
+| ------------------ | --------------------------------------------------------------------------------------- |
+| `idmovement_item`  | Identificador de la línea.                                                              |
+| `idmovements`      | Movimiento al que pertenece (FK con cascade).                                           |
+| `idusers`          | Empresa propietaria (FK con cascade, convención multiempresa).                          |
+| `idproducts`       | Referencia al producto **sin clave foránea**: el historial se conserva al borrar productos. |
+| `product_name`     | Copia histórica del nombre en ese momento.                                              |
+| `product_code`     | Copia histórica del código en ese momento.                                              |
+| `category`         | Copia histórica de la categoría en ese momento.                                         |
+| `amount`           | Cantidad movida (entero mayor o igual que 1).                                           |
+| `unit_value`       | Precio aplicado en ese momento: `sale_value` en salida, `purchase_value` en entrada; no cambia si después se edita el producto. |
 
 ### Reglas de inventario
 
-- Un producto requiere una categoría existente de la misma empresa.
+- Un producto requiere una categoría existente de la misma empresa y valores de compra y venta obligatorios, no negativos y con `compra < venta`.
 - `amount` representa el stock actual del producto.
 - Una `entrada` incrementa el stock; una `salida` lo disminuye.
-- No se permite una salida mayor que el stock disponible.
-- Al eliminar una categoría o un proveedor, el backend elimina primero los productos asociados y después el registro.
+- Un movimiento puede incluir varios productos con distintas cantidades; se valida la suma por producto antes de confirmar.
+- No se permite una salida mayor que el stock disponible (ni en la composición ni al confirmar).
+- El precio de cada línea se congela en el momento del movimiento: editar después el valor de un producto no altera el historial.
+- Al eliminar una categoría o un proveedor, el backend elimina primero los productos asociados y después el registro; el historial de movimientos se conserva.
 - Al renombrar el usuario de una cuenta, las claves foráneas con `ON UPDATE CASCADE` arrastran el inventario e historial al nuevo identificador.
-- Al eliminar una cuenta se eliminan sus movimientos, productos, proveedores, categorías y finalmente la cuenta.
+- Al eliminar una cuenta se eliminan sus movimientos (detalle y cabecera), productos, proveedores, categorías y finalmente la cuenta.
 
 ## API REST
 
@@ -472,14 +493,15 @@ GET /filterProducts?categoryName=Papelería&provider_name=Distribuidora%20Centra
 
 Parámetros:
 
-- `product_code`
+- `product_code`: exacto.
+- `product_name`: coincidencia parcial (`LIKE`), para buscar productos por nombre.
 - `categoryName`
 - `provider_name`
 - `amount`: devuelve productos cuya cantidad sea menor o igual al valor indicado.
 
 #### `POST /newProduct`
 
-`product_code`, `product_name`, `categoryName` y `provider_name` son obligatorios; `amount` y `description` son opcionales. La categoría y el proveedor deben pertenecer a la empresa.
+`product_code`, `product_name`, `categoryName`, `provider_name`, `purchase_value` y `sale_value` son obligatorios; `amount` y `description` son opcionales. La categoría y el proveedor deben pertenecer a la empresa. Los valores deben ser numéricos, no negativos y con `compra < venta`.
 
 ```json
 {
@@ -487,6 +509,8 @@ Parámetros:
   "product_name": "Cuaderno",
   "amount": 25,
   "description": "Cuaderno de 100 hojas",
+  "purchase_value": 8.5,
+  "sale_value": 12.5,
   "categoryName": "Papelería",
   "provider_name": "Distribuidora Central"
 }
@@ -498,32 +522,58 @@ Mismos campos que `newProduct` más `idproducts`.
 
 #### `DELETE /deleteProduct/:product_name`
 
-Elimina un producto de la empresa por nombre.
+Elimina un producto de la empresa por nombre. El historial de movimientos que lo menciona se conserva.
 
 ### Movimientos
 
 #### `POST /newMovement`
 
-Registra una entrada o salida, actualiza el stock y guarda el movimiento. El usuario que registra el movimiento se toma del token.
+Registra un movimiento con varios productos, actualiza el stock de cada uno y guarda el detalle con el precio vigente, todo en una transacción. El usuario que registra el movimiento se toma del token.
 
 ```json
 {
-  "type": "entrada",
-  "amount": 10,
-  "category_name": "Papelería",
-  "product_name": "Cuaderno"
+  "type": "salida",
+  "items": [
+    { "idproducts": 1, "amount": 5 },
+    { "idproducts": 3, "amount": 2 }
+  ]
 }
 ```
 
-Valores válidos de `type`: `entrada` y `salida`. Para una salida, la cantidad no puede superar el stock disponible.
+Valores válidos de `type`: `entrada` y `salida`. Cada `amount` debe ser un entero mayor o igual que 1 y cada `idproducts` debe pertenecer a la empresa. Las cantidades del mismo producto se fusionan antes de validar. Para una salida, la suma de cantidades por producto no puede superar el stock disponible.
 
 #### `GET /filterMovements`
 
-Lista los movimientos de la empresa ordenados del más reciente al más antiguo. Todos los parámetros son opcionales:
+Lista los movimientos de la empresa ordenados del más reciente al más antiguo, con sus productos agrupados. Todos los parámetros son opcionales:
 
 ```text
 GET /filterMovements?type=salida&category_name=Papelería&product_name=Cuaderno&product_code=PAP-001&initDate=2026-01-01&finalDate=2026-12-31
 ```
+
+La respuesta agrupa cada movimiento con su detalle y total:
+
+```json
+[
+  {
+    "idmovements": 1,
+    "movement_type": "salida",
+    "date_movement": "2026-11-11T14:30:00.000Z",
+    "total": 62.5,
+    "items": [
+      {
+        "product_name": "Cuaderno",
+        "product_code": "PAP-001",
+        "category": "Papelería",
+        "amount": 5,
+        "unit_value": 12.5,
+        "line_value": 62.5
+      }
+    ]
+  }
+]
+```
+
+`line_value` es `cantidad × valor unitario` y `total` es la suma de las líneas. El rango de fechas cubre el día final completo.
 
 ## Rutas del frontend
 
@@ -582,7 +632,6 @@ inventario/
   - No versionar `backend/secretKey.env` ni credenciales de MySQL.
   - Mover host, usuario, contraseña y nombre de base de datos a variables de entorno.
   - Usar HTTPS.
-  - Usar transacciones para actualizar el stock y registrar el movimiento como una operación atómica.
   - Configurar CORS con una lista de orígenes permitidos por entorno.
   - Rotar las credenciales si alguna contraseña o secreto ya fue expuesto.
 
@@ -636,4 +685,4 @@ npm run preview
 
 ## Estado del proyecto
 
-El proyecto está preparado para desarrollo local. Para un entorno productivo todavía deben completarse, como mínimo, la gestión de secretos por entorno, el manejo transaccional de movimientos y una estrategia de despliegue con HTTPS.
+El proyecto está preparado para desarrollo local. Para un entorno productivo todavía deben completarse, como mínimo, la gestión de secretos por entorno y una estrategia de despliegue con HTTPS.

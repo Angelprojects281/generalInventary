@@ -1,7 +1,8 @@
 const db = require("../../db/db");
 
 const filterProducts = (req, res) => {
-  const { product_code, categoryName, amount, provider_name } = req.query;
+  const { product_code, product_name, categoryName, amount, provider_name } =
+    req.query;
   const idusers = req.user.idusers;
 
   let principalQuery = `
@@ -12,6 +13,8 @@ const filterProducts = (req, res) => {
       products.product_name,
       products.amount,
       products.description,
+      products.purchase_value,
+      products.sale_value,
       categories.category AS category,
       providers.provider_name AS provider_name
     FROM products
@@ -27,6 +30,11 @@ const filterProducts = (req, res) => {
   if (product_code) {
     principalQuery += " AND products.product_code = ?";
     values.push(product_code);
+  }
+
+  if (product_name) {
+    principalQuery += " AND products.product_name LIKE CONCAT('%', ?, '%')";
+    values.push(product_name);
   }
 
   if (categoryName) {
@@ -51,7 +59,15 @@ const filterProducts = (req, res) => {
       });
     }
 
-    return res.status(200).json(results);
+    // mysql2 devuelve DECIMAL como cadena; la API expone los valores
+    // numericos para que la interfaz pueda operar con ellos.
+    const products = results.map((row) => ({
+      ...row,
+      purchase_value: Number(row.purchase_value),
+      sale_value: Number(row.sale_value),
+    }));
+
+    return res.status(200).json(products);
   });
 };
 module.exports = filterProducts;

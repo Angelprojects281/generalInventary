@@ -12,13 +12,30 @@ interface ProductInterface {
   idcategoria: number;
 }
 
+interface MovementItemInterface {
+  product_name: string;
+  product_code: string | null;
+  category: string;
+  amount: number;
+  unit_value: number;
+  line_value: number;
+}
+
 interface MovementInterface {
   idmovements: number;
   movement_type: string;
   date_movement: string;
-  amount: number;
-  category: string;
-  product_name: string;
+  total: number;
+  items: MovementItemInterface[];
+  dateFormatted: string;
+}
+
+// Formatea la fecha y hora durante la carga (no en el render, por ESLint):
+// AAAA-MM-DD HH:mm:ss con getters locales.
+function formatMovementDate(dateMovement: string): string {
+  const date = new Date(dateMovement);
+  const pad = (value: number) => String(value).padStart(2, "0");
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
 }
 
 function buildMovementFilters(
@@ -77,7 +94,12 @@ async function loadMovements(
     return [];
   }
 
-  return data as MovementInterface[];
+  const movements = data as Omit<MovementInterface, "dateFormatted">[];
+
+  return movements.map((movement) => ({
+    ...movement,
+    dateFormatted: formatMovementDate(movement.date_movement),
+  }));
 }
 
 export default function MovementsScreen() {
@@ -239,34 +261,49 @@ export default function MovementsScreen() {
         <ul className="infoList">
           <li className="lineList">
             <p className="listInfo">{t("Tipo")}</p>
-            <p className="listInfo">{t("Fecha")}</p>
-            <p className="listInfo">{t("Cantidad")}</p>
-            <p className="listInfo">{t("Categoria")}</p>
-            <p className="listInfo">{t("Producto")}</p>
+            <p className="listInfo">{t("Productos")}</p>
+            <p className="listInfo">{t("Fecha y hora")}</p>
+            <p className="listInfo">{t("Total")}</p>
           </li>
-          {movementsArray.map((movement) => (
-            <li
-              key={movement.idmovements}
-              value={movement.idmovements}
-              className="lineList"
-            >
-              <p className="listInfo lastInfo" data-label={t("Tipo")}>
-                {t(movement.movement_type)}
-              </p>
-              <p className="listInfo lastInfo" data-label={t("Fecha")}>
-                {movement.date_movement.split("T")[0]}
-              </p>
-              <p className="listInfo lastInfo" data-label={t("Cantidad")}>
-                {movement.amount}
-              </p>
-              <p className="listInfo lastInfo" data-label={t("Categoria")}>
-                {movement.category}
-              </p>
-              <p className="listInfo lastInfo" data-label={t("Producto")}>
-                {movement.product_name}
-              </p>
-            </li>
-          ))}
+          {movementsArray.map((movement) => {
+            const isOutbound = movement.movement_type === "salida";
+            return (
+              <li
+                key={movement.idmovements}
+                value={movement.idmovements}
+                className="lineList"
+              >
+                <p className="listInfo lastInfo" data-label={t("Tipo")}>
+                  {t(movement.movement_type)}
+                </p>
+                <p
+                  className="listInfo lastInfo historyProducts"
+                  data-label={t("Productos")}
+                >
+                  <span className="historyProductLines">
+                    {movement.items.map((item, index) => (
+                      <span
+                        key={`${movement.idmovements}-${index}`}
+                        className="historyProductLine"
+                      >
+                        {`${item.product_name} x${item.amount} — ${item.line_value.toFixed(2)}`}
+                      </span>
+                    ))}
+                  </span>
+                </p>
+                <p className="listInfo lastInfo" data-label={t("Fecha y hora")}>
+                  {movement.dateFormatted}
+                </p>
+                <p
+                  className={`listInfo lastInfo historyTotal ${isOutbound ? "historyGain" : "historyLoss"}`}
+                  data-label={t("Total")}
+                  title={t(isOutbound ? "Ganancia" : "Gasto")}
+                >
+                  {movement.total.toFixed(2)}
+                </p>
+              </li>
+            );
+          })}
         </ul>
       </section>
     </div>

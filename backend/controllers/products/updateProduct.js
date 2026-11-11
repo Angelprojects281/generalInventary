@@ -9,6 +9,8 @@ const updateProduct = (req, res) => {
     description,
     categoryName,
     provider_name,
+    purchase_value,
+    sale_value,
   } = req.body;
   const idusers = req.user.idusers;
   const productCode =
@@ -24,6 +26,32 @@ const updateProduct = (req, res) => {
   if (productCode.length > 50) {
     return res.status(400).json({
       error: "El código único no puede superar los 50 caracteres.",
+    });
+  }
+
+  if (purchase_value === undefined || purchase_value === null ||
+      sale_value === undefined || sale_value === null ||
+      purchase_value === "" || sale_value === "") {
+    return res.status(400).json({
+      error: "Ingrese los valores de compra y venta.",
+    });
+  }
+
+  if (!Number.isFinite(purchase_value) || !Number.isFinite(sale_value)) {
+    return res.status(400).json({
+      error: "Los valores deben ser números válidos.",
+    });
+  }
+
+  if (purchase_value < 0 || sale_value < 0) {
+    return res.status(400).json({
+      error: "Los valores no pueden ser negativos.",
+    });
+  }
+
+  if (purchase_value >= sale_value) {
+    return res.status(400).json({
+      error: "El valor de compra debe ser menor al valor de venta.",
     });
   }
 
@@ -125,12 +153,16 @@ const updateProduct = (req, res) => {
                       "product_name = ?",
                       "idcategoria = ?",
                       "idprovider = ?",
+                      "purchase_value = ?",
+                      "sale_value = ?",
                     ];
                     const valuesToUpdate = [
                       productCode,
                       product_name,
                       category.idcategoria,
                       provider.idprovider,
+                      purchase_value,
+                      sale_value,
                     ];
 
                     if (

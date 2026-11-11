@@ -35,6 +35,8 @@ const companies = [
         category: "Herramientas",
         provider: "Distribuidora Tornillos del Norte",
         amount: 45,
+        purchase_value: 12.5,
+        sale_value: 17.5,
         description: "Martillo de una con mango de fibra de vidrio",
       },
       {
@@ -43,6 +45,8 @@ const companies = [
         category: "Herramientas",
         provider: "Distribuidora Tornillos del Norte",
         amount: 12,
+        purchase_value: 65,
+        sale_value: 91,
         description: "Taladro percutor con maletin y juego de brocas",
       },
       {
@@ -51,6 +55,8 @@ const companies = [
         category: "Pinturas",
         provider: "Pinturas y Barnices La Colina",
         amount: 30,
+        purchase_value: 18.9,
+        sale_value: 26.46,
         description: "Pintura vinilica para interior y exterior",
       },
       {
@@ -59,6 +65,8 @@ const companies = [
         category: "Pinturas",
         provider: "Pinturas y Barnices La Colina",
         amount: 60,
+        purchase_value: 4.5,
+        sale_value: 6.3,
         description: "Pincel de cerda natural con mango de madera",
       },
       {
@@ -67,6 +75,8 @@ const companies = [
         category: "Electricidad",
         provider: "Electricidad El Rayo",
         amount: 120,
+        purchase_value: 2.8,
+        sale_value: 3.92,
         description: "Bombillo LED 9W luz fria, casquillo E27",
       },
       {
@@ -75,6 +85,8 @@ const companies = [
         category: "Electricidad",
         provider: "Electricidad El Rayo",
         amount: 18,
+        purchase_value: 32,
+        sale_value: 44.8,
         description: "Cable THW 12 AWG de cobre, rollo de 100 metros",
       },
       {
@@ -83,6 +95,8 @@ const companies = [
         category: "Fontaneria",
         provider: "Fontaneria Los Tuberos",
         amount: 40,
+        purchase_value: 7.5,
+        sale_value: 10.5,
         description: "Tubo PVC hidraulico de media pulgada",
       },
       {
@@ -91,6 +105,8 @@ const companies = [
         category: "Fontaneria",
         provider: "Fontaneria Los Tuberos",
         amount: 25,
+        purchase_value: 9.9,
+        sale_value: 13.86,
         description: "Llave de paso cromada para tuberia",
       },
       {
@@ -99,6 +115,8 @@ const companies = [
         category: "Materiales",
         provider: "Construcciones El Roble",
         amount: 80,
+        purchase_value: 9.5,
+        sale_value: 13.3,
         description: "Cemento gris de alta resistencia para estructuras",
       },
       {
@@ -107,6 +125,8 @@ const companies = [
         category: "Materiales",
         provider: "Construcciones El Roble",
         amount: 55,
+        purchase_value: 3.2,
+        sale_value: 4.48,
         description: "Arena fina lavada para mezcla y acabados",
       },
     ],
@@ -129,6 +149,8 @@ const companies = [
         category: "Panes",
         provider: "Molinos La Estrella",
         amount: 150,
+        purchase_value: 1.2,
+        sale_value: 1.68,
         description: "Pan campesino tradicional de 500 g",
       },
       {
@@ -137,6 +159,8 @@ const companies = [
         category: "Panes",
         provider: "Molinos La Estrella",
         amount: 60,
+        purchase_value: 1.5,
+        sale_value: 2.1,
         description: "Croissant hojaldrado relleno de mantequilla",
       },
       {
@@ -145,6 +169,8 @@ const companies = [
         category: "Pasteles",
         provider: "Lacteos San Miguel",
         amount: 40,
+        purchase_value: 3.5,
+        sale_value: 4.9,
         description: "Porcion de torta de chocolate humedo",
       },
       {
@@ -153,6 +179,8 @@ const companies = [
         category: "Pasteles",
         provider: "Endulzantes La Miel",
         amount: 35,
+        purchase_value: 2,
+        sale_value: 2.8,
         description: "Milhoja con crema pastelera y hojaldre",
       },
       {
@@ -161,6 +189,8 @@ const companies = [
         category: "Bebidas",
         provider: "Distribuidora El Rio",
         amount: 48,
+        purchase_value: 1.8,
+        sale_value: 2.52,
         description: "Jugo de naranja natural exprimido el mismo dia",
       },
       {
@@ -169,6 +199,8 @@ const companies = [
         category: "Bebidas",
         provider: "Distribuidora El Rio",
         amount: 90,
+        purchase_value: 2.4,
+        sale_value: 3.36,
         description: "Cafe americano preparado con grano tostado",
       },
       {
@@ -177,6 +209,8 @@ const companies = [
         category: "Snacks",
         provider: "Endulzantes La Miel",
         amount: 70,
+        purchase_value: 1.1,
+        sale_value: 1.54,
         description: "Galleta de avena endulzada con miel natural",
       },
       {
@@ -185,6 +219,8 @@ const companies = [
         category: "Snacks",
         provider: "Molinos La Estrella",
         amount: 85,
+        purchase_value: 1.3,
+        sale_value: 1.82,
         description: "Pan relleno de queso derretido",
       },
       {
@@ -193,6 +229,8 @@ const companies = [
         category: "Ingredientes",
         provider: "Molinos La Estrella",
         amount: 50,
+        purchase_value: 2.6,
+        sale_value: 3.64,
         description: "Harina de trigo para panificacion",
       },
       {
@@ -201,6 +239,8 @@ const companies = [
         category: "Ingredientes",
         provider: "Lacteos San Miguel",
         amount: 45,
+        purchase_value: 2.9,
+        sale_value: 4.06,
         description: "Leche entera pasteurizada",
       },
     ],
@@ -223,6 +263,8 @@ const companies = [
         category: "Bebidas",
         provider: "Bebidas El Paraiso Mayorista",
         amount: 144,
+        purchase_value: 0.8,
+        sale_value: 1.12,
         description: "Gaseosa sabor cola en botella de 400 ml",
       },
       {
@@ -231,6 +273,8 @@ const companies = [
         category: "Bebidas",
         provider: "Bebidas El Paraiso Mayorista",
         amount: 96,
+        purchase_value: 0.7,
+        sale_value: 0.98,
         description: "Agua pura sin gas en botella de 600 ml",
       },
       {
@@ -239,6 +283,8 @@ const companies = [
         category: "Lacteos",
         provider: "Lacteos Del Valle",
         amount: 60,
+        purchase_value: 3.4,
+        sale_value: 4.76,
         description: "Leche entera empacada de 1 litro",
       },
       {
@@ -247,6 +293,8 @@ const companies = [
         category: "Lacteos",
         provider: "Lacteos Del Valle",
         amount: 25,
+        purchase_value: 4.6,
+        sale_value: 6.44,
         description: "Queso fresco artesanal en porcion de 500 g",
       },
       {
@@ -255,6 +303,8 @@ const companies = [
         category: "Abarrotes",
         provider: "Abarrotes El Central",
         amount: 80,
+        purchase_value: 2.7,
+        sale_value: 3.78,
         description: "Arroz blanco grado extra",
       },
       {
@@ -263,6 +313,8 @@ const companies = [
         category: "Abarrotes",
         provider: "Abarrotes El Central",
         amount: 40,
+        purchase_value: 5.5,
+        sale_value: 7.7,
         description: "Aceite vegetal de soya de 1 litro",
       },
       {
@@ -271,6 +323,8 @@ const companies = [
         category: "Limpieza",
         provider: "Detergentes Brillante S.A.",
         amount: 30,
+        purchase_value: 6.4,
+        sale_value: 8.96,
         description: "Detergente liquido concentrado para ropa",
       },
       {
@@ -279,6 +333,8 @@ const companies = [
         category: "Limpieza",
         provider: "Detergentes Brillante S.A.",
         amount: 50,
+        purchase_value: 3.8,
+        sale_value: 5.32,
         description: "Papel higienico doble hoja, paquete de 4 rollos",
       },
       {
@@ -287,6 +343,8 @@ const companies = [
         category: "Snacks",
         provider: "Snacks y Dulces Importados",
         amount: 65,
+        purchase_value: 1.9,
+        sale_value: 2.66,
         description: "Papas fritas sabor natural",
       },
       {
@@ -295,6 +353,8 @@ const companies = [
         category: "Snacks",
         provider: "Snacks y Dulces Importados",
         amount: 44,
+        purchase_value: 2.2,
+        sale_value: 3.08,
         description: "Chocolate con leche en barra de 100 g",
       },
     ],
@@ -347,14 +407,16 @@ async function seedCompany(c) {
   for (const product of c.products) {
     await db.promise().query(
       `INSERT INTO products
-        (idusers, product_code, product_name, amount, description, idcategoria, idprovider)
-       VALUES (?, ?, ?, ?, ?, ?, ?)`,
+        (idusers, product_code, product_name, amount, description, purchase_value, sale_value, idcategoria, idprovider)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         c.user,
         product.code,
         product.name,
         product.amount,
         product.description,
+        product.purchase_value,
+        product.sale_value,
         categoryIds[product.category],
         providerIds[product.provider],
       ],

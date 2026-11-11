@@ -1,8 +1,10 @@
 -- =====================================================
 -- REINICIO COMPLETO DE LA BASE DE DATOS INVENTARY
--- Esquema multiempresa: cada usuario/empresa tiene su
--- propio inventario (categorias, proveedores, productos
--- y movimientos) aislado mediante la columna idusers.
+-- Esquema multiempresa con 6 tablas: users, categories,
+-- providers, products, movements (cabecera del
+-- historial) y movement_items (detalle por producto).
+-- Cada usuario/empresa tiene su propio inventario
+-- aislado mediante la columna idusers.
 -- =====================================================
 
 CREATE DATABASE IF NOT EXISTS `inventary`
@@ -18,6 +20,7 @@ SET FOREIGN_KEY_CHECKS = 0;
 -- ELIMINAR TABLAS
 -- =====================================================
 
+DROP TABLE IF EXISTS `movement_items`;
 DROP TABLE IF EXISTS `movements`;
 DROP TABLE IF EXISTS `products`;
 DROP TABLE IF EXISTS `providers`;
@@ -98,6 +101,10 @@ CREATE TABLE `products` (
   `product_name` varchar(100) NOT NULL,
   `amount` int NOT NULL DEFAULT 0,
   `description` varchar(500) DEFAULT 'SIN DESCRIPCION',
+  `purchase_value` decimal(12,2) NOT NULL,
+  `sale_value` decimal(12,2) NOT NULL,
+  CONSTRAINT `chk_products_values`
+    CHECK (`purchase_value` >= 0 AND `sale_value` > `purchase_value`),
   `idcategoria` int NOT NULL,
   `idprovider` int NOT NULL DEFAULT 0,
   PRIMARY KEY (`idproducts`),
@@ -119,24 +126,55 @@ CREATE TABLE `products` (
 
 -- =====================================================
 -- TABLA MOVEMENTS
--- El historial pertenece a una empresa (idusers).
--- idusers identifica al dueño y se conservan las
--- copias de nombre de producto y categoria usadas
--- en ese momento.
+-- Cabecera del historial: cada fila es un movimiento
+-- (entrada o salida) de una empresa (idusers). El
+-- detalle por producto con sus copias historicas y su
+-- valor unitario vive en movement_items.
 -- =====================================================
 
 CREATE TABLE `movements` (
   `idmovements` int NOT NULL AUTO_INCREMENT,
   `idusers` varchar(50) NOT NULL,
   `movement_type` varchar(50) NOT NULL,
-  `date_movement` date NOT NULL,
-  `amount` int NOT NULL,
-  `category` varchar(50) NOT NULL,
-  `product_name` varchar(50) NOT NULL,
-  `product_code` varchar(50) DEFAULT NULL,
+  `date_movement` datetime NOT NULL,
   PRIMARY KEY (`idmovements`),
   KEY `movements_user_idx` (`idusers`),
   CONSTRAINT `fk_movements_user`
+    FOREIGN KEY (`idusers`) REFERENCES `users` (`idusers`)
+    ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB
+  DEFAULT CHARSET=utf8mb4
+  COLLATE=utf8mb4_0900_ai_ci;
+
+-- =====================================================
+-- TABLA MOVEMENT_ITEMS
+-- Detalle de cada movimiento: una fila por producto.
+-- idproducts es solo referencia de conveniencia (sin
+-- clave foranea): product_name, product_code y category
+-- son copias historicas, de modo que borrar un producto
+-- o una categoria no borra el historial. unit_value
+-- guarda el precio aplicado en ese momento (sale_value
+-- en salida, purchase_value en entrada) y no cambia si
+-- despues se edita el producto.
+-- =====================================================
+
+CREATE TABLE `movement_items` (
+  `idmovement_item` int NOT NULL AUTO_INCREMENT,
+  `idmovements` int NOT NULL,
+  `idusers` varchar(50) NOT NULL,
+  `idproducts` int NOT NULL,
+  `product_name` varchar(100) NOT NULL,
+  `product_code` varchar(50) DEFAULT NULL,
+  `category` varchar(50) NOT NULL,
+  `amount` int NOT NULL,
+  `unit_value` decimal(12,2) NOT NULL,
+  PRIMARY KEY (`idmovement_item`),
+  KEY `movement_items_movement_idx` (`idmovements`),
+  KEY `movement_items_user_idx` (`idusers`),
+  CONSTRAINT `fk_movement_items_movement`
+    FOREIGN KEY (`idmovements`) REFERENCES `movements` (`idmovements`)
+    ON UPDATE CASCADE ON DELETE CASCADE,
+  CONSTRAINT `fk_movement_items_user`
     FOREIGN KEY (`idusers`) REFERENCES `users` (`idusers`)
     ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB
@@ -167,3 +205,5 @@ SELECT * FROM `providers`;
 SELECT * FROM `products`;
 
 SELECT * FROM `movements`;
+
+SELECT * FROM `movement_items`;
