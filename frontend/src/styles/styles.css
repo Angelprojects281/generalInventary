@@ -2438,3 +2438,111 @@ body:has(.formContainer)::before {
     font-size: 20px;
   }
 }
+
+/* ---------- Atajo de teclado para añadir productos escaneados ---------- */
+/* El campo de código va en un contenedor flex con el botón de ajustes: al
+   dejar de ser hijo directo de .formContainer hay que replicar el
+   estirado que hace ".formContainer > .userInput". */
+.movementSearchField {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+  min-width: 0;
+}
+
+.movementSearchField > .userInput {
+  display: block;
+  flex: 1 1 auto;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  margin: 0;
+}
+
+.movementShortcutButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 48px;
+  box-sizing: border-box;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-surface);
+  color: var(--color-muted);
+  cursor: pointer;
+  transition:
+    border-color 180ms ease,
+    color 180ms ease;
+}
+
+.movementShortcutButton:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.movementShortcutButton:focus-visible {
+  outline: 2px solid var(--color-ink);
+  outline-offset: 2px;
+}
+
+.movementShortcutButton[aria-expanded="true"] {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.movementShortcutSettings {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* El desplegable no es hijo directo de .formContainer: hay que neutralizar
+   el centrado y el margen superior que trae .userInput. */
+.movementShortcutSettings > .userInput {
+  display: block;
+  width: 100%;
+  max-width: 320px;
+  box-sizing: border-box;
+  margin: 0;
+}
+
+.movementShortcutLabel {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-ink);
+}
+
+.movementShortcutHint {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--color-muted);
+}
+
+.movementShortcutHint kbd {
+  display: inline-block;
+  padding: 1px 6px;
+  border: 1px solid var(--color-border);
+  border-bottom-width: 2px;
+  border-radius: 6px;
+  background: var(--color-surface);
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-ink);
+}
+
+/* Móvil: el botón de ajustes se mantiene y la pista baja de tamaño. */
+@media (max-width: 680px) {
+  .movementShortcutButton {
+    width: 42px;
+  }
+
+  .movementShortcutHint {
+    font-size: 12.5px;
+  }
+}

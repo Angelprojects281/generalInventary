@@ -514,6 +514,19 @@ const translations: Record<string, string> = {
   "El rango seleccionado contiene muchos movimientos; el informe será extenso.":
     "The selected range contains many movements; the report will be long.",
   "Generando el informe...": "Generating the report...",
+  // Atajo de teclado para añadir productos escaneados.
+  "Configurar la tecla para añadir productos":
+    "Configure the key to add products",
+  "Tecla para añadir el producto encontrado":
+    "Key to add the found product",
+  "El atajo de escaneo está desactivado.":
+    "The scanning shortcut is disabled.",
+  "Atajo actualizado": "Shortcut updated",
+  "Se ha actualizado la tecla para añadir productos.":
+    "The key to add products has been updated.",
+  Desactivada: "Disabled",
+  "Con Enter, el producto se añade en cuanto termina la búsqueda.":
+    "With Enter, the product is added as soon as the search finishes.",
 };
 
 const dynamicTranslations: [RegExp, string][] = [
@@ -526,6 +539,7 @@ const dynamicTranslations: [RegExp, string][] = [
   [/^El proveedor (.+) se actualizó correctamente\.$/, "Provider $1 was updated successfully."],
   [/^El producto (.+) se actualizó correctamente\.$/, "Product $1 was updated successfully."],
   [/^Movimiento registrado correctamente\. Total: ([\d.,]+)$/, "Movement recorded successfully. Total: $1"],
+  [/^Pulsa (.+) para añadir el producto y seguir escaneando\.$/, "Press $1 to add the product and keep scanning."],
 ];
 
 function getStoredLanguage(): Language {

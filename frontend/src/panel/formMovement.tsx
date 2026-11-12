@@ -1,9 +1,15 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "motion/react";
-import { Trash2 } from "lucide-react";
+import { Keyboard, Trash2 } from "lucide-react";
 import { mostrarAlerta, mostrarConfirmacionDetalle, type ResumenDetalle } from "../alerts/alert";
 import apiFetch from "../api";
-import { useTranslation } from "../i18n";
+import { useTranslation, translateText } from "../i18n";
+import {
+  SHORTCUT_OPTIONS,
+  matchesShortcut,
+  readStoredShortcut,
+  saveShortcut,
+} from "./movementShortcut";
 
 interface formProps {
   onAcept: () => void;
@@ -76,6 +82,34 @@ function lineTotalFor(
   return Math.round(item.amount * unit * 100) / 100;
 }
 
+// Coincidencia única para la consulta actual: por código, el código coincide
+// (sin distinguir mayúsculas, como la colación de MySQL); por nombre, el
+// nombre contiene el texto escrito (la búsqueda es parcial por LIKE).
+function uniqueMatch(
+  results: SearchProductInterface[],
+  consulta: { code: string; name: string },
+): SearchProductInterface | null {
+  if (results.length !== 1) return null;
+
+  const producto = results[0];
+
+  if (
+    consulta.code &&
+    producto.product_code.toLowerCase() !== consulta.code.toLowerCase()
+  ) {
+    return null;
+  }
+
+  if (
+    consulta.name &&
+    !producto.product_name.toLowerCase().includes(consulta.name.toLowerCase())
+  ) {
+    return null;
+  }
+
+  return producto;
+}
+
 // Búsqueda combinada: código exacto y nombre parcial, como en
 // productsScreen. Si no hay texto no se consulta la API.
 async function searchProducts(
@@ -111,30 +145,31 @@ function FormMovement({ onAcept, onCancel }: formProps) {
     SearchProductInterface[]
   >([]);
   const [items, setItems] = useState<MovementItemInterface[]>([]);
+  const [shortcutId, setShortcutId] = useState<string>(readStoredShortcut);
+  const [shortcutSettingsOpen, setShortcutSettingsOpen] = useState(false);
+  const codeInputRef = useRef<HTMLInputElement>(null);
+  const nameInputRef = useRef<HTMLInputElement>(null);
+  // Consulta que produjo los resultados que hay ahora en pantalla (mecanismo
+  // anti-resultados-obsoletos).
+  const resultsQueryRef = useRef<{ code: string; name: string } | null>(null);
+  // Consulta pendiente de añadir cuando la búsqueda aún no ha respondido
+  // (modelo diferido). Es una ref y no estado: no provoca render.
+  const pendingAddRef = useRef<{ code: string; name: string } | null>(null);
   const { t } = useTranslation();
 
   // Total en vivo: valor derivado del estado durante el render (no es
   // estado nuevo ni efecto), recalculado en cada pulsación del teclado.
   const total = calculateMovementTotal(items, type);
 
-  // Las cargas se encadenan con .then para no fijar estado de forma
-  // síncrona dentro del efecto; sin texto la búsqueda resuelve [] y
-  // quedan limpios los resultados.
+  // Foco inicial en el campo de código: se puede escanear directamente.
   useEffect(() => {
-    let isCurrent = true;
-
-    searchProducts(codeQuery.trim(), nameQuery.trim()).then((results) => {
-      if (isCurrent) setSearchResults(results);
-    });
-
-    return () => {
-      isCurrent = false;
-    };
-  }, [codeQuery, nameQuery]);
+    codeInputRef.current?.focus();
+  }, []);
 
   // Si el producto ya está en el movimiento se fusiona sumando una
   // unidad más (una sola línea por producto, decisión del usuario).
-  const addProduct = (product: SearchProductInterface) => {
+  // Devuelve true si se añadió (o fusionó) y false si no había existencias.
+  const addProduct = (product: SearchProductInterface): boolean => {
     const existing = items.find(
       (item) => item.idproducts === product.idproducts,
     );
@@ -152,7 +187,7 @@ function FormMovement({ onAcept, onCancel }: formProps) {
         "No se pudo registrar el movimiento",
         "No hay existencias suficientes para registrar la salida.",
       );
-      return;
+      return false;
     }
 
     if (existing) {
@@ -169,7 +204,7 @@ function FormMovement({ onAcept, onCancel }: formProps) {
             : item,
         ),
       );
-      return;
+      return true;
     }
 
     setItems((current) => [
@@ -184,6 +219,111 @@ function FormMovement({ onAcept, onCancel }: formProps) {
         sale_value: product.sale_value,
       },
     ]);
+
+    return true;
+  };
+
+  // Última versión de addProduct: el efecto de búsqueda la usa para
+  // resolver el camino diferido del atajo sin declararla en sus
+  // dependencias (y sin volver a disparar la búsqueda al cambiar las
+  // líneas).
+  const addProductRef = useRef(addProduct);
+
+  useEffect(() => {
+    addProductRef.current = addProduct;
+  });
+
+  // Las cargas se encadenan con .then para no fijar estado de forma
+  // síncrona dentro del efecto; sin texto la búsqueda resuelve [] y
+  // quedan limpios los resultados. Además se anota qué consulta produjo
+  // los resultados (mecanismo anti-resultados-obsoletos) y se resuelve la
+  // cola de adiciones pendientes (camino diferido del atajo de escaneo).
+  useEffect(() => {
+    let isCurrent = true;
+
+    const consulta = { code: codeQuery.trim(), name: nameQuery.trim() };
+
+    searchProducts(consulta.code, consulta.name).then((results) => {
+      if (!isCurrent) return;
+
+      setSearchResults(results);
+      // Los resultados de ahora en pantalla son los de esta consulta.
+      resultsQueryRef.current = consulta;
+
+      const pendiente = pendingAddRef.current;
+      if (!pendiente) return;
+      if (pendiente.code !== consulta.code || pendiente.name !== consulta.name) {
+        return; // la intención es de otra consulta: se espera
+      }
+
+      pendingAddRef.current = null;
+
+      const producto = uniqueMatch(results, consulta);
+      if (!producto) return; // no hay coincidencia única: se descarta
+
+      if (!addProductRef.current(producto)) return;
+
+      setCodeQuery("");
+      setNameQuery("");
+      setSearchResults([]);
+      codeInputRef.current?.focus();
+    });
+
+    return () => {
+      isCurrent = false;
+    };
+  }, [codeQuery, nameQuery]);
+
+  // Reinicia el ciclo de escaneo: limpia la búsqueda, la lista de resultados
+  // y devuelve el foco al campo de código. No toca las líneas ya añadidas.
+  const reiniciarCiclo = () => {
+    setCodeQuery("");
+    setNameQuery("");
+    setSearchResults([]);
+    codeInputRef.current?.focus();
+  };
+
+  // Manejador del atajo de escaneo (compartido por los dos campos de
+  // búsqueda): solo actúa con el foco en la zona de búsqueda.
+  const handleSearchKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (!matchesShortcut(event.nativeEvent, shortcutId)) {
+      return;
+    }
+
+    // preventDefault: la tecla elegida no tiene acción nativa y así se
+    // evita cualquier comportamiento por defecto del navegador.
+    event.preventDefault();
+
+    const consulta = { code: codeQuery.trim(), name: nameQuery.trim() };
+    if (!consulta.code && !consulta.name) {
+      return;
+    }
+
+    // ¿Los resultados de pantalla son los de la consulta actual?
+    const consultaDeResultados = resultsQueryRef.current;
+    const sonActuales =
+      consultaDeResultados !== null &&
+      consultaDeResultados.code === consulta.code &&
+      consultaDeResultados.name === consulta.name;
+
+    if (!sonActuales) {
+      // Camino diferido: la respuesta de esta consulta aún no ha llegado
+      // (caso del Enter del escáner). Se guarda la consulta pendiente y se
+      // añade cuando llegue la única coincidencia.
+      pendingAddRef.current = consulta;
+      return;
+    }
+
+    const producto = uniqueMatch(searchResults, consulta);
+    if (!producto) {
+      return; // 0 resultados o más de 1 (búsqueda por nombre)
+    }
+
+    if (!addProduct(producto)) {
+      return; // por ejemplo, una salida sin existencias
+    }
+
+    reiniciarCiclo();
   };
 
   const setLineAmount = (idproducts: number, value: string) => {
@@ -309,6 +449,19 @@ function FormMovement({ onAcept, onCancel }: formProps) {
     type === "salida" &&
     items.some((item) => item.amount !== "" && item.amount > item.stock);
 
+  // Etiqueta visible de la tecla configurada y la pista traducida, partida
+  // para destacar la tecla con <kbd>. La frase se compone en código (la
+  // tecla va en medio), por eso se usa translateText y no el hook t().
+  const shortcutLabel =
+    SHORTCUT_OPTIONS.find((option) => option.id === shortcutId)?.label ?? "";
+  const hintParts = shortcutLabel
+    ? translateText(
+        `Pulsa ${shortcutLabel} para añadir el producto y seguir escaneando.`,
+      ).split(shortcutLabel)
+    : ["", ""];
+  const hintAntes = hintParts[0] ?? "";
+  const hintDespues = hintParts[1] ?? "";
+
   return (
     <motion.div
       className="formContainer movementComposer"
@@ -329,21 +482,88 @@ function FormMovement({ onAcept, onCancel }: formProps) {
         <option value="salida">{t("Salida")}</option>
       </select>
 
+      <div className="movementSearchField">
+        <input
+          ref={codeInputRef}
+          className="userInput"
+          placeholder={t("código único")}
+          type="text"
+          maxLength={50}
+          value={codeQuery}
+          onChange={(e) => {
+            pendingAddRef.current = null;
+            setCodeQuery(e.target.value);
+          }}
+          onKeyDown={handleSearchKeyDown}
+        />
+        <button
+          type="button"
+          className="movementShortcutButton"
+          aria-expanded={shortcutSettingsOpen}
+          aria-label={t("Configurar la tecla para añadir productos")}
+          title={t("Configurar la tecla para añadir productos")}
+          onClick={() => setShortcutSettingsOpen((open) => !open)}
+        >
+          <Keyboard size={18} aria-hidden="true" />
+        </button>
+      </div>
       <input
-        className="userInput"
-        placeholder={t("código único")}
-        type="text"
-        maxLength={50}
-        value={codeQuery}
-        onChange={(e) => setCodeQuery(e.target.value)}
-      />
-      <input
+        ref={nameInputRef}
         className="userInput"
         placeholder={t("nombre del producto")}
         type="text"
         value={nameQuery}
-        onChange={(e) => setNameQuery(e.target.value)}
+        onChange={(e) => {
+          pendingAddRef.current = null;
+          setNameQuery(e.target.value);
+        }}
+        onKeyDown={handleSearchKeyDown}
       />
+
+      {shortcutSettingsOpen && (
+        <section className="movementBlock movementShortcutSettings">
+          <p className="movementShortcutLabel">
+            {t("Tecla para añadir el producto encontrado")}
+          </p>
+          <select
+            className="userInput"
+            value={shortcutId}
+            onChange={(e) => {
+              const value = e.target.value;
+              setShortcutId(value);
+              saveShortcut(value);
+              mostrarAlerta(
+                "success",
+                "Atajo actualizado",
+                "Se ha actualizado la tecla para añadir productos.",
+              );
+            }}
+          >
+            {SHORTCUT_OPTIONS.map((option) => (
+              <option key={option.id || "none"} value={option.id}>
+                {option.id === "" ? t("Desactivada") : option.label}
+              </option>
+            ))}
+          </select>
+          {shortcutId === "Enter" && (
+            <p className="movementShortcutHint">
+              {t("Con Enter, el producto se añade en cuanto termina la búsqueda.")}
+            </p>
+          )}
+        </section>
+      )}
+
+      <p className="movementBlock movementShortcutHint">
+        {shortcutId === "" ? (
+          t("El atajo de escaneo está desactivado.")
+        ) : (
+          <>
+            {hintAntes}
+            <kbd>{shortcutLabel}</kbd>
+            {hintDespues}
+          </>
+        )}
+      </p>
 
       <section className="movementBlock movementResults">
         {searchResults.length > 0 ? (
