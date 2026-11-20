@@ -4,6 +4,10 @@ var router = express.Router();
 const auth = require("../middleware/auth");
 const register = require("../controllers/users/register");
 const logIn = require("../controllers/users/logIn");
+const verifyAccount = require("../controllers/users/verifyAccount");
+const requestVerificationCode = require("../controllers/users/requestVerificationCode");
+const requestPasswordReset = require("../controllers/users/requestPasswordReset");
+const resetPassword = require("../controllers/users/resetPassword");
 const getAccount = require("../controllers/users/getAccount");
 const updateAccount = require("../controllers/users/updateAccount");
 const changePassword = require("../controllers/users/changePassword");
@@ -23,10 +27,19 @@ const updateCategory = require("../controllers/category/updateCategory");
 const updateProvider = require("../controllers/providers/updateProvider");
 const updateProduct = require("../controllers/products/updateProduct");
 
-// Rutas publicas: registro e inicio de sesion.
+// Rutas publicas: registro, inicio de sesion, verificacion de cuentas y
+// recuperacion de contrasena por correo. Ninguna exige JWT.
 router.post("/register", register);
 
 router.post("/logIn", logIn);
+
+router.post("/verifyAccount", verifyAccount);
+
+router.post("/requestVerificationCode", requestVerificationCode);
+
+router.post("/requestPasswordReset", requestPasswordReset);
+
+router.post("/resetPassword", resetPassword);
 
 // Todo lo demas exige un JWT valido; cada cuenta solo accede a su
 // propio inventario mediante req.user.idusers.

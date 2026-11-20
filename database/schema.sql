@@ -1,8 +1,10 @@
 -- =====================================================
 -- REINICIO COMPLETO DE LA BASE DE DATOS INVENTARY
--- Esquema multiempresa con 6 tablas: users, categories,
+-- Esquema multiempresa con 7 tablas: users, categories,
 -- providers, products, movements (cabecera del
--- historial) y movement_items (detalle por producto).
+-- historial), movement_items (detalle por producto) y
+-- verification_codes (codigos de verificacion y
+-- recuperacion de contrasena).
 -- Cada usuario/empresa tiene su propio inventario
 -- aislado mediante la columna idusers.
 -- =====================================================
@@ -25,6 +27,7 @@ DROP TABLE IF EXISTS `movements`;
 DROP TABLE IF EXISTS `products`;
 DROP TABLE IF EXISTS `providers`;
 DROP TABLE IF EXISTS `categories`;
+DROP TABLE IF EXISTS `verification_codes`;
 DROP TABLE IF EXISTS `users`;
 
 -- =====================================================
@@ -32,13 +35,52 @@ DROP TABLE IF EXISTS `users`;
 -- Cada fila es una cuenta/empresa con su inventario.
 -- No existe el campo rol: todas las cuentas tienen los
 -- mismos permisos sobre su propio inventario.
+-- email es unico (colacion ci: sin distincion de
+-- mayusculas, correcto para correos) y se consulta SIN
+-- BINARY; idusers conserva su BINARY de siempre.
+-- email_verified vale 0 hasta que el usuario confirma
+-- el codigo de verificacion: sin confirmar no puede
+-- iniciar sesion.
 -- =====================================================
 
 CREATE TABLE `users` (
   `idusers` varchar(50) NOT NULL,
   `company_name` varchar(100) NOT NULL,
+  `email` varchar(255) NOT NULL,
   `password` varchar(5000) NOT NULL,
-  PRIMARY KEY (`idusers`)
+  `email_verified` tinyint NOT NULL DEFAULT 0,
+  PRIMARY KEY (`idusers`),
+  UNIQUE KEY `users_email_UNIQUE` (`email`)
+) ENGINE=InnoDB
+  DEFAULT CHARSET=utf8mb4
+  COLLATE=utf8mb4_0900_ai_ci;
+
+-- =====================================================
+-- TABLA VERIFICATION_CODES
+-- Un codigo activo por usuario y proposito: 'verificacion'
+-- (entrada al panel) o 'recuperacion' (clave nueva). La
+-- clave UNIQUE (idusers, purpose) permite un solo codigo
+-- vigente: el reenvio sobrescribe la fila con created_at
+-- nuevo y attempts a 0. Caducidad: 15 minutos desde
+-- created_at. Se borra al validarse (un solo uso) y cae
+-- en cascada al eliminar la cuenta; no hay limpieza
+-- programada. code_hash guarda el SHA-256 hex del codigo.
+-- =====================================================
+
+CREATE TABLE `verification_codes` (
+  `idcode` int NOT NULL AUTO_INCREMENT,
+  `idusers` varchar(50) NOT NULL,
+  `purpose` varchar(20) NOT NULL,
+  `code_hash` char(64) NOT NULL,
+  `attempts` tinyint NOT NULL DEFAULT 0,
+  `created_at` datetime NOT NULL,
+  PRIMARY KEY (`idcode`),
+  UNIQUE KEY `verification_codes_user_purpose_UNIQUE` (`idusers`, `purpose`),
+  CONSTRAINT `chk_verification_codes_purpose`
+    CHECK (`purpose` IN ('verificacion', 'recuperacion')),
+  CONSTRAINT `fk_verification_codes_user`
+    FOREIGN KEY (`idusers`) REFERENCES `users` (`idusers`)
+    ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB
   DEFAULT CHARSET=utf8mb4
   COLLATE=utf8mb4_0900_ai_ci;
@@ -197,6 +239,8 @@ SET FOREIGN_KEY_CHECKS = 1;
 -- =====================================================
 
 SELECT * FROM `users`;
+
+SELECT * FROM `verification_codes`;
 
 SELECT * FROM `categories`;
 

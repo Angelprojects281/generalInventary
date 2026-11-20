@@ -39,6 +39,16 @@ const logIn = async (req, res) => {
       });
     }
 
+    // Cuenta sin verificar: no se emite token. El frontend detecta el
+    // 403 (apiFetch solo intercepta el 401) y abre la pantalla de
+    // verificacion.
+    if (user.email_verified === 0) {
+      return res.status(403).json({
+        error:
+          "Su cuenta no está verificada. Revise su correo para introducir el código.",
+      });
+    }
+
     const token = jwt.sign({ idusers: user.idusers }, process.env.JWT_SECRET, {
       expiresIn: "1h",
     });

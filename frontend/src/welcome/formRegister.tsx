@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { motion } from "motion/react";
-import { useNavigate } from "react-router-dom";
 import { UserPlus } from "lucide-react";
 import { mostrarAlerta } from "../alerts/alert";
 import apiFetch from "../api";
@@ -8,22 +7,32 @@ import { useTranslation } from "../i18n";
 
 interface formProps {
   onCancel: () => void;
+  onRegistered: (cuenta: { idusers: string; email: string }) => void;
 }
 
-function FormRegister({ onCancel }: formProps) {
+function FormRegister({ onCancel, onRegistered }: formProps) {
   const [idusers, setIdusers] = useState("");
   const [companyName, setCompanyName] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const navigate = useNavigate();
   const { t } = useTranslation();
 
   const handleRegister = async () => {
-    if (!idusers || !companyName || !password || !confirmPassword) {
+    if (!idusers || !companyName || !email || !password || !confirmPassword) {
       mostrarAlerta(
         "error",
         "No se pudo crear la cuenta",
         "Complete todos los campos obligatorios.",
+      );
+      return;
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      mostrarAlerta(
+        "error",
+        "No se pudo crear la cuenta",
+        "Ingrese un correo electrónico válido.",
       );
       return;
     }
@@ -39,7 +48,7 @@ function FormRegister({ onCancel }: formProps) {
 
     const res = await apiFetch("/register", {
       method: "POST",
-      body: JSON.stringify({ idusers, companyName, password }),
+      body: JSON.stringify({ idusers, companyName, email, password }),
     });
 
     const data = await res.json();
@@ -49,8 +58,14 @@ function FormRegister({ onCancel }: formProps) {
       return;
     }
 
-    localStorage.setItem("token", data.token);
-    navigate("/panel");
+    // Sin token ni navegacion: la cuenta queda sin verificar y la
+    // bienvenida pasa a la pantalla de codigo.
+    mostrarAlerta(
+      "success",
+      "Cuenta creada",
+      "Cuenta creada. Revise su correo para verificarla.",
+    );
+    onRegistered({ idusers, email });
   };
 
   return (
@@ -80,6 +95,16 @@ function FormRegister({ onCancel }: formProps) {
         value={companyName}
         onChange={(e) => {
           setCompanyName(e.target.value);
+        }}
+      ></input>
+      <input
+        className="userInput"
+        placeholder={t("correo electrónico")}
+        type="email"
+        maxLength={255}
+        value={email}
+        onChange={(e) => {
+          setEmail(e.target.value);
         }}
       ></input>
       <input

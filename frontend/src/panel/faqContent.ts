@@ -21,7 +21,7 @@ export const FAQ_GROUPS: FaqGroup[] = [
       {
         question: "¿Cómo creo mi cuenta?",
         answer:
-          "Desde la página de bienvenida, pulsa «Crear una cuenta» y completa el usuario, el nombre de la empresa y la contraseña. La contraseña debe ser segura; al crearla la sesión se inicia automáticamente.",
+          "Desde la página de bienvenida, pulsa «Crear una cuenta» y completa el usuario, el nombre de la empresa, el correo electrónico y la contraseña. La contraseña debe ser segura. Al crearla recibirás un código de 6 dígitos en tu correo: introdúcelo en la pantalla de verificación y entrarás directamente al panel.",
       },
       {
         question: "¿Cada empresa ve los datos de otra?",
@@ -36,7 +36,12 @@ export const FAQ_GROUPS: FaqGroup[] = [
       {
         question: "¿Qué pasa si olvido la contraseña?",
         answer:
-          "No hay recuperación por correo. La contraseña se cambia en «Mi cuenta» indicando la actual. Si no recuerdas la actual, tendrás que registrar una cuenta nueva y cargar de nuevo el inventario.",
+          "En el inicio de sesión, pulsa «¿Olvidaste tu contraseña?», introduce tu correo electrónico y recibirás un código de 6 dígitos. Después escribe el código y la contraseña nueva para volver a entrar.",
+      },
+      {
+        question: "¿No me llega el correo de verificación?",
+        answer:
+          "Revisa la carpeta de spam: el correo puede tardar unos segundos. Desde la pantalla de verificación puedes reenviar el código (hay 60 segundos de espera entre envíos). Si sigue sin llegar, comprueba la configuración de correo del backend.",
       },
     ],
   },

@@ -2546,3 +2546,52 @@ body:has(.formContainer)::before {
     font-size: 12.5px;
   }
 }
+
+/* ---------- Formularios de verificación y recuperación ---------- */
+/* Enlace de texto bajo los campos del inicio de sesión («¿Olvidaste tu
+   contraseña?»): sin borde ni fondo, en el color de acento y subrayado
+   al pasar el cursor. Ocupa el ancho completo de la rejilla del
+   formulario. */
+.formLink {
+  grid-column: 1 / -1;
+  justify-self: center;
+  border: none;
+  background: none;
+  padding: 0;
+  color: var(--color-accent);
+  font: inherit;
+  cursor: pointer;
+}
+
+.formLink:hover {
+  text-decoration: underline;
+}
+
+.formLink:focus-visible {
+  outline: 2px solid var(--color-ink);
+  outline-offset: 2px;
+}
+
+/* Campo del código de 6 dígitos: monoespaciado, centrado y con más
+   cuerpo que un .userInput normal (va junto a la clase userInput). */
+.codeInput {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 22px;
+  letter-spacing: 0.35em;
+  text-align: center;
+}
+
+/* Botón deshabilitado mientras dura el cooldown de reenvío (60 s). */
+.optionButton:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  animation: none;
+}
+
+/* Móvil: el código se reduce para caber en pantallas estrechas. */
+@media (max-width: 680px) {
+  .codeInput {
+    font-size: 19px;
+    letter-spacing: 0.25em;
+  }
+}

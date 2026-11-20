@@ -3,13 +3,30 @@ import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { ArrowRight, Boxes, ClipboardList, ShieldCheck, UserRound } from "lucide-react";
 import FormLogin from "./formLogin";
 import FormRegister from "./formRegister";
+import FormVerify from "./formVerify";
+import FormForgotPassword from "./formForgotPassword";
+import FormResetPassword from "./formResetPassword";
 import VantaBackground from "../visual/vantaBackground";
 import { useTranslation } from "../i18n";
 
-type openForm = "login" | "register" | null;
+type openForm =
+  | "login"
+  | "register"
+  | "verify"
+  | "forgot"
+  | "reset"
+  | null;
+
+// Contexto de los flujos multi-paso: verificacion (usuario + correo) y
+// recuperacion (correo). Todo vive en "/" sin rutas nuevas.
+type verifyContext = { idusers: string; email: string };
 
 export default function Welcome() {
   const [form, setForm] = useState<openForm>(null);
+  const [verificacion, setVerificacion] = useState<verifyContext | null>(
+    null,
+  );
+  const [emailRecuperacion, setEmailRecuperacion] = useState("");
   const reduceMotion = useReducedMotion();
   const { t } = useTranslation();
 
@@ -163,10 +180,53 @@ export default function Welcome() {
 
       <AnimatePresence>
         {form === "login" && (
-          <FormLogin key="login" onCancel={() => setForm(null)} />
+          <FormLogin
+            key="login"
+            onCancel={() => setForm(null)}
+            onUnverified={(idusers) => {
+              // Cuenta sin verificar: se abre la verificacion sin correo
+              // prellenado; el formulario lo pide solo para reenviar.
+              setVerificacion({ idusers, email: "" });
+              setForm("verify");
+            }}
+            onForgot={() => setForm("forgot")}
+          />
         )}
         {form === "register" && (
-          <FormRegister key="register" onCancel={() => setForm(null)} />
+          <FormRegister
+            key="register"
+            onCancel={() => setForm(null)}
+            onRegistered={(cuenta) => {
+              setVerificacion(cuenta);
+              setForm("verify");
+            }}
+          />
+        )}
+        {form === "verify" && verificacion && (
+          <FormVerify
+            key="verify"
+            idusers={verificacion.idusers}
+            email={verificacion.email}
+            onCancel={() => setForm(null)}
+          />
+        )}
+        {form === "forgot" && (
+          <FormForgotPassword
+            key="forgot"
+            onCancel={() => setForm(null)}
+            onSent={(email) => {
+              setEmailRecuperacion(email);
+              setForm("reset");
+            }}
+          />
+        )}
+        {form === "reset" && (
+          <FormResetPassword
+            key="reset"
+            email={emailRecuperacion}
+            onCancel={() => setForm(null)}
+            onReset={() => setForm("login")}
+          />
         )}
       </AnimatePresence>
     </div>

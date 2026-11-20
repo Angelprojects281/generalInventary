@@ -8,9 +8,11 @@ import { useTranslation } from "../i18n";
 
 interface formProps {
   onCancel: () => void;
+  onUnverified: (idusers: string) => void;
+  onForgot: () => void;
 }
 
-function FormLogin({ onCancel }: formProps) {
+function FormLogin({ onCancel, onUnverified, onForgot }: formProps) {
   const [idusers, setIdusers] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
@@ -34,6 +36,15 @@ function FormLogin({ onCancel }: formProps) {
     const data = await res.json();
 
     if (!res.ok) {
+      // El 403 (cuenta sin verificar) no lo intercepta apiFetch: se
+      // detecta aqui y se abre la pantalla de verificacion con el
+      // usuario escrito (el correo se pide en ese formulario).
+      if (res.status === 403) {
+        mostrarAlerta("error", "Cuenta no verificada", data.error);
+        onUnverified(idusers);
+        return;
+      }
+
       mostrarAlerta("error", "No se pudo iniciar sesión", data.error);
       return;
     }
@@ -69,6 +80,10 @@ function FormLogin({ onCancel }: formProps) {
           setPassword(e.target.value);
         }}
       ></input>
+
+      <button className="formLink" onClick={onForgot}>
+        {t("¿Olvidaste tu contraseña?")}
+      </button>
 
       <section className="buttonsSection">
         <button className="optionButton" onClick={handleLogin}>

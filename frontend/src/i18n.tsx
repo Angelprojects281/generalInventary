@@ -404,8 +404,6 @@ const translations: Record<string, string> = {
   "Filtros e historial": "Filters and history",
   "Navegación, idioma y temas": "Navigation, language and themes",
   "¿Cómo creo mi cuenta?": "How do I create my account?",
-  "Desde la página de bienvenida, pulsa «Crear una cuenta» y completa el usuario, el nombre de la empresa y la contraseña. La contraseña debe ser segura; al crearla la sesión se inicia automáticamente.":
-    "From the welcome page, click \"Create an account\" and fill in the username, the company name and the password. The password must be strong enough; the session starts automatically once the account is created.",
   "¿Cada empresa ve los datos de otra?": "Can one company see another company's data?",
   "No. Cada cuenta es una empresa independiente y solo accede a sus propias categorías, proveedores, productos y movimientos. Para gestionar otra empresa necesitas otra cuenta.":
     "No. Each account is an independent company and only accesses its own categories, providers, products and movements. You need another account to manage a different company.",
@@ -413,8 +411,6 @@ const translations: Record<string, string> = {
   "Con el botón «Cerrar sesion» del panel o de la pantalla «Mi cuenta». La sesión también se cierra sola tras 20 minutos de inactividad y el botón «atrás» del navegador pide confirmación antes de salir de la aplicación.":
     "With the \"Log Out\" button on the dashboard or on the \"My account\" screen. The session also closes on its own after 20 minutes of inactivity, and the browser back button asks for confirmation before leaving the app.",
   "¿Qué pasa si olvido la contraseña?": "What if I forget my password?",
-  "No hay recuperación por correo. La contraseña se cambia en «Mi cuenta» indicando la actual. Si no recuerdas la actual, tendrás que registrar una cuenta nueva y cargar de nuevo el inventario.":
-    "There is no email recovery. The password is changed in \"My account\" by entering the current one. If you cannot remember it, you will have to register a new account and load your inventory again.",
   "¿Por qué un producto necesita categoría y proveedor?":
     "Why does a product need a category and a provider?",
   "Son datos obligatorios al dar de alta un producto y deben pertenecer a tu empresa. Si aún no tienes, créalos antes en sus respectivas secciones.":
@@ -527,6 +523,64 @@ const translations: Record<string, string> = {
   Desactivada: "Disabled",
   "Con Enter, el producto se añade en cuanto termina la búsqueda.":
     "With Enter, the product is added as soon as the search finishes.",
+  // Verificación de cuenta por correo.
+  "correo electrónico": "email",
+  "Ingrese un correo electrónico válido.": "Enter a valid email address.",
+  "Ya existe una cuenta con ese correo.":
+    "An account with that email already exists.",
+  "Cuenta creada": "Account created",
+  "Cuenta creada. Revise su correo para verificarla.":
+    "Account created. Check your email to verify it.",
+  "Cuenta creada correctamente. Hemos enviado un código de verificación a su correo.":
+    "Account created successfully. We have sent a verification code to your email.",
+  "No se pudo enviar el correo de verificación. Inténtelo de nuevo.":
+    "The verification email could not be sent. Please try again.",
+  "Cuenta no verificada": "Account not verified",
+  "Su cuenta no está verificada. Revise su correo para introducir el código.":
+    "Your account is not verified. Check your email to enter the code.",
+  "Verifica tu cuenta": "Verify your account",
+  "Hemos enviado un código de 6 dígitos a": "We have sent a 6-digit code to",
+  "El código caduca a los 15 minutos.": "The code expires in 15 minutes.",
+  "código de verificación": "verification code",
+  VERIFICAR: "VERIFY",
+  "Reenviar código": "Resend code",
+  "No se pudo verificar la cuenta": "Could not verify the account",
+  "El código debe tener 6 dígitos.": "The code must be 6 digits.",
+  "No hay ningún código pendiente para esa cuenta.":
+    "There is no pending code for that account.",
+  "El código ha caducado. Solicite uno nuevo.":
+    "The code has expired. Request a new one.",
+  "El código es incorrecto.": "The code is incorrect.",
+  "Demasiados intentos. Solicite un nuevo código.":
+    "Too many attempts. Request a new code.",
+  "Cuenta verificada correctamente.": "Account verified successfully.",
+  "No se pudo verificar el código. Inténtelo de nuevo.":
+    "The code could not be verified. Please try again.",
+  // Recuperación de contraseña por correo.
+  "¿Olvidaste tu contraseña?": "Forgot your password?",
+  "Recupera tu contraseña": "Recover your password",
+  "ENVIAR CÓDIGO": "SEND CODE",
+  "Solicitud enviada": "Request sent",
+  "No se pudo enviar el código": "The code could not be sent",
+  "Si el usuario y el correo coinciden, recibirás un código de verificación.":
+    "If the username and email match, you will receive a verification code.",
+  "Restablecer contraseña": "Reset password",
+  "RESTABLECER CONTRASEÑA": "RESET PASSWORD",
+  "No se pudo restablecer la contraseña": "Could not reset the password",
+  "Si existe una cuenta con ese correo, recibirás un código para restablecer tu contraseña.":
+    "If an account exists with that email, you will receive a code to reset your password.",
+  "El código es incorrecto o ha caducado.":
+    "The code is incorrect or has expired.",
+  // FAQ de cuenta reescrita: el registro pide correo y verifica antes de
+  // entrar, y ya existe recuperación de contraseña en dos pasos.
+  "Desde la página de bienvenida, pulsa «Crear una cuenta» y completa el usuario, el nombre de la empresa, el correo electrónico y la contraseña. La contraseña debe ser segura. Al crearla recibirás un código de 6 dígitos en tu correo: introdúcelo en la pantalla de verificación y entrarás directamente al panel.":
+    "From the welcome page, click \"Create an account\" and fill in the username, the company name, the email address and the password. The password must be strong enough. When the account is created you will receive a 6-digit code by email: enter it on the verification screen and you will go straight to the dashboard.",
+  "En el inicio de sesión, pulsa «¿Olvidaste tu contraseña?», introduce tu correo electrónico y recibirás un código de 6 dígitos. Después escribe el código y la contraseña nueva para volver a entrar.":
+    "On the login form, click \"Forgot your password?\", enter your email address and you will receive a 6-digit code. Then enter the code and the new password to log in again.",
+  "¿No me llega el correo de verificación?":
+    "I am not receiving the verification email?",
+  "Revisa la carpeta de spam: el correo puede tardar unos segundos. Desde la pantalla de verificación puedes reenviar el código (hay 60 segundos de espera entre envíos). Si sigue sin llegar, comprueba la configuración de correo del backend.":
+    "Check the spam folder: the email may take a few seconds. From the verification screen you can resend the code (there is a 60-second wait between sends). If it still does not arrive, check the backend email settings.",
 };
 
 const dynamicTranslations: [RegExp, string][] = [
